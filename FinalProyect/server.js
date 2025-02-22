@@ -146,7 +146,6 @@ app.get('/search_plates', (req, res) => {
 });
 
 // Iniciar el servidor
-server.listen(3000, '0.0.0.0', () => {
-    console.log('Servidor corriendo en http://0.0.0.0:80');
+server.listen(80, () => {
+    console.log('Servidor web corriendo en http://localhost:80');
 });
-
