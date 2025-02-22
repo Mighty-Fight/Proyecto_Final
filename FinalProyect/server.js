@@ -13,7 +13,7 @@ const io = socketIo(server);
 const db = mysql.createConnection({
     host: "placas.cnk4qa6sidds.us-east-1.rds.amazonaws.com",
     user: "admin",
-    password: 'admin1234',
+    password: 'junior2025',
     database: 'placas_db',
 });
 
