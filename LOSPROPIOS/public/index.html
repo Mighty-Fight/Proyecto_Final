@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Placas</title>
+</head>
+<body>
+    <h1>Estado de Placas</h1>
+    <div id="placa-info">Esperando detección...</div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Actualizar el estado de la placa cuando se reciba una actualización del servidor
+        socket.on('updatePlaca', function(data) {
+            document.getElementById('placa-info').innerText = data;
+        });
+    </script>
+</body>
+</html>

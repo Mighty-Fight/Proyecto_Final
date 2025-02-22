@@ -1,0 +1,73 @@
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.86.40:5000
+Press CTRL+C to quit
+ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers
+  built with gcc 8 (Debian 8.3.0-6)
+  configuration: --enable-gpl --enable-version3 --enable-static --disable-debug --disable-ffplay --disable-indev=sndio --disable-outdev=sndio --cc=gcc --enable-fontconfig --enable-frei0r --enable-gnutls --enable-gmp --enable-libgme --enable-gray --enable-libfribidi --enable-libass --enable-libfreetype --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librubberband --enable-libsoxr --enable-libspeex --enable-libsrt --enable-libvorbis --enable-libopus --enable-libtheora --enable-libvidstab --enable-libvo-amrwbenc --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg
+  libavutil      59.  8.100 / 59.  8.100
+  libavcodec     61.  3.100 / 61.  3.100
+  libavformat    61.  1.100 / 61.  1.100
+  libavdevice    61.  1.100 / 61.  1.100
+  libavfilter    10.  1.100 / 10.  1.100
+  libswscale      8.  1.100 /  8.  1.100
+  libswresample   5.  1.100 /  5.  1.100
+  libpostproc    58.  1.100 / 58.  1.100
+[tcp @ 0xce6b740] Connection to tcp://193.186.4.211:554?timeout=0 failed: Connection timed out
+[in#0 @ 0xce68b00] Error opening input: Connection timed out
+Error opening input file rtsp://admin:abcd1234..@193.186.4.211:554/Streaming/Channels/101.
+Error opening input files: Connection timed out
+Exception in thread Thread-2:
+Traceback (most recent call last):
+  File "/home/ec2-user/FinalProyect/camnew.py", line 144, in process_frames
+    raise ValueError("No se pudo obtener el frame.")
+ValueError: No se pudo obtener el frame.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib64/python3.9/threading.py", line 980, in _bootstrap_inner
+    self.run()
+  File "/usr/lib64/python3.9/threading.py", line 917, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/ec2-user/FinalProyect/camnew.py", line 173, in process_frames
+    time.sleep(5)
+NameError: name 'time' is not defined
+147.185.132.207 - - [04/Jan/2025 03:38:33] "GET / HTTP/1.0" 404 -
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.ffmpeg version 7.0.2-static https://johnvansickle.com/ffmpeg/  Copyright (c) 2000-2024 the FFmpeg developers
+  built with gcc 8 (Debian 8.3.0-6)
+  configuration: --enable-gpl --enable-version3 --enable-static --disable-debug --disable-ffplay --disable-indev=sndio --disable-outdev=sndio --cc=gcc --enable-fontconfig --enable-frei0r --enable-gnutls --enable-gmp --enable-libgme --enable-gray --enable-libfribidi --enable-libass --enable-libfreetype --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-librubberband --enable-libsoxr --enable-libspeex --enable-libsrt --enable-libvorbis --enable-libopus --enable-libtheora --enable-libvidstab --enable-libvo-amrwbenc --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg
+  libavutil      59.  8.100 / 59.  8.100
+  libavcodec     61.  3.100 / 61.  3.100
+  libavformat    61.  1.100 / 61.  1.100
+  libavdevice    61.  1.100 / 61.  1.100
+  libavfilter    10.  1.100 / 10.  1.100
+  libswscale      8.  1.100 /  8.  1.100
+  libswresample   5.  1.100 /  5.  1.100
+  libpostproc    58.  1.100 / 58.  1.100
+
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.86.40:5000
+Press CTRL+C to quit
+[tcp @ 0xe942740] Connection to tcp://193.186.4.211:554?timeout=0 failed: Connection timed out
+[in#0 @ 0xe93fb00] Error opening input: Connection timed out
+Error opening input file rtsp://admin:abcd1234..@193.186.4.211:554/Streaming/Channels/101.
+Error opening input files: Connection timed out
+Exception in thread Thread-2:
+Traceback (most recent call last):
+  File "/home/ec2-user/FinalProyect/camnew.py", line 144, in process_frames
+    raise ValueError("No se pudo obtener el frame.")
+ValueError: No se pudo obtener el frame.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib64/python3.9/threading.py", line 980, in _bootstrap_inner
+    self.run()
+  File "/usr/lib64/python3.9/threading.py", line 917, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/ec2-user/FinalProyect/camnew.py", line 173, in process_frames
+    time.sleep(5)
+NameError: name 'time' is not defined

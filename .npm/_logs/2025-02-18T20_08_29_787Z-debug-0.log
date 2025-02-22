@@ -1,0 +1,12 @@
+0 verbose cli /usr/bin/node-18 /usr/local/lib/node_modules/npm/bin/npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v18.20.4
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/ec2-user/actions-runner/_work/LOSPROPIOS/LOSPROPIOS/.npmrc
+5 silly config load:file:/home/ec2-user/.npmrc
+6 silly config load:file:/etc/npmrc
+7 verbose title npm exec tsm ./src/app.ts
+8 verbose argv "exec" "--" "tsm" "./src/app.ts"
+9 verbose logfile logs-max:10 dir:/home/ec2-user/.npm/_logs/2025-02-18T20_08_29_787Z-
+10 verbose logfile /home/ec2-user/.npm/_logs/2025-02-18T20_08_29_787Z-debug-0.log
+11 silly logfile done cleaning log files

@@ -1,0 +1,1105 @@
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}
+Error: listen EACCES: permission denied 0.0.0.0:80
+    at Server.setupListenHandle [as _listen2] (node:net:1800:21)
+    at listenInCluster (node:net:1865:12)
+    at Server.listen (node:net:1953:7)
+    at Object.<anonymous> (/home/ec2-user/FinalProyect/server.js:150:8)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1422:10)
+    at Module.load (node:internal/modules/cjs/loader:1203:32)
+    at Module._load (node:internal/modules/cjs/loader:1019:12)
+    at Object.<anonymous> (/usr/local/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+    at Module._compile (node:internal/modules/cjs/loader:1364:14) {
+  code: 'EACCES',
+  errno: -13,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 80
+}

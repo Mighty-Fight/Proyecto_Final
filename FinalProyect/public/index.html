@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Cámara</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Mostrar placas detectadas en tiempo real
+        socket.on('updatePlaca', (data) => {
+            // Tomar los elementos donde queremos inyectar la información
+            const plateSpan = document.getElementById('detected-plate');
+            const timeSpan = document.getElementById('detected-plate-timestamp');
+            const platesTable = document.getElementById("plates-table");
+
+            // Formatear el timestamp
+            const timestamp = new Date(data.timestamp).toLocaleString();
+
+            // Actualizar el texto "Placa detectada"
+            plateSpan.textContent = data.placa;
+            // Actualizar el timestamp
+            timeSpan.textContent = timestamp;
+
+            // Añadir la nueva placa a la tabla
+            const newRow = `
+                <tr>
+                    <td>${platesTable.rows.length}</td>
+                    <td>${data.placa}</td>
+                    <td>${timestamp}</td>
+                </tr>
+            `;
+            platesTable.innerHTML += newRow;
+        });
+
+        // Función para obtener y mostrar las placas almacenadas en la base de datos
+        async function fetchPlates() {
+            try {
+                const response = await fetch("http://eurowash.ddns.net/plates");
+                const plates = await response.json();
+
+                const platesTable = document.getElementById("plates-table");
+                // Reiniciar encabezados de la tabla
+                platesTable.innerHTML = `
+                    <tr>
+                        <th>ID</th>
+                        <th>Placa</th>
+                        <th>Timestamp</th>
+                    </tr>
+                `;
+
+                plates.forEach((plate, index) => {
+                    platesTable.innerHTML += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${plate.placa}</td>
+                            <td>${new Date(plate.timestamp).toLocaleString()}</td>
+                        </tr>
+                   `;
+                });
+            } catch (error) {
+                console.error("Error al obtener las placas:", error);
+            }
+        }
+
+        // Función para reiniciar la tabla
+        async function resetTable() {
+            if (confirm('¿Estás seguro de que quieres reiniciar la tabla? Esto eliminará todos los registros.')) {
+                try {
+                    const response = await fetch("http://eurowash.ddns.net/reset_table", { method: 'POST' });
+                    const message = await response.text();
+                    alert(message); // Muestra el mensaje del servidor
+                    fetchPlates(); // Actualiza la tabla
+                } catch (error) {
+                    console.error("Error reiniciando la tabla:", error);
+                    alert("Hubo un error al reiniciar la tabla.");
+                }
+            }
+        }
+
+        // Función para realizar búsquedas en la base de datos
+        async function searchPlates() {
+            const placaInput = document.getElementById("search-placa").value.trim();
+            const startInput = document.getElementById("search-start").value;
+            const endInput = document.getElementById("search-end").value;
+
+            const queryParams = [];
+            if (placaInput) queryParams.push(`placa=${encodeURIComponent(placaInput)}`);
+            if (startInput) queryParams.push(`startTimestamp=${encodeURIComponent(startInput)}`);
+            if (endInput) queryParams.push(`endTimestamp=${encodeURIComponent(endInput)}`);
+
+            // Construir la query string
+            const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+
+            try {
+                const response = await fetch(`http://eurowash.ddns.net/search_plates${queryString}`);
+                const results = await response.json();
+
+                const searchResultsTable = document.getElementById("search-results");
+                searchResultsTable.innerHTML = `
+                    <tr>
+                        <th>ID</th>
+                        <th>Placa</th>
+                        <th>Timestamp</th>
+                    </tr>
+                `;
+
+                results.forEach((result) => {
+                    searchResultsTable.innerHTML += `
+                        <tr>
+                            <td>${result.id}</td>
+                            <td>${result.placa}</td>
+                            <td>${new Date(result.timestamp).toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+                if (results.length === 0) {
+                    alert("No se encontraron resultados.");
+                }
+            } catch (error) {
+                console.error("Error buscando placas:", error);
+                alert("Hubo un error al realizar la búsqueda.");
+            }
+        }
+
+        // Llamar a fetchPlates al cargar la página
+        document.addEventListener("DOMContentLoaded", fetchPlates);
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Hub de Cámara</h1>
+        <nav>
+            <ul>
+                <li><a href="#live-feed">Live Feed</a></li>
+                <li><a href="#processed-feed">Processed Feed</a></li>
+                <li><a href="#plates-list">Plates List</a></li>
+                <li><a href="#search-plates">Search Plates</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <!-- Sección de feed original -->
+        <section id="live-feed">
+            <h2>Live Feed (Original)</h2>
+            <img src="http://eurowash.ddns.net:5001/video_feed" alt="/video_feed">
+        </section>
+
+        <!-- Sección de feed procesado -->
+        <section id="processed-feed">
+            <h2>Processed Feed</h2>
+            <img src="http://eurowash.ddns.net:5001/processed_feed" alt="/processed_feed">
+        </section>
+
+        <!-- Sección de placas detectadas -->
+        <section id="plates-list">
+            <h2>Plates Detected</h2>
+
+            <!-- NUEVO: Texto explícito para “placa detectada” y timestamp -->
+            <div style="margin-bottom: 10px;">
+                <strong>Placa detectada:</strong>
+                <span id="detected-plate">No plates detected yet.</span>
+                &nbsp;&nbsp;
+                <strong>Timestamp:</strong>
+                <span id="detected-plate-timestamp">--</span>
+            </div>
+
+            <button onclick="fetchPlates()">Refresh List</button>
+            <button onclick="resetTable()">Reiniciar Tabla</button>
+            <table id="plates-table" border="1">
+                <tr>
+                    <th>ID</th>
+                    <th>Placa</th>
+                    <th>Timestamp</th>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Sección para búsqueda de placas -->
+        <section id="search-plates">
+            <h2>Search Plates</h2>
+            <form onsubmit="event.preventDefault(); searchPlates();">
+                <label for="search-placa">Placa:</label>
+                <input type="text" id="search-placa" placeholder="Ejemplo: ABC123">
+                <label for="search-start">Fecha Inicio:</label>
+                <input type="datetime-local" id="search-start">
+                <label for="search-end">Fecha Fin:</label>
+                <input type="datetime-local" id="search-end">
+                <button type="submit">Buscar</button>
+            </form>
+            <table id="search-results" border="1">
+                <tr>
+                    <th>ID</th>
+                    <th>Placa</th>
+                    <th>Timestamp</th>
+                </tr>
+            </table>
+        </section>
+    </main>
+</body>
+</html>
+

@@ -1,0 +1,24 @@
+0 verbose cli /usr/bin/node-18 /usr/local/lib/node_modules/npm/bin/npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v18.20.4
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/home/ec2-user/actions-runner/_work/LOSPROPIOS/LOSPROPIOS/.npmrc
+5 silly config load:file:/home/ec2-user/.npmrc
+6 silly config load:file:/etc/npmrc
+7 verbose title npm exec tsm ./src/app.ts
+8 verbose argv "exec" "--" "tsm" "./src/app.ts"
+9 verbose logfile logs-max:10 dir:/home/ec2-user/.npm/_logs/2025-02-17T22_44_11_857Z-
+10 verbose logfile /home/ec2-user/.npm/_logs/2025-02-17T22_44_11_857Z-debug-0.log
+11 silly logfile done cleaning log files
+12 http fetch GET 200 https://registry.npmjs.org/npm 235ms
+13 verbose cwd /home/ec2-user/actions-runner/_work/LOSPROPIOS/LOSPROPIOS
+14 verbose os Linux 6.1.115-126.197.amzn2023.x86_64
+15 verbose node v18.20.4
+16 verbose npm  v10.9.2
+17 notice
+17 notice New [31mmajor[39m version of npm available! [31m10.9.2[39m -> [34m11.1.0[39m
+17 notice Changelog: [34mhttps://github.com/npm/cli/releases/tag/v11.1.0[39m
+17 notice To update run: [4mnpm install -g npm@11.1.0[24m
+17 notice  { force: true, [Symbol(proc-log.meta)]: true }
+18 verbose exit 1
+19 verbose code 1
