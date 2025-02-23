@@ -10,12 +10,13 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+require('dotenv').config();
 // Conexión a la base de datos MySQL
 const db = mysql.createConnection({
-    host: "placas.cnk4qa6sidds.us-east-1.rds.amazonaws.com",
-    user: "admin",
-    password: 'junior2025',
-    database: 'placas_db',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 // Verificar la conexión a MySQL
