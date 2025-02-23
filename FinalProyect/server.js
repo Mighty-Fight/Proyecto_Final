@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
+const path = require('path'); // Importar path para rutas dinámicas
 
 // Crear la aplicación Express
 const app = express();
@@ -27,14 +28,14 @@ db.connect((err) => {
 });
 
 // Servir archivos estáticos desde la carpeta "public"
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Configurar el body-parser para manejar datos JSON
 app.use(bodyParser.json());
 
 // Ruta principal para la aplicación
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Rutas para los feeds (original y procesado) - Se colocan primero para evitar conflictos
@@ -89,10 +90,8 @@ app.post('/update', (req, res) => {
 
 // Ruta para reiniciar la tabla
 app.post('/reset_table', (req, res) => {
-    const resetQuery = `
-        TRUNCATE TABLE placas; -- Limpia todos los datos de la tabla
-    `;
-    db.query(resetQuery, (err, results) => {
+    const resetQuery = `TRUNCATE TABLE placas;`; // Limpia todos los datos de la tabla
+    db.query(resetQuery, (err) => {
         if (err) {
             console.error('Error al reiniciar la tabla:', err.message);
             res.status(500).send('Error al reiniciar la tabla.');
@@ -115,6 +114,7 @@ app.get('/plates', (req, res) => {
         }
     });
 });
+
 // Ruta para buscar placas con parámetros opcionales (nombre y rango de fechas)
 app.get('/search_plates', (req, res) => {
     const { placa, startTimestamp, endTimestamp } = req.query;
@@ -145,7 +145,9 @@ app.get('/search_plates', (req, res) => {
     });
 });
 
-// Iniciar el servidor
-server.listen(80, () => {
-    console.log('Servidor web corriendo en http://localhost:80');
+// Iniciar el servidor en un puerto seguro
+const PORT = process.env.PORT || 3000; // Usa 3000 en lugar de 80 para evitar errores de permisos
+
+server.listen(PORT, () => {
+    console.log(`Servidor web corriendo en http://localhost:${PORT}`);
 });
