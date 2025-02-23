@@ -146,7 +146,7 @@ app.get('/search_plates', (req, res) => {
 });
 
 // Iniciar el servidor en un puerto seguro
-const PORT = process.env.PORT || 80; // Usa 3000 en lugar de 80 para evitar errores de permisos
+const PORT = process.env.PORT || 3000; // Usa 3000 en lugar de 80 para evitar errores de permisos
 
 server.listen(PORT, () => {
     console.log(`Servidor web corriendo en http://localhost:${PORT}`);
