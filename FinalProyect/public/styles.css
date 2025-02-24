@@ -38,9 +38,11 @@ header {
 
 /* Logo en el header */
 .header-logo {
-    width: 120px; /* Ajusta según la imagen */
+    width: 135px; /* Ajusta según la imagen */
     height: auto;
-    margin-left: 20px;
+}
+    /*margin-left: 20px;
+
 }
 
 /* Menú de navegación */
@@ -70,7 +72,7 @@ nav ul li a {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-right: 20px;
+   
 }
 
 .profile-section span {
