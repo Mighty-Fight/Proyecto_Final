@@ -173,6 +173,29 @@ input, select {
         flex-direction: column;
         align-items: flex-end;
     }
+
+    header {
+        flex-direction: column; /* Hace que los elementos se apilen */
+        align-items: center;
+        text-align: center;
+    }
+
+    nav ul {
+        flex-direction: column; /* Hace que los links se apilen */
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .profile-section {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .profile-section button {
+        width: 100%; /* Hace que los botones sean más fáciles de presionar */
+        max-width: 150px;
+    }
 }
 
 input[type="datetime-local"] {
