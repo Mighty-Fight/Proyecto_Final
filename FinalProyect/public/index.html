@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Camera</title>
-    <link rel="stylesheet" href="/styles.css">
+    <title>Gonorreas</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
@@ -130,8 +130,12 @@
     </script>
 </head>
 <body>
+    <!--<video autoplay loop muted playsinline class="bg-video">
+        <source src="gg.png" type="video/mp4">
+    </video>
+-->
     <header>
-        <h1>Hub de Cámara LIVE</h1>
+        <img src="logo.png" alt="Logo" class="header-logo"> <!-- Cambia 'logo.png' por el nombre real -->
         <nav>
             <ul>
                 <li><a href="#live-feed">Live Feed</a></li>
@@ -140,6 +144,11 @@
                 <li><a href="#search-plates">Search Plates</a></li>
             </ul>
         </nav>
+        <div class="profile-section">
+            <span>Cajero, LitMilo</span>
+            <button>Perfil</button>
+            <button>Log out</button>
+        </div>
     </header>
     <main>
         <!-- Sección de feed original -->

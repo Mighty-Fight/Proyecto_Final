@@ -2,70 +2,191 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
-    color: #333;
+    background-color: #000000;
+    background-image: url('gg.png');
+    background-size: 200px;
+    background-position: center center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que se repita */
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden; /* Evita el scroll horizontal */
 }
+/*.bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ajusta el video al tamaño de la pantalla */
+    /*z-index: -1; /* Lo envía al fondo */
+/*}
 
+
+
+/* Header con logo y perfil */
 header {
-    background-color: #333;
+    background-color: #222;
     color: #fff;
     padding: 1rem 2rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 1.5rem;
+/* Logo en el header */
+.header-logo {
+    width: 120px; /* Ajusta según la imagen */
+    height: auto;
+    margin-left: 20px;
+}
+
+/* Menú de navegación */
+nav {
+    flex-grow: 1;
+    text-align: center;
 }
 
 nav ul {
     list-style: none;
     padding: 0;
     display: flex;
-    gap: 1rem;
-}
-
-nav ul li {
+    justify-content: center;
+    gap: 2rem;
     margin: 0;
 }
 
 nav ul li a {
-    color: #fff;
+    color: #ffffff;
     text-decoration: none;
+    font-weight: bold;
+    font-size: 1.7rem;
+}
+
+/* Sección de perfil */
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 20px;
+}
+
+.profile-section span {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.profile-section button {
+    padding: 5px 10px;
+    background-color: #a71c8f;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-radius: 5px;
+}
+
+.profile-section button:hover {
+    background-color: #4e2c48;
 }
 
 main {
+    width: 90%;
+    max-width: 1200px;
     padding: 2rem;
 }
 
-main h2 {
-    margin-top: 0;
+h2 {
+    text-align: center;
+    color: #ffffff;
 }
 
-#search-input {
-    padding: 0.5rem;
-    font-size: 1rem;
+/* Estilos para los cuadros de video */
+section img {
+    width: 100%; /* Hace que los videos sean responsive */
+    max-width: 800px;
+    display: block;
+    margin: 0 auto;
 }
 
+/* Tabla responsive */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: #a71c8f;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+table th {
+    background: #4b4a4a;
+    color: white;
+    text-transform: uppercase;
+}
+
+/* Estilos para botones */
 button {
-    padding: 0.5rem 1rem;
-    background-color: #007bff;
-    color: #fff;
+    padding: 10px 20px;
+    background-color: #a71c8f;
+    color: white;
     border: none;
     cursor: pointer;
     font-size: 1rem;
+    border-radius: 5px;
+    margin-right: 10px;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #4e2c48;
 }
 
-#search-results {
-    margin-top: 1rem;
-    list-style: none;
-    padding: 0;
+/* Input y formularios */
+input, select {
+    padding: 8px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
 }
 
-#search-results li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #ccc;
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    table, th, td {
+        font-size: 0.9rem;
+    }
+
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .profile-section {
+        flex-direction: column;
+        align-items: flex-end;
+    }
 }
+
+input[type="datetime-local"] {
+    background-color: #4b4a4a; /* Cambia el color de fondo */
+    color: white; /* Cambia el color del texto */
+    border: 1px solid #a71c8f; /* Borde más visible */
+}
+
+input[type="text"] {
+    background-color: #4b4a4a; /* Cambia el color de fondo */
+    color: white; /* Cambia el color del texto */
+    border: 1px solid #a71c8f; /* Borde más visible */
+}
+
+/*#a71c8f
+/*#a71c8f
+
