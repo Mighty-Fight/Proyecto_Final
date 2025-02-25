@@ -1,213 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gonorreas</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-
-        // Mostrar placas detectadas en tiempo real
-        socket.on('updatePlaca', (data) => {
-            // Tomar los elementos donde queremos inyectar la información
-            const plateSpan = document.getElementById('detected-plate');
-            const timeSpan = document.getElementById('detected-plate-timestamp');
-            const platesTable = document.getElementById("plates-table");
-
-            // Formatear el timestamp
-            const timestamp = new Date(data.timestamp).toLocaleString();
-
-            // Actualizar el texto "Placa detectada"
-            plateSpan.textContent = data.placa;
-            // Actualizar el timestamp
-            timeSpan.textContent = timestamp;
-
-            // Añadir la nueva placa a la tabla
-            const newRow = `
-                <tr>
-                    <td>${platesTable.rows.length}</td>
-                    <td>${data.placa}</td>
-                    <td>${timestamp}</td>
-                </tr>
-            `;
-            platesTable.innerHTML += newRow;
-        });
-
-        // Función para obtener y mostrar las placas almacenadas en la base de datos
-        async function fetchPlates() {
-            try {
-                const response = await fetch("http://eurowash.ddns.net/plates");
-                const plates = await response.json();
-
-                const platesTable = document.getElementById("plates-table");
-                // Reiniciar encabezados de la tabla
-                platesTable.innerHTML = `
-                    <tr>
-                        <th>ID</th>
-                        <th>Placa</th>
-                        <th>Timestamp</th>
-                    </tr>
-                `;
-
-                plates.forEach((plate, index) => {
-                    platesTable.innerHTML += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${plate.placa}</td>
-                            <td>${new Date(plate.timestamp).toLocaleString()}</td>
-                        </tr>
-                   `;
-                });
-            } catch (error) {
-                console.error("Error al obtener las placas:", error);
-            }
-        }
-
-        // Función para reiniciar la tabla
-        async function resetTable() {
-            if (confirm('¿Estás seguro de que quieres reiniciar la tabla? Esto eliminará todos los registros.')) {
-                try {
-                    const response = await fetch("http://eurowash.ddns.net/reset_table", { method: 'POST' });
-                    const message = await response.text();
-                    alert(message); // Muestra el mensaje del servidor
-                    fetchPlates(); // Actualiza la tabla
-                } catch (error) {
-                    console.error("Error reiniciando la tabla:", error);
-                    alert("Hubo un error al reiniciar la tabla.");
-                }
-            }
-        }
-
-        // Función para realizar búsquedas en la base de datos
-        async function searchPlates() {
-            const placaInput = document.getElementById("search-placa").value.trim();
-            const startInput = document.getElementById("search-start").value;
-            const endInput = document.getElementById("search-end").value;
-
-            const queryParams = [];
-            if (placaInput) queryParams.push(`placa=${encodeURIComponent(placaInput)}`);
-            if (startInput) queryParams.push(`startTimestamp=${encodeURIComponent(startInput)}`);
-            if (endInput) queryParams.push(`endTimestamp=${encodeURIComponent(endInput)}`);
-
-            // Construir la query string
-            const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
-
-            try {
-                const response = await fetch(`http://eurowash.ddns.net/search_plates${queryString}`);
-                const results = await response.json();
-
-                const searchResultsTable = document.getElementById("search-results");
-                searchResultsTable.innerHTML = `
-                    <tr>
-                        <th>ID</th>
-                        <th>Placa</th>
-                        <th>Timestamp</th>
-                    </tr>
-                `;
-
-                results.forEach((result) => {
-                    searchResultsTable.innerHTML += `
-                        <tr>
-                            <td>${result.id}</td>
-                            <td>${result.placa}</td>
-                            <td>${new Date(result.timestamp).toLocaleString()}</td>
-                        </tr>
-                    `;
-                });
-                if (results.length === 0) {
-                    alert("No se encontraron resultados.");
-                }
-            } catch (error) {
-                console.error("Error buscando placas:", error);
-                alert("Hubo un error al realizar la búsqueda.");
-            }
-        }
-
-        // Llamar a fetchPlates al cargar la página
-        document.addEventListener("DOMContentLoaded", fetchPlates);
-    </script>
+    <title>Panel de Control</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/main.js" defer></script>
 </head>
 <body>
-    <!--<video autoplay loop muted playsinline class="bg-video">
-        <source src="gg.png" type="video/mp4">
-    </video>
--->
     <header>
-        <img src="logo.png" alt="Logo" class="header-logo"> <!-- Cambia 'logo.png' por el nombre real -->
+        <img src="/img/logo.png" alt="Logo" class="header-logo">
         <nav>
             <ul>
-                <li><a href="#live-feed">Live Feed</a></li>
+                <li><a href="#video-section">Live Feed</a></li>
                 <li><a href="#processed-feed">Processed Feed</a></li>
-                <li><a href="#plates-list">Plates List</a></li>
+                <li><a href="#plates-section">Plates List</a></li>
                 <li><a href="#search-plates">Search Plates</a></li>
             </ul>
         </nav>
         <div class="profile-section">
-            <span>Cajero, LitMilo</span>
-            <button>Perfil</button>
-            <button>Log out</button>
+            <span id="username-display">Usuario</span>
+            <button id="logout-button">Cerrar Sesión</button>
         </div>
     </header>
+
     <main>
-        <!-- Sección de feed original -->
-        <section id="live-feed">
-            <h2>Live Feed (Original)</h2>
-            <img src="http://eurowash.ddns.net:5001/video_feed" alt="/video_feed">
-        </section>
+        <h2>Bienvenido al Panel de Control</h2>
+        <p>Aquí puedes gestionar la información de escaneo de placas en tiempo real.</p>
 
-        <!-- Sección de feed procesado -->
-        <section id="processed-feed">
-            <h2>Processed Feed</h2>
-            <img src="http://eurowash.ddns.net:5001/processed_feed" alt="/processed_feed">
-        </section>
-
-        <!-- Sección de placas detectadas -->
-        <section id="plates-list">
-            <h2>Plates Detected</h2>
-
-            <!-- NUEVO: Texto explícito para “placa detectada” y timestamp -->
-            <div style="margin-bottom: 10px;">
-                <strong>Placa detectada:</strong>
-                <span id="detected-plate">No plates detected yet.</span>
-                &nbsp;&nbsp;
-                <strong>Timestamp:</strong>
-                <span id="detected-plate-timestamp">--</span>
+        <section id="video-section">
+            <h3>Live Feed (Original)</h3>
+            <div class="video-container">
+                <img src="http://eurowash.ddns.net:5001/video_feed" alt="video_feed">
             </div>
-
-            <button onclick="fetchPlates()">Refresh List</button>
-            <button onclick="resetTable()">Reiniciar Tabla</button>
-            <table id="plates-table" border="1">
-                <tr>
-                    <th>ID</th>
-                    <th>Placa</th>
-                    <th>Timestamp</th>
-                </tr>
-            </table>
+        </section>
+        
+        <section id="processed-feed">
+            <h3>Processed Feed</h3>
+            <div class="video-container">
+                <img src="http://eurowash.ddns.net:5001/processed_feed" alt="processed_feed">
+            </div>
         </section>
 
-        <!-- Sección para búsqueda de placas -->
+        <section id="plates-section">
+            <h3>Plates Detected</h3>
+            <p><strong>Placa detectada:</strong> <span id="detected-plate">No se ha detectado ninguna placa aún</span> 
+               <strong>Timestamp:</strong> <span id="timestamp">--</span></p>
+
+            <button id="refresh-button">Refresh List</button>
+            <button id="reset-button">Reiniciar Tabla</button>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>PLACA</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="plates-table">
+                        <tr>
+                            <td>1</td>
+                            <td>No se ha detectado ninguna placa aún</td>
+                            <td>--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <section id="search-plates">
-            <h2>Search Plates</h2>
-            <form onsubmit="event.preventDefault(); searchPlates();">
-                <label for="search-placa">Placa:</label>
-                <input type="text" id="search-placa" placeholder="Ejemplo: ABC123">
-                <label for="search-start">Fecha Inicio:</label>
-                <input type="datetime-local" id="search-start">
-                <label for="search-end">Fecha Fin:</label>
-                <input type="datetime-local" id="search-end">
+            <h3>Search Plates</h3>
+            <form id="search-form">
+                <label for="plate-search">Placa:</label>
+                <input type="text" id="plate-search" placeholder="Ejemplo: ABC123">
+                
+                <label for="start-date">Fecha Inicio:</label>
+                <input type="datetime-local" id="start-date">
+
+                <label for="end-date">Fecha Fin:</label>
+                <input type="datetime-local" id="end-date">
+
                 <button type="submit">Buscar</button>
             </form>
-            <table id="search-results" border="1">
-                <tr>
-                    <th>ID</th>
-                    <th>Placa</th>
-                    <th>Timestamp</th>
-                </tr>
-            </table>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>PLACA</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="search-results">
+                        <tr>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
+
+    <script>
+        // Cargar usuario autenticado
+        fetch('/user-info')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('username-display').textContent = data.username || 'Usuario';
+            })
+            .catch(err => console.error('Error obteniendo información del usuario:', err));
+
+        // Eventos de botones
+        document.getElementById('logout-button').addEventListener('click', () => {
+            fetch('/logout').then(() => window.location.href = "/login");
+        });
+    </script>
 </body>
 </html>
-

@@ -1,154 +1,81 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const mysql = require('mysql2');
 const bodyParser = require('body-parser');
-const path = require('path'); // Importar path para rutas dinámicas
+const session = require('express-session');
+const path = require('path');
+const authRoutes = require('./routes/authRoutes');
+const plateRoutes = require('./routes/plateRoutes');
+const { isAuthenticated } = require('./middleware/authMiddleware');
+const db = require('./config/db');
 
-// Crear la aplicación Express
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
 require('dotenv').config();
-// Conexión a la base de datos MySQL
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-});
 
-// Verificar la conexión a MySQL
-db.connect((err) => {
-    if (err) {
-        console.error('Error conectando a la base de datos:', err.message);
-        return;
-    }
-    console.log('Conectado a la base de datos MySQL.');
-});
+app.use(session({
+    secret: 'mi_secreto_super_seguro',
+    resave: false,
+    saveUninitialized: true,
+}));
 
-// Servir archivos estáticos desde la carpeta "public"
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Configurar el body-parser para manejar datos JSON
+app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Ruta principal para la aplicación
-app.get('/', (req, res) => {
+// Rutas de autenticación y placas
+app.use('/', authRoutes);
+app.use('/plates', plateRoutes);
+
+// Ruta protegida
+app.get('/', isAuthenticated, (req, res) => {
+    console.log(`Usuario autenticado: ${req.session.user.username}`);
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Rutas para los feeds (original y procesado) - Se colocan primero para evitar conflictos
-app.get('/original_feed', (req, res) => {
-    res.redirect('http://eurowash.ddns.net:5001/video_feed');
+// Ruta para obtener información del usuario autenticado
+app.get('/user-info', isAuthenticated, (req, res) => {
+    res.json({ username: req.session.user.username });
 });
 
-app.get('/processed_feed', (req, res) => {
-    res.redirect('http://eurowash.ddns.net:5001/processed_feed');
-});
-
-// Almacenar el último estado de la placa detectada
+// Comunicación con Socket.IO
 let placaStatus = 'No se ha detectado ninguna placa aún';
 
-// Comunicación en tiempo real usando Socket.IO
 io.on('connection', (socket) => {
     console.log('Usuario conectado');
-
-    // Enviar el estado actual de la placa al cliente
     socket.emit('updatePlaca', { placa: placaStatus, timestamp: new Date().toLocaleString() });
-
     socket.on('disconnect', () => {
         console.log('Usuario desconectado');
     });
 });
 
-// Ruta para recibir actualizaciones de placas detectadas desde `camnew.py`
+// Recibir placas desde `camnew.py`
 app.post('/update', (req, res) => {
     const { placa } = req.body;
-    const timestamp = new Date(); // Generar un timestamp actual
-
+    const timestamp = new Date();
     if (placa) {
-        // Emitir la placa detectada a los clientes en tiempo real
-        placaStatus = placa; // Actualizar el estado actual
+        console.log(`Nueva placa recibida: ${placa}`);
+        placaStatus = placa;
         io.emit('updatePlaca', { placa, timestamp: timestamp.toLocaleString() });
 
-        // Guardar en la base de datos
-        const query = 'INSERT INTO placas (placa, timestamp) VALUES (?, ?)';
-        db.query(query, [placa, timestamp], (err) => {
+        db.query('INSERT INTO placas (placa, timestamp) VALUES (?, ?)', [placa, timestamp], (err) => {
             if (err) {
                 console.error('Error al insertar en la base de datos:', err.message);
-                res.status(500).send('Error al guardar la placa en la base de datos.');
+                res.status(500).send('Error interno.');
             } else {
-                console.log(`Placa "${placa}" guardada en la base de datos con timestamp.`);
+                console.log(`Placa "${placa}" guardada en la base de datos.`);
                 res.sendStatus(200);
             }
         });
     } else {
+        console.warn('Placa no proporcionada en la solicitud.');
         res.status(400).send('Placa no proporcionada.');
     }
 });
 
-// Ruta para reiniciar la tabla
-app.post('/reset_table', (req, res) => {
-    const resetQuery = `TRUNCATE TABLE placas;`; // Limpia todos los datos de la tabla
-    db.query(resetQuery, (err) => {
-        if (err) {
-            console.error('Error al reiniciar la tabla:', err.message);
-            res.status(500).send('Error al reiniciar la tabla.');
-        } else {
-            console.log('Tabla reiniciada correctamente.');
-            res.send('Tabla reiniciada correctamente.');
-        }
-    });
-});
-
-// Ruta para obtener todas las placas almacenadas en la base de datos
-app.get('/plates', (req, res) => {
-    const query = 'SELECT id, placa, timestamp FROM placas ORDER BY timestamp DESC';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error al obtener las placas de la base de datos:', err.message);
-            res.status(500).send('Error interno del servidor.');
-        } else {
-            res.json(results);
-        }
-    });
-});
-
-// Ruta para buscar placas con parámetros opcionales (nombre y rango de fechas)
-app.get('/search_plates', (req, res) => {
-    const { placa, startTimestamp, endTimestamp } = req.query;
-
-    let query = 'SELECT * FROM placas WHERE 1=1'; // Base query
-    const params = [];
-
-    // Filtros opcionales
-    if (placa) {
-        query += ' AND placa LIKE ?';
-        params.push(`%${placa}%`);
-    }
-    if (startTimestamp) {
-        query += ' AND timestamp >= ?';
-        params.push(startTimestamp);
-    }
-    if (endTimestamp) {
-        query += ' AND timestamp <= ?';
-        params.push(endTimestamp);
-    }
-
-    db.query(query, params, (err, results) => {
-        if (err) {
-            console.error('Error ejecutando la búsqueda:', err.message);
-            return res.status(500).send('Error interno del servidor.');
-        }
-        res.json(results);
-    });
-});
-
-// Iniciar el servidor en un puerto seguro
-const PORT = process.env.PORT || 3000; // Usa 3000 en lugar de 80 para evitar errores de permisos
-
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Servidor web corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
