@@ -94,7 +94,7 @@ app.post('/update', (req, res) => {
 });
 
 // Iniciar el servidor en el puerto configurado
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 server.listen(PORT, () => {
     console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });
