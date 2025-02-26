@@ -1,19 +1,24 @@
-const db = require('../config/db');
-const bcrypt = require('bcrypt');
+const db = require("../config/db");
 
-class User {
-    static async create(username, password, callback) {
-        console.log(`Registrando usuario: ${username}`);
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const query = 'INSERT INTO users (username, password) VALUES (?, ?)';
-        db.query(query, [username, hashedPassword], callback);
-    }
+const createUserTable = () => {
+    const query = `
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(50) UNIQUE NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    `;
+    db.query(query, (err) => {
+        if (err) {
+            console.error("Error creando la tabla de usuarios:", err.message);
+        } else {
+            console.log("Tabla 'users' verificada/correcta.");
+        }
+    });
+};
 
-    static findByUsername(username, callback) {
-        console.log(`Buscando usuario: ${username}`);
-        const query = 'SELECT * FROM users WHERE username = ?';
-        db.query(query, [username], callback);
-    }
-}
+createUserTable();
 
-module.exports = User;
+module.exports = {};

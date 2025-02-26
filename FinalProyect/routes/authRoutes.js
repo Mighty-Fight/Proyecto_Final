@@ -1,39 +1,87 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const db = require('../config/db');
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const db = require("../config/db");
 const router = express.Router();
-const path = require('path');
 
-router.get('/login', (req, res) => {
-    console.log("Renderizando página de login");
-    res.sendFile(path.join(__dirname, '../public', 'login.html'));
+// 📌 Registro de usuario
+router.post("/register", async (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: "Todos los campos son obligatorios." });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const query = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+
+        db.query(query, [username, email, hashedPassword], (err) => {
+            if (err) {
+                console.error("Error en el registro:", err.message);
+                return res.status(500).json({ message: "Error al registrar el usuario." });
+            }
+            res.json({ message: "Registro exitoso. Redirigiendo al login..." });
+        });
+    } catch (error) {
+        console.error("Error en el registro:", error);
+        res.status(500).json({ message: "Error interno del servidor." });
+    }
 });
 
-router.post('/login', (req, res) => {
+// 📌 Login de usuario
+// 📌 Login de usuario
+router.post("/login", (req, res) => {
     const { username, password } = req.body;
-    console.log(`Intento de inicio de sesión para: ${username}`);
 
-    const query = 'SELECT * FROM users WHERE username = ?';
+    if (!username || !password) {
+        return res.status(400).json({ message: "Todos los campos son obligatorios." });
+    }
+
+    const query = "SELECT * FROM users WHERE username = ?";
     db.query(query, [username], async (err, results) => {
         if (err) {
-            console.error('Error en login:', err.message);
-            return res.status(500).send('Error interno.');
+            console.error("Error en login:", err.message);
+            return res.status(500).json({ message: "Error interno del servidor." });
         }
+
         if (results.length === 0) {
-            console.log('Usuario no encontrado');
-            return res.send('Usuario no encontrado.');
+            return res.status(401).json({ message: "Usuario no encontrado." });
         }
 
         const user = results[0];
         const match = await bcrypt.compare(password, user.password);
-        if (match) {
-            req.session.user = user;
-            console.log(`Inicio de sesión exitoso: ${username}`);
-            res.redirect('/');
-        } else {
-            console.log('Contraseña incorrecta');
-            res.send('Contraseña incorrecta.');
+        if (!match) {
+            return res.status(401).json({ message: "Contraseña incorrecta." });
         }
+
+        // ✅ Asegurar que la sesión se guarda antes de responder
+        req.session.regenerate((err) => {
+            if (err) {
+                console.error("Error regenerando la sesión:", err);
+                return res.status(500).json({ message: "Error interno de sesión." });
+            }
+
+            req.session.user = { id: user.id, username: user.username };
+            console.log("✅ Usuario autenticado, redirigiendo...");
+
+            // ✅ Confirmar que la sesión se guarda antes de responder
+            req.session.save((err) => {
+                if (err) {
+                    console.error("Error guardando la sesión:", err);
+                    return res.status(500).json({ message: "Error interno del servidor." });
+                }
+
+                res.json({ message: "Login exitoso. Redirigiendo...", redirect: "/index.html" });
+            });
+        });
+    });
+});
+
+
+// 📌 Cerrar sesión
+router.get("/logout", (req, res) => {
+    req.session.destroy(() => {
+        res.redirect("/login.html");
     });
 });
 

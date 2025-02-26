@@ -107,18 +107,29 @@
     </main>
 
     <script>
-        // Cargar usuario autenticado
+        // Verificar si el usuario está autenticado
         fetch('/user-info')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // Si la respuesta no es OK (usuario no autenticado), redirigir a login.html
+                    window.location.href = "/login.html";
+                    return Promise.reject("Usuario no autenticado. Redirigiendo...");
+                }
+                return response.json();
+            })
             .then(data => {
+                // Si el usuario está autenticado, mostrar su nombre en la interfaz
                 document.getElementById('username-display').textContent = data.username || 'Usuario';
             })
             .catch(err => console.error('Error obteniendo información del usuario:', err));
-
-        // Eventos de botones
+    
+        // Evento para cerrar sesión
         document.getElementById('logout-button').addEventListener('click', () => {
-            fetch('/logout').then(() => window.location.href = "/login");
+            fetch('/logout')
+                .then(() => window.location.href = "/login.html")
+                .catch(err => console.error("Error cerrando sesión:", err));
         });
     </script>
+    
 </body>
 </html>

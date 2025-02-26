@@ -217,6 +217,93 @@ input[type="text"] {
     border: 1px solid #a71c8f; /* Borde más visible */
 }
 
+.login-container {
+    width: 320px;  /* Ajuste del tamaño del cuadro */
+    margin: auto;  /* Centrado horizontalmente */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centrar exactamente */
+    padding: 20px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2); /* Suave efecto de sombra */
+}
+
+.login-container input {
+    width: calc(100% - 20px); /* Para que los inputs no sobresalgan */
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+}
+
+.login-container button {
+    width: 100%;
+    padding: 10px;
+    background: #a100a1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login-container button:hover {
+    background: #800080;
+}
+
+.register-container {
+    width: 320px;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+
+.register-container h2 {
+    color: white;
+}
+
+.register-container input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+}
+
+.register-container button {
+    width: 100%;
+    padding: 10px;
+    background: #a100a1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.register-container button:hover {
+    background: #800080;
+}
+
+#register-message {
+    color: #ff4c4c;
+    margin-top: 10px;
+}
+
+
+
 /*#a71c8f
 /*#a71c8f
 
