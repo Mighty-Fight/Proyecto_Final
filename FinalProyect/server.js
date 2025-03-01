@@ -93,6 +93,15 @@ app.post('/update', (req, res) => {
     }
 });
 
+app.get('/cajero', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'cajero.html'));
+});
+
+app.get('/vista_salon', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'vista_salon.html'));
+});
+
+
 // Iniciar el servidor en el puerto configurado
 const PORT = process.env.PORT || 80;
 server.listen(PORT, () => {

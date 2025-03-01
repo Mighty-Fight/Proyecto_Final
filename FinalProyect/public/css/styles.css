@@ -302,6 +302,18 @@ input[type="text"] {
     margin-top: 10px;
 }
 
+main {
+    width: 90%;
+    max-width: 1200px;
+    padding: 2rem;
+    text-align: center;
+}
+
+h2 {
+    color: #ffffff;
+    text-align: center;
+}
+
 
 
 /*#a71c8f
