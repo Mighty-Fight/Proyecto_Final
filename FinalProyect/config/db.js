@@ -1,5 +1,13 @@
 const mysql = require('mysql2');
-require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv');
+
+// 🔍 Detectar si está en AWS o en local
+const envPath = process.env.NODE_ENV === 'production' 
+    ? path.resolve(__dirname, '../FinalProyect/.env')  // Para EC2
+    : path.resolve(__dirname, '../.env'); // Para local
+
+dotenv.config({ path: envPath });
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
