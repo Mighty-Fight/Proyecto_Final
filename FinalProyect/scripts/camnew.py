@@ -5,24 +5,30 @@ import threading
 import queue
 import time
 from collections import Counter
+# Descomentar las importaciones para la nube
 from flask import Flask, Response
 import requests
 
-app = Flask(__name__)
+print("✅ Script camnew.py iniciado...")
+
+
 
 # ===============================
 # Configuración Tesseract
 # ===============================
-pytesseract.pytesseract.tesseract_cmd = r"/usr/local/bin/tesseract"
-# Para Windows, usa:
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+# Comentado el path local de Tesseract para funcionamiento local
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # ===============================
 # Parámetros de la cámara y ROI
 # ===============================
-rtsp_url = "rtsp://admin:abcd1234..@181.236.129.6:554/Streaming/Channels/101"
+rtsp_url = "rtsp://admin:abcd1234..@161.10.94.252:554/Streaming/Channels/101"
 width, height = 1280, 720
 roi_x, roi_y, roi_w, roi_h = 400, 200, 500, 200
+
+print("📷 Conectando a la cámara en:", rtsp_url)
 
 # ===============================
 # Cola y variables para OCR
@@ -36,30 +42,25 @@ sample_limit = 3
 confirmed_plate = ""  # Placa confirmada final
 pending_plate = ""    # Placa pendiente
 pending_count = 0
-confirmation_threshold = 2
+
+# AJUSTE: Se cambia el threshold a 3 para requerir 3 lecturas iguales
+confirmation_threshold = 3
 
 # Variables para cooldown
 last_confirmed_time = 0
 cooldown_seconds = 5  # Tiempo de inactividad para ignorar la misma placa
 
-# ===============================
-# Variables para los streams
-# ===============================
+# Variable global para mostrar la imagen original
 frame_original = None
 frame_processed = None
 
 ##############################################
-# Función para enviar la placa al servidor
+# Inicializar la app Flask para la nube
 ##############################################
-def send_plate_to_server(plate):
-    try:
-        requests.post('http://eurowash.ddns.net/update', json={'placa': plate}, timeout=5)
-        print(f"[INFO] Placa '{plate}' enviada al servidor.")
-    except Exception as e:
-        print(f"[ERROR] Al enviar la placa: {e}")
+app = Flask(__name__)
 
 ##############################################
-# Funciones de preprocesamiento
+# Funciones de preprocesamiento (originales)
 ##############################################
 def advanced_preprocessing(image_bgr):
     gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
@@ -115,7 +116,7 @@ def order_points(pts):
     return rect
 
 ##############################################
-# Hilo de procesamiento de frames
+# Hilo de procesamiento de frames (original)
 ##############################################
 def process_frames():
     global frame_original, frame_processed
@@ -137,6 +138,7 @@ def process_frames():
 
         frame_original = frame.copy()
         frame_processed = frame.copy()
+        # Delimitar el área de análisis con un cuadro verde (ROI)
         cv2.rectangle(frame_processed, (roi_x, roi_y),
                       (roi_x + roi_w, roi_y + roi_h),
                       (0, 255, 0), 2)
@@ -171,7 +173,19 @@ def process_frames():
         time.sleep(0.01)
 
 ##############################################
-# Hilo de OCR (sin redundancia extra)
+# FUNCIÓN NUEVA: Para medir diferencia de caracteres entre dos placas
+##############################################
+def plate_diff(plate1, plate2):
+    """
+    Retorna el número de caracteres diferentes entre dos cadenas de igual longitud.
+    Si difieren en longitud, asumimos diferencia total (por ejemplo, 6).
+    """
+    if len(plate1) != len(plate2):
+        return max(len(plate1), len(plate2))
+    return sum(a != b for a, b in zip(plate1, plate2))
+
+##############################################
+# Hilo de OCR (original) con la nueva lógica
 ##############################################
 def process_ocr():
     global number_samples, letter_samples, confirmed_plate, pending_plate, pending_count, last_confirmed_time
@@ -208,15 +222,24 @@ def process_ocr():
                 mc_letters = Counter(letter_samples).most_common(1)
                 if mc_numbers and mc_letters:
                     new_plate = f"{mc_letters[0][0]} {mc_numbers[0][0]}"
+
+                    # 1) Si es exactamente la misma que la confirmada, ignorar
                     if new_plate == confirmed_plate:
                         continue
+
+                    # 2) Si ya tenemos una placa confirmada, revisar cuántos caracteres difieren
+                    if confirmed_plate:
+                        diff_chars = plate_diff(new_plate.replace(" ", ""), confirmed_plate.replace(" ", ""))
+                        if diff_chars <= 3:
+                            continue
+
+                    # 3) Lógica de pending para confirmar en 3 lecturas
                     if new_plate == pending_plate:
                         pending_count += 1
                         if pending_count >= confirmation_threshold:
                             confirmed_plate = new_plate
                             last_confirmed_time = time.time()
                             print(f"[INFO] Placa detectada: {confirmed_plate}")
-                            threading.Thread(target=send_plate_to_server, args=(confirmed_plate,), daemon=True).start()
                             pending_count = 0
                     else:
                         pending_plate = new_plate
@@ -225,9 +248,45 @@ def process_ocr():
         except Exception as e:
             print(f"[ERROR] process_ocr: {e}")
 
-##############################################
-# Rutas Flask para streaming
-##############################################
+#################################################################
+# Funcionalidades adicionales para detección confiable de placas
+#################################################################
+
+def preprocess_plate_roi(plate_roi):
+    if plate_roi is None:
+        return None
+    # Aquí se podría implementar el preprocesamiento avanzado (mediana, CLAHE, umbral adaptativo, etc.)
+    return plate_roi  # Placeholder, se mantiene el código original
+
+def extract_plate_roi(image):
+    return None       # Placeholder
+
+def ocr_plate(plate_image):
+    return ""         # Placeholder
+
+tracker = None
+bbox = None
+
+def process_improved_plate():
+    while True:
+        if frame_original is None:
+            time.sleep(0.01)
+            continue
+        # Placeholder para pipeline mejorado con tracking
+        time.sleep(0.5)
+
+def print_plate_console():
+    global confirmed_plate
+    last_plate = ""
+    while True:
+        if confirmed_plate and confirmed_plate != last_plate:
+            print(f"[FINAL] Placa detectada: {confirmed_plate}")
+            last_plate = confirmed_plate
+        time.sleep(0.5)
+
+#################################################################
+# Endpoints para streaming en la nube (descomentados)
+#################################################################
 @app.route("/video_feed")
 def video_feed():
     def gen():
@@ -261,14 +320,69 @@ def processed_feed():
     return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 ##############################################
-# MAIN: iniciar hilos y Flask
+# MAIN: iniciar hilos y funcionamiento en la nube
 ##############################################
 if __name__ == "__main__":
     # Inicializar cooldown
     last_confirmed_time = 0
-    cooldown_seconds = 5
 
+    # Iniciar hilos para procesamiento original
     threading.Thread(target=process_ocr, daemon=True).start()
     threading.Thread(target=process_frames, daemon=True).start()
+    
+    # Iniciar nuevo hilo con el pipeline mejorado (con tracking) para la ROI
+    threading.Thread(target=process_improved_plate, daemon=True).start()
+    
+    # Iniciar hilo adicional para imprimir la placa detectada en consola (del pipeline original)
+    threading.Thread(target=print_plate_console, daemon=True).start()
+
+    # Comentado: funcionamiento local (ventana emergente)
+    """
+    while True:
+        if frame_original is not None:
+            display_frame = frame_original.copy()
+            cv2.rectangle(display_frame, (roi_x, roi_y), (roi_x+roi_w, roi_y+roi_h), (0,255,0), 2)
+            cv2.imshow("Camara en Vivo", display_frame)
+            cv2.imshow("Área de Análisis", display_frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cv2.destroyAllWindows()
+    """
+    
+    # Descomentar: ejecutar la app Flask para funcionamiento en la nube
     app.run(host="0.0.0.0", port=5001, debug=False)
 
+if __name__ == "__main__":
+    # Inicializar cooldown
+    last_confirmed_time = 0
+
+    # Iniciar hilos para procesamiento de OCR y detección de placas
+    threading.Thread(target=process_ocr, daemon=True).start()
+    threading.Thread(target=process_frames, daemon=True).start()
+
+    # 📷 Mostrar la transmisión en una ventana de OpenCV
+    cap = cv2.VideoCapture(rtsp_url)
+    if not cap.isOpened():
+        print("❌ No se pudo abrir la cámara RTSP.")
+    else:
+        print("✅ Transmisión en vivo iniciada... Presiona 'Q' para salir.")
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("⚠️ No se pudo obtener frame. Reintentando...")
+            time.sleep(1)
+            continue
+
+        # Dibuja un rectángulo para marcar la ROI (donde se detecta la placa)
+        cv2.rectangle(frame, (roi_x, roi_y), (roi_x + roi_w, roi_y + roi_h), (0, 255, 0), 2)
+
+        # Muestra la imagen en la ventana
+        cv2.imshow("Transmisión en Vivo", frame)
+
+        # Salir con la tecla "Q"
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()

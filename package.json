@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "ffplay": "^1.1.0"
   }
 }
