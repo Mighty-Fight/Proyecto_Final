@@ -16,7 +16,7 @@ print("✅ Script camnew.py iniciado...")
 # ===============================
 # Configuración Tesseract
 # ===============================
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"/usr/local/bin/tesseract"
 
 # Comentado el path local de Tesseract para funcionamiento local
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
