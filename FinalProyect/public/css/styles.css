@@ -1,239 +1,59 @@
-body {
+/* ========================= */
+/* Estilos para login.html */
+/* ========================= */
+
+/* Fondo del login */
+.loginbody {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #000000;
-    background-image: url('gg.png');
-    background-size: 200px;
-    background-position: center center; /* Centra la imagen */
-    background-repeat: no-repeat; /* Evita que se repita */
+    background: url('../img/nissan.jpg') no-repeat center center fixed;
+    background-size: cover;
     color: #ffffff;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    overflow-x: hidden; /* Evita el scroll horizontal */
-}
-/*.bg-video {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ajusta el video al tamaño de la pantalla */
-    /*z-index: -1; /* Lo envía al fondo */
-/*}
-
-
-
-/* Header con logo y perfil */
-header {
-    background-color: #222;
-    color: #fff;
-    padding: 1rem 2rem;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    height: 100vh;
 }
 
-/* Logo en el header */
-.header-logo {
-    width: 135px; /* Ajusta según la imagen */
-    height: auto;
-}
-    /*margin-left: 20px;
-
-}
-
-/* Menú de navegación */
-nav {
-    flex-grow: 1;
-    text-align: center;
-}
-
-nav ul {
-    list-style: none;
-    padding: 0;
+/* Contenedor principal del login */
+.login-container {
     display: flex;
     justify-content: center;
-    gap: 2rem;
-    margin: 0;
-}
-
-nav ul li a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1.7rem;
-}
-
-/* Sección de perfil */
-.profile-section {
-    display: flex;
     align-items: center;
-    gap: 10px;
-   
-}
-
-.profile-section span {
-    font-size: 1rem;
-    font-weight: bold;
-}
-
-.profile-section button {
-    padding: 5px 10px;
-    background-color: #a71c8f;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    border-radius: 5px;
-}
-
-.profile-section button:hover {
-    background-color: #4e2c48;
-}
-
-main {
-    width: 90%;
-    max-width: 1200px;
-    padding: 2rem;
-}
-
-h2 {
-    text-align: center;
-    color: #ffffff;
-}
-
-/* Estilos para los cuadros de video */
-section img {
-    width: 100%; /* Hace que los videos sean responsive */
-    max-width: 800px;
-    display: block;
-    margin: 0 auto;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-
-/* Tabla responsive */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    background: #a71c8f;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-table th, table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: center;
-}
-
-table th {
-    background: #4b4a4a;
-    color: white;
-    text-transform: uppercase;
-}
-
-/* Estilos para botones */
-button {
-    padding: 10px 20px;
-    background-color: #a71c8f;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    border-radius: 5px;
-    margin-right: 10px;
-}
-
-button:hover {
-    background-color: #4e2c48;
-}
-
-/* Input y formularios */
-input, select {
-    padding: 8px;
-    margin: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-/* Estilos responsivos */
-@media (max-width: 768px) {
-    table, th, td {
-        font-size: 0.9rem;
-    }
-
-    button {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .profile-section {
-        flex-direction: column;
-        align-items: flex-end;
-    }
-
-    header {
-        flex-direction: column; /* Hace que los elementos se apilen */
-        align-items: center;
-        text-align: center;
-    }
-
-    nav ul {
-        flex-direction: column; /* Hace que los links se apilen */
-        gap: 10px;
-        padding: 10px 0;
-    }
-
-    .profile-section {
-        flex-direction: column;
-        align-items: center;
-        margin-top: 10px;
-    }
-
-    .profile-section button {
-        width: 100%; /* Hace que los botones sean más fáciles de presionar */
-        max-width: 150px;
-    }
-}
-
-input[type="datetime-local"] {
-    background-color: #4b4a4a; /* Cambia el color de fondo */
-    color: white; /* Cambia el color del texto */
-    border: 1px solid #a71c8f; /* Borde más visible */
-}
-
-input[type="text"] {
-    background-color: #4b4a4a; /* Cambia el color de fondo */
-    color: white; /* Cambia el color del texto */
-    border: 1px solid #a71c8f; /* Borde más visible */
-}
-
-.login-container {
-    width: 320px;  /* Ajuste del tamaño del cuadro */
-    margin: auto;  /* Centrado horizontalmente */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Centrar exactamente */
-    padding: 20px;
-    background: #1a1a1a;
+    width: 650px; /* Ajusta el tamaño */
+    background: rgba(0, 0, 0, 0.8);
     border-radius: 10px;
-    text-align: center;
-    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2); /* Suave efecto de sombra */
-    background-image: url('FinalProyect/public/img/nissan.jpg');
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    padding: 20px;
 }
 
-.login-container input {
-    width: calc(100% - 20px); /* Para que los inputs no sobresalgan */
+/* Estructura de dos columnas */
+.login-content {
+    display: flex;
+    width: 100%;
+}
+
+/* Sección del formulario */
+.login-form {
+    width: 50%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los elementos horizontalmente */
+    justify-content: center;
+    text-align: center;
+}
+
+
+.login-form h2 {
+    color: white;
+    text-align: center;
+}
+
+/* Campos de entrada */
+.login-form input {
+    width: 300px;
     padding: 10px;
     margin: 10px 0;
     border: none;
@@ -242,7 +62,8 @@ input[type="text"] {
     color: white;
 }
 
-.login-container button {
+/* Botón de ingresar */
+.login-form button {
     width: 100%;
     padding: 10px;
     background: #a100a1;
@@ -250,11 +71,70 @@ input[type="text"] {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    text-align: center;
 }
 
-.login-container button:hover {
+.login-form button:hover {
     background: #800080;
 }
+
+/* Enlace de registro */
+.login-form p {
+    text-align: center;
+}
+
+.login-form a {
+    color: #a100a1;
+    text-decoration: none;
+}
+
+.login-form a:hover {
+    text-decoration: underline;
+}
+
+
+.login-image {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url('../img/logo.png') no-repeat center center;
+    background-size: 90%;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 400px; /* Ajusta la altura según sea necesario */
+    min-height: 150px;
+}
+
+
+
+.login-image img {
+    max-width: 80%;
+    height: auto;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .login-container {
+        width: 90%;
+        flex-direction: column;
+    }
+
+    .login-content {
+        flex-direction: column;
+    }
+
+    .login-form,
+    .login-image {
+        width: 100%;
+    }
+}
+
+
+
+/* ========================= */
+/* Estilos para register.html */
+/* ========================= */
 
 .register-container {
     width: 320px;
@@ -303,6 +183,106 @@ input[type="text"] {
     margin-top: 10px;
 }
 
+/* ========================= */
+/* Estilos para index.html */
+/* ========================= */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    background-image: url('/FinalProyect/public/img/nissan.jpg');
+    background-size: 200px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+header {
+    background-color: #222;
+    color: #fff;
+    padding: 1rem 2rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-logo {
+    width: 135px;
+    height: auto;
+}
+
+nav {
+    flex-grow: 1;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 0;
+}
+
+nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.7rem;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-section span {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.profile-section button {
+    padding: 5px 10px;
+    background-color: #a71c8f;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-radius: 5px;
+}
+
+.profile-section button:hover {
+    background-color: #4e2c48;
+}
+
+/* ========================= */
+/* Estilos para vista_salon.html */
+/* ========================= */
+
+main {
+    width: 90%;
+    max-width: 1200px;
+    padding: 2rem;
+}
+
+h2 {
+    text-align: center;
+    color: #ffffff;
+}
+
+/* ========================= */
+/* Estilos para cajero.html */
+/* ========================= */
+
 main {
     width: 90%;
     max-width: 1200px;
@@ -310,13 +290,105 @@ main {
     text-align: center;
 }
 
-h2 {
-    color: #ffffff;
+/* ========================= */
+/* Estilos generales */
+/* ========================= */
+
+html {
+    scroll-behavior: smooth;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: #a71c8f;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
     text-align: center;
 }
 
+table th {
+    background: #4b4a4a;
+    color: white;
+    text-transform: uppercase;
+}
 
+button {
+    padding: 10px 20px;
+    background-color: #a71c8f;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px;
+    margin-right: 10px;
+}
 
-/*#a71c8f
-/*#a71c8f
+button:hover {
+    background-color: #4e2c48;
+}
 
+input, select {
+    padding: 8px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    table, th, td {
+        font-size: 0.9rem;
+    }
+
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .profile-section {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .profile-section {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .profile-section button {
+        width: 100%;
+        max-width: 150px;
+    }
+}
+
+input[type="datetime-local"] {
+    background-color: #4b4a4a;
+    color: white;
+    border: 1px solid #a71c8f;
+}
+
+input[type="text"] {
+    background-color: #4b4a4a;
+    color: white;
+    border: 1px solid #a71c8f;
+}

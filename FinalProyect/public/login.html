@@ -6,19 +6,25 @@
     <title>Iniciar Sesión</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="loginbody">
+
     <div class="login-container">
-        <h2>Iniciar Sesión</h2>
-        <form id="login-form">  <!-- Agregado ID para que lo capture main.js -->
-            <input type="text" name="username" placeholder="Usuario" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit">Ingresar</button>
-        </form>
-        <p id="login-message"></p>  <!-- Agregado para mostrar errores o mensajes -->
-        <p>¿No tienes cuenta? <a href="register.html">Regístrate aquí</a></p>
+        <div class="login-content">
+            <div class="login-form">
+                <h2>Iniciar Sesión</h2>
+                <form id="login-form">
+                    <input type="text" name="username" placeholder="Usuario" required>
+                    <input type="password" name="password" placeholder="Contraseña" required>
+                    <button type="submit">Ingresar</button>
+                </form>
+                <p id="login-message"></p>
+                <p>¿No tienes cuenta? <a href="register.html">Regístrate aquí</a></p>
+            </div>
+            <div class="login-image">
+            </div>
+        </div>
     </div>
 
-    <script src="js/main.js"></script> <!-- Conexión con main.js -->
+    <script src="js/main.js"></script>
 </body>
 </html>
-
