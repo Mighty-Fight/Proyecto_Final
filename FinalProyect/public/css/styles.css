@@ -191,17 +191,17 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #000000;
-    background-image: url('../img/nissan.jpg') no-repeat center center fixed;
-    background-size: 200px;
-    background-position: center center;
-    background-repeat: no-repeat;
+    background: url('../img/nissan.jpg') no-repeat center center fixed;
+    background-size: cover; /* Ajuste importante para que se vea completa */
+    background-position: center;
     color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
+    min-height: 100vh; /* Asegura que cubra toda la altura de la pantalla */
+    width: 100%;
 }
+
 
 header {
     background-color: #222;
