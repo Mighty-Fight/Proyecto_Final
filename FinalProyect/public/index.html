@@ -116,7 +116,7 @@
             .then(response => {
                 if (!response.ok) {
                     // Si la respuesta no es OK (usuario no autenticado), redirigir a login.html
-                    window.location.href = "/login.html";
+                    window.location.href = "/principal.html";
                     return Promise.reject("Usuario no autenticado. Redirigiendo...");
                 }
                 return response.json();

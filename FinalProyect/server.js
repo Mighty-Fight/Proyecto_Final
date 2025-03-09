@@ -35,16 +35,10 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Ruta de inicio para redirigir al login o dashboard si ya está autenticado
 app.get("/", (req, res) => {
-    if (req.session.user) {
-        console.log(`Usuario autenticado: ${req.session.user.username}`);
-        res.sendFile(path.join(__dirname, "public", "index.html"));
-    } else {
-        console.log("Usuario no autenticado. Redirigiendo a login...");
-        res.redirect("/login.html");
-    }
+    res.sendFile(path.join(__dirname, "public", "principal.html"));
 });
+
 
 
 // Ruta para obtener información del usuario autenticado
