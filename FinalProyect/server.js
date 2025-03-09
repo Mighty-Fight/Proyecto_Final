@@ -21,7 +21,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -37,8 +37,9 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "principal.html"));
-});
+}); 
 
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Ruta para obtener información del usuario autenticado
@@ -94,6 +95,11 @@ app.get('/cajero', (req, res) => {
 app.get('/vista_salon', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'vista_salon.html'));
 });
+
+app.get("/index.html", isAuthenticated, (req, res) => {
+    res.redirect("/dashboard");
+});
+
 
 
 // Iniciar el servidor en el puerto configurado

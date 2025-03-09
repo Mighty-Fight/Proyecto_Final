@@ -71,7 +71,8 @@ router.post("/login", (req, res) => {
                     return res.status(500).json({ message: "Error interno del servidor." });
                 }
 
-                res.json({ message: "Login exitoso. Redirigiendo...", redirect: "/index.html" });
+                res.json({ message: "Login exitoso. Redirigiendo...", redirect: "/dashboard" });
+
             });
         });
     });
