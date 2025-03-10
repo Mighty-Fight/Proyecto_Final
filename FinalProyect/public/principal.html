@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Principal</title>
+    <!-- ✅ Tu CSS principal -->
     <link rel="stylesheet" href="css/styles.css">
+    <!-- ✅ Carga el script al final del head con defer para que el DOM esté listo -->
+    <script defer src="js/main.js"></script>
+    <!-- ✅ Fuentes -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -13,25 +17,32 @@
     <!-- 🔹 Barra Superior con Contacto -->
     <div class="top-bar">
         <p>
-            <i class="fas fa-map-marker-alt"></i> <strong>📍 Cl. 84 #46-20 Barranquilla, Atlántico</strong> &nbsp;&nbsp; 
-            <i class="fas fa-phone-alt"></i> <strong>📞 +57 3184533033</strong>
+            <i class="fas fa-map-marker-alt"></i>
+            <strong>📍 Cl. 84 #46-20 Barranquilla, Atlántico</strong> &nbsp;&nbsp;
+            <i class="fas fa-phone-alt"></i>
+            <strong>📞 +57 3184533033</strong>
         </p>
     </div>
 
-    <!-- 🔹 Barra de Navegación -->
     <header>
         <div class="nav-container">
             <div class="logo">
                 <img src="img/loguito.jpeg" alt="Logo">
             </div>
+
+            <!-- ✅ Ícono de menú hamburguesa -->
+            <div class="menu-icon">☰</div>
+
             <nav>
-                <ul>
+                <ul id="menu">
                     <li><a href="#services">Servicios</a></li>
                     <li><a href="#contact">Contáctanos</a></li>
+                    <li class="mobile-only"><a href="login.html">Iniciar Sesión</a></li> <!-- ✅ Solo en móviles -->
                 </ul>
             </nav>
+
             <div class="login-button">
-                <a href="login.html" class="btn">Iniciar Sesión</a>
+                <a href="login.html" class="btn">Iniciar Sesión</a> <!-- ✅ Solo en escritorio -->
             </div>
         </div>
     </header>
@@ -39,6 +50,7 @@
     <!-- 🔹 Sección Principal -->
     <section class="hero">
         <div class="hero-content">
+            <!-- ✅ Espacio para un título o descripción si deseas -->
         </div>
     </section>
 
@@ -71,7 +83,6 @@
     <section id="contact" class="contact-section">
         <h2>Contáctanos</h2>
         <div class="contact-container">
-            
             <!-- 🔹 Información de contacto -->
             <div class="contact-info">
                 <div class="contact-item">
@@ -101,12 +112,11 @@
 
             <!-- 🔹 Mapa -->
             <div class="contact-map">
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d460.1424133129876!2d-74.81900122490917!3d11.001638091042658!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef42da9cdafa88b%3A0x23faf4ec36dd256c!2sCl.%2084%20%2346-20%2C%20Nte.%20Centro%20Historico%2C%20Barranquilla%2C%20Atl%C3%A1ntico!5e1!3m2!1ses!2sco!4v1741572327783!5m2!1ses!2sco" 
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d460.1424133129876!2d-74.81900122490917!3d11.001638091042658!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef42da9cdafa88b%3A0x23faf4ec36dd256c!2sCl.%2084%20%2346-20%2C%20Nte.%20Centro%20Historico%2C%20Barranquilla%2C%20Atl%C3%A1ntico!5e1!3m2!1ses!2sco!4v1741572327783!5m2!1ses!2sco"
                     width="450" height="350" style="border:0;" allowfullscreen="" loading="lazy">
                 </iframe>
             </div>
-
         </div>
     </section>
 
@@ -130,4 +140,5 @@
 
 </body>
 </html>
+
 
