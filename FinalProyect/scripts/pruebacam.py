@@ -1,6 +1,6 @@
 import cv2
 
-rtsp_url = "rtsp://admin:abcd1234..@161.10.94.252:554/Streaming/Channels/101"
+rtsp_url = "rtsp://admin:abcd1234..@161.10.81.186:554/Streaming/Channels/101"
 
 cap = cv2.VideoCapture(rtsp_url, cv2.CAP_FFMPEG)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"H264"))  # Fuerza H.264

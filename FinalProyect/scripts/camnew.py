@@ -24,7 +24,7 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 # ===============================
 # Parámetros de la cámara y ROI
 # ===============================
-rtsp_url = "rtsp://admin:abcd1234..@161.10.94.252:554/Streaming/Channels/101"
+rtsp_url = "rtsp://admin:abcd1234..@161.10.81.186:554/Streaming/Channels/101"
 width, height = 1280, 720
 roi_x, roi_y, roi_w, roi_h = 400, 200, 500, 200
 
