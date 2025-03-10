@@ -419,7 +419,7 @@ input[type="text"] {
 }
 
 /* ========================= */
-/* Estilos para principal.html */
+/* 🔹 DISEÑO PRINCIPAL */
 /* ========================= */
 
 /* 🔹 Asegurar que la barra de navegación esté centrada */
@@ -510,7 +510,7 @@ nav ul li a:hover {
 /* 🔹 Efecto hover: fondo blanco y letras negras */
 .btn:hover {
     background-color: white;
-    color: black;
+    color: #af267a;
     border: 2px solid white; /* Agrega un borde para que no se pierda el diseño */
 }
 
@@ -533,7 +533,7 @@ nav ul li a:hover {
     font-size: 1.2rem;
 }
 
-/* 🔹 Estilos para el recuadro de Opinión del Cliente */
+/* 🔹 Sección de Opinión del Cliente (en pantallas grandes se ve absoluta) */
 .customer-feedback {
     position: absolute;
     top: 65%;
@@ -554,7 +554,6 @@ nav ul li a:hover {
 }
 
 .feedback-container input,
-/* 🔹 Alinear correctamente la caja de "Escribe tu opinión" */
 .feedback-container textarea {
     height: 50px; /* Altura ajustada */
     resize: none;
@@ -594,7 +593,7 @@ nav ul li a:hover {
     border: 2px solid #af267a;
 }
 
-/* 🔹 Estilos para el icono de Instagram */
+/* 🔹 Icono de Instagram */
 .instagram-icon {
     position: fixed;
     bottom: 20px;
@@ -616,64 +615,57 @@ nav ul li a:hover {
 /* ========================= */
 /* 🔹 SECCIÓN DE SERVICIOS EXPANDIDA */
 /* ========================= */
-
 .services-section {
-    background-color: #f4f4f4; /* Fondo blanco */
-    padding: 60px 5%; /* Más espaciado */
+    background-color: #f4f4f4;
+    padding: 60px 5%;
     text-align: center;
-    width: 100vw; /* Ocupar todo el ancho */
+    width: 100vw;
 }
 
-/* 🔹 Estilos para el título */
 .services-section h2 {
     color: #af267a;
-    font-size: 2.5rem; /* Más grande */
+    font-size: 2.5rem;
     margin-bottom: 30px;
     text-transform: uppercase;
     font-weight: bold;
     font-family: 'League Spartan', sans-serif;
     margin-top: -20px;
-
 }
 
-/* 🔹 Contenedor de servicios más ancho */
 .service-container {
     display: flex;
-    justify-content: space-evenly; /* Distribuye mejor */
-    gap: 40px; /* Más separación entre cajas */
+    justify-content: space-evenly;
+    gap: 40px;
     width: 95%;
-    max-width: 1400px; /* Más amplio */
+    max-width: 1400px;
     margin: auto;
 }
 
-/* 🔹 Cada caja de servicio más grande */
 .service-box {
     font-family: 'League Spartan', sans-serif;
     background: white;
     padding: 25px;
     border-radius: 12px;
-    width: 320px; /* Aumenté el ancho */
-    height: 320px; /* Más altura */
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15); /* Sombra más visible */
+    width: 320px;
+    height: 320px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
     text-align: center;
 }
 
-/* 🔹 Imágenes dentro de las cajas (más grandes) */
 .service-box img {
-    width: 170px; /* Aumentado */
+    width: 170px;
     height: auto;
     margin-bottom: 15px;
 }
 
-/* 🔹 Texto dentro de las cajas */
 .service-box h3 {
     color: #af267a;
-    font-size: 1.6rem; /* Más grande */
+    font-size: 1.6rem;
     font-weight: bold;
 }
 
 .service-box p {
-    font-size: 1.4rem; /* Más grande */
+    font-size: 1.4rem;
     color: black;
     margin: 10px 0;
 }
@@ -682,40 +674,26 @@ nav ul li a:hover {
     color: black;
 }
 
-/* 🔹 Responsivo (ajustado para pantallas pequeñas) */
 @media (max-width: 1024px) {
     .service-container {
-        flex-wrap: wrap; /* Permite que bajen en pantallas medianas */
+        flex-wrap: wrap;
         justify-content: center;
     }
 
     .service-box {
         width: 90%;
-        max-width: 350px; /* Ajusta mejor en móviles */
+        max-width: 350px;
         height: auto;
     }
 
     .service-box img {
-        width: 90px; /* Se mantiene grande pero sin exagerar */
+        width: 90px;
     }
 }
 
 /* ========================= */
 /* 🔹 SECCIÓN DE CONTACTO */
 /* ========================= */
-
-.top-bar {
-    background-color: transparent; /* Mantiene el fondo transparente */
-    color: white;
-    font-size: 14px;
-    font-family: 'Open Sans', sans-serif;
-    display: flex;
-    justify-content: flex-end; /* Alinea los elementos a la derecha */
-    align-items: center;
-    gap: 15px; /* Espacio entre iconos y texto */
-    padding: 5px 20px; /* Ajusta el padding para mover más a la derecha */
-    width: 90%;
-}
 
 .contact-section {
     background-color: #f4f4f4;
@@ -724,10 +702,9 @@ nav ul li a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100vw;
+    width: 110vw;
 }
 
-/* 🔹 Estilo del título */
 .contact-section h2 {
     color: #af267a;
     font-size: 2.5rem;
@@ -737,7 +714,6 @@ nav ul li a:hover {
     font-family: 'League Spartan', sans-serif;
 }
 
-/* 🔹 Contenedor principal */
 .contact-container {
     display: flex;
     justify-content: space-between;
@@ -748,45 +724,36 @@ nav ul li a:hover {
     margin: auto;
 }
 
-/* 🔹 Estilo de los ítems de contacto */
 .contact-info {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
     gap: 25px;
     flex: 1;
-    width: 100%;
-    text-align: left;
 }
 
-/* 🔹 Cada elemento de la información de contacto */
 .contact-item {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-/* 🔹 Estilos de los íconos (IMÁGENES) */
 .contact-item img {
-    width: 50px;  /* Tamaño del icono */
-    height: 50px; /* Tamaño del icono */
+    width: 50px;
+    height: 50px;
 }
 
-/* 🔹 Estilos del título de cada ítem */
 .contact-item-title {
     font-size: 1.8rem;
     font-weight: bold;
     color: #af267a;
 }
 
-/* 🔹 Estilos del texto de cada ítem */
 .contact-item-text {
     font-size: 1.5rem;
     color: black;
 }
 
-/* 🔹 Estilo del mapa */
 .contact-map {
     flex: 1.3;
     display: flex;
@@ -800,7 +767,6 @@ nav ul li a:hover {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* 🔹 Responsivo */
 @media (max-width: 768px) {
     .contact-container {
         flex-direction: column;
@@ -887,14 +853,13 @@ nav ul {
         font-size: 2rem;
         color: white;
         position: absolute;
-        right: 20px; /* Ajusta esto para moverlo más a la izquierda/derecha */
+        right: 20px;
         top: 15px;
-        z-index: 1100; /* Asegurar que esté por encima */
+        z-index: 1100;
     }
 
     /* ✅ Ajustar menú hamburguesa */
     nav ul {
-        /* Por defecto está oculto */
         display: none;
         flex-direction: column;
         width: 100%;
@@ -902,20 +867,34 @@ nav ul {
         background: #1a1a1a;
         position: absolute;
         top: 60px;
-        left: 0; /* Se despliega desde la izquierda */
+        left: 0;
         padding: 10px 0;
         z-index: 1000;
     }
 
-    /* ✅ Cuando el menú está activo, se muestra */
     nav ul.active {
         display: flex;
     }
 
-    /* ✅ Si el menú está activo, mostramos el botón de sesión (si fuera necesario) */
     nav ul.active .login-button {
         display: block;
         margin-top: 10px;
+    }
+
+    /* ✅ En móviles, `.customer-feedback` deja de ser absoluta para no recortar contenido */
+    .customer-feedback {
+        position: relative;
+        top: auto;
+        right: auto;
+        transform: none;
+        width: 90%;
+        margin: 20px auto;
+    }
+
+    /* Ajustar un poco el contenedor */
+    .feedback-container {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
     }
 
     /* ✅ Logo más pequeño en móviles */
@@ -931,7 +910,7 @@ nav ul {
         height: auto;
     }
 
-    /* ✅ Ajuste del triángulo del logo en móviles */
+    /* ✅ Ajuste del triángulo del logo en móviles (opcional ocultarlo) */
     .logo::after {
         top: -2px;
         border-right: 40px solid transparent;
@@ -942,9 +921,10 @@ nav ul {
     /* ✅ Sección de servicios en columna */
     .service-container {
         flex-direction: column;
-        gap: 20px;
+        text-align: center;
         align-items: center;
-        width: 100%;
+        width: 90%;
+        margin: auto;
     }
 
     .service-box {
@@ -956,6 +936,8 @@ nav ul {
         flex-direction: column;
         align-items: center;
         text-align: center;
+        width: 90%;
+        margin: auto; /* Centra horizontalmente */
     }
 
     .contact-info {
@@ -969,26 +951,10 @@ nav ul {
         height: 320px;
     }
 
-    /* ✅ Formulario de opinión más compacto */
-    .opinion-box {
-        width: 90%;
-        margin-top: 20px;
-    }
-
-    .opinion-box input,
-    .opinion-box textarea {
-        width: 100%;
-        font-family: 'Open Sans', sans-serif;
-        font-weight: bold;
-    }
-
-    /* ✅ Ajustar tamaño del logo de Instagram */
+    /* ✅ Ajustar el icono de Instagram si quieres que sea más chico */
     .instagram-logo {
         width: 40px;
         height: auto;
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
     }
 
     /* ✅ Ajuste de los títulos */
@@ -997,6 +963,7 @@ nav ul {
         font-size: 1.5rem;
     }
 }
+
 
 
 
