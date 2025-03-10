@@ -54,7 +54,7 @@
 
 /* Inputs */
 .login-form input {
-    width: 100%;
+    width: 92%;
     padding: 12px;
     margin: 10px 0;
     border: 1px solid #ccc;
@@ -133,7 +133,26 @@
     width: 100%; /* Tamaño adecuado del logo */
 }
 
+/* 🔹 Botón "Volver" */
+.back-button {
+    width: 100%;
+    padding: 10px;
+    background: #333;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s ease-in-out;
+}
 
+.back-button:hover {
+    background: white;
+    color: #333;
+    border: 2px solid #333;
+}
 
 
 
@@ -512,6 +531,86 @@ nav ul li a:hover {
 
 .hero-content p {
     font-size: 1.2rem;
+}
+
+/* 🔹 Estilos para el recuadro de Opinión del Cliente */
+.customer-feedback {
+    position: absolute;
+    top: 65%;
+    right: 10%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9); /* Fondo blanco con transparencia */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 320px;
+}
+
+.feedback-container h3 {
+    font-size: 2rem;
+    color: #af267a;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.feedback-container input,
+/* 🔹 Alinear correctamente la caja de "Escribe tu opinión" */
+.feedback-container textarea {
+    height: 50px; /* Altura ajustada */
+    resize: none;
+    font-family: 'Open Sans', sans-serif; /* Cambia la fuente */
+    font-weight: bold; /* Aplica negrilla */
+    width: 100%; /* Asegura que se alinee correctamente */
+    margin-top: 5px; /* Espaciado superior para alinearlo mejor */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Evita que se desborde */
+    background: white; /* Fondo blanco */
+    color: black; /* Texto negro */
+}
+
+.feedback-container textarea {
+    height: 80px;
+    resize: none;
+}
+
+.feedback-container button {
+    width: 100%;
+    padding: 10px;
+    background: #af267a;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.feedback-container button:hover {
+    background: white;
+    color: #af267a;
+    border: 2px solid #af267a;
+}
+
+/* 🔹 Estilos para el icono de Instagram */
+.instagram-icon {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+}
+
+.instagram-icon img {
+    width: 120%;
+    height: auto;
+    transition: transform 0.3s;
+}
+
+.instagram-icon:hover img {
+    transform: scale(1.2);
 }
 
 /* ========================= */
