@@ -8,7 +8,7 @@ cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"H264"))  # Fuerza H.264
 
 
 if not cap.isOpened():
-    print("❌ No se pudo conectar a la cámara. Verifica la URL RTSP.")
+    print("❌ No se  pudo conectar a la cámara. Verifica la URL RTSP.")
 else:
     print("✅ Conexión a la cámara establecida.")
 
