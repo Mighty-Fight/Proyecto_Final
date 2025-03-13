@@ -64,28 +64,41 @@ io.on('connection', (socket) => {
 });
 
 // Recibir placas desde `camnew.py`
+let lastPlate = ''; // Variable para almacenar la última placa registrada
+
 app.post('/update', (req, res) => {
     const { placa } = req.body;
     const timestamp = new Date();
-    
-    if (placa) {
-        console.log(`Nueva placa recibida: ${placa}`);
-        placaStatus = placa;
-        io.emit('updatePlaca', { placa, timestamp: timestamp.toLocaleString() });
 
-        db.query('INSERT INTO placas (placa, timestamp) VALUES (?, ?)', [placa, timestamp], (err) => {
-            if (err) {
-                console.error('Error al insertar en la base de datos:', err.message);
-                res.status(500).send('Error interno.');
-            } else {
-                console.log(`Placa "${placa}" guardada en la base de datos.`);
-                res.sendStatus(200);
-            }
-        });
-    } else {
-        console.warn('Placa no proporcionada en la solicitud.');
-        res.status(400).send('Placa no proporcionada.');
+    // Si no se proporciona una placa o se recibe el valor por defecto, no se procesa
+    if (!placa || placa === "No se ha detectado ninguna placa aún") {
+        console.warn('Placa no válida recibida.');
+        return res.json({ success: false, message: "Placa no válida" });
     }
+
+    // Si la placa recibida es igual a la última guardada, no se inserta de nuevo
+    if (placa === lastPlate) {
+        console.log(`Placa repetida (${placa}), no se inserta de nuevo.`);
+        return res.json({ success: false, message: "Placa repetida" });
+    }
+
+    // Actualizamos la última placa
+    lastPlate = placa;
+
+    console.log(`Nueva placa recibida: ${placa}`);
+    placaStatus = placa;
+    io.emit('updatePlaca', { placa, timestamp: timestamp.toLocaleString() });
+
+    // Insertar la placa en la base de datos
+    db.query('INSERT INTO placas (placa, timestamp) VALUES (?, ?)', [placa, timestamp], (err) => {
+        if (err) {
+            console.error('Error al insertar en la base de datos:', err.message);
+            return res.status(500).json({ success: false, error: 'Error interno.' });
+        } else {
+            console.log(`Placa "${placa}" guardada en la base de datos.`);
+            return res.json({ success: true, placa });
+        }
+    });
 });
 
 app.get('/cajero', (req, res) => {

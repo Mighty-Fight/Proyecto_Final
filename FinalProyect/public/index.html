@@ -42,7 +42,7 @@
         <section id="processed-feed">
             <h3>Processed Feed</h3>
             <div class="video-container">
-                <img src="http://44.211.67.168:5001/processed_feed" alt="processed_feed">
+                <img src="http://44.211.67.168:5001/processed_feed" alt="processed_feed"> 
             </div>
         </section>
 
@@ -134,6 +134,78 @@
                 .catch(err => console.error("Error cerrando sesión:", err));
         });
     </script>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  // Conectar con el servidor Socket.IO
+  const socket = io();
+
+  // Escuchar el evento de actualización de placa
+  socket.on('updatePlaca', (data) => {
+    // Actualizar el DOM
+    document.getElementById('detected-plate').textContent = data.placa;
+    document.getElementById('timestamp').textContent = data.timestamp;
+    
+    // Escribir en la consola del navegador
+    console.log("Se detectó una placa:", data.placa);
+
+    // Enviar la placa al endpoint para guardar en la base de datos
+    fetch('/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        placa: data.placa,
+        timestamp: data.timestamp
+      })
+    })
+    .then(response => response.json())
+    .then(result => {
+      if(result.success) {
+        console.log("Placa guardada en la BD:", data.placa);
+      } else {
+        console.warn("No se pudo guardar la placa en la BD.");
+      }
+    })
+    .catch(error => console.error("Error guardando la placa:", error));
+  });
+</script>
+
+<script>
+    document.getElementById("search-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+  
+      const plate = document.getElementById("plate-search").value;
+      const startDate = document.getElementById("start-date").value;
+      const endDate = document.getElementById("end-date").value;
+  
+      // Construir los parámetros de consulta
+      let queryParams = [];
+      if (plate) queryParams.push(`plate=${encodeURIComponent(plate)}`);
+      if (startDate) queryParams.push(`startDate=${encodeURIComponent(startDate)}`);
+      if (endDate) queryParams.push(`endDate=${encodeURIComponent(endDate)}`);
+      const queryString = queryParams.length > 0 ? "?" + queryParams.join("&") : "";
+  
+      // Hacer fetch a un endpoint que devuelva las placas según los filtros
+      fetch("/get-plates" + queryString)
+        .then(response => response.json())
+        .then(data => {
+          // Se espera que data sea un arreglo de objetos {id, placa, timestamp}
+          const tbody = document.getElementById("search-results");
+          tbody.innerHTML = ""; // Limpiar tabla
+  
+          if (data.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='3'>No se encontraron placas</td></tr>";
+          } else {
+            data.forEach(item => {
+              const row = document.createElement("tr");
+              row.innerHTML = `<td>${item.id}</td><td>${item.placa}</td><td>${item.timestamp}</td>`;
+              tbody.appendChild(row);
+            });
+          }
+        })
+        .catch(error => console.error("Error fetching plates:", error));
+    });
+  </script>
     
 </body>
 </html>

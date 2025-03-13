@@ -6,7 +6,7 @@ import queue
 import time
 from collections import Counter
 # Descomentar las importaciones para la nube
-from flask import Flask, Response
+from flask import Flask, Response, jsonify
 import requests
 
 print("✅ Script camnew.py iniciado...")
@@ -24,7 +24,7 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 # ===============================
 # Parámetros de la cámara y ROI
 # ===============================
-rtsp_url = "rtsp://admin:abcd1234..@161.10.81.18:554/Streaming/Channels/101"
+rtsp_url = "rtsp://admin:abcd1234..@186.119.52.250:554/Streaming/Channels/101"
 width, height = 1280, 720
 roi_x, roi_y, roi_w, roi_h = 400, 200, 500, 200
 
@@ -241,6 +241,12 @@ def process_ocr():
                             last_confirmed_time = time.time()
                             print(f"[INFO] Placa detectada: {confirmed_plate}")
                             pending_count = 0
+
+                            # Enviar la placa confirmada al servidor Node (ambiente local)
+                            try:
+                                requests.post("http://44.211.67.168/update", json={"placa": confirmed_plate}) #cambiar por IP de EC2
+                            except Exception as e:
+                                print(f"Error enviando la placa al servidor Node: {e}")
                     else:
                         pending_plate = new_plate
                         pending_count = 1
@@ -318,6 +324,18 @@ def processed_feed():
             else:
                 time.sleep(0.01)
     return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
+
+@app.route("/latest_plate", methods=["GET"])
+def latest_plate():
+    global confirmed_plate, last_confirmed_time
+    if confirmed_plate and last_confirmed_time:
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(last_confirmed_time))
+    else:
+        timestamp = "--"
+    return jsonify({
+        "plate": confirmed_plate if confirmed_plate else "No se ha detectado ninguna placa aún",
+        "timestamp": timestamp
+    })
 
 ##############################################
 # MAIN: iniciar hilos y funcionamiento en la nube
