@@ -101,6 +101,44 @@ app.post('/update', (req, res) => {
     });
 });
 
+app.get('/get-plates', (req, res) => {
+    let { plate, startDate, endDate } = req.query;
+    let sql = 'SELECT id, placa, timestamp FROM placas';
+    let params = [];
+
+    if (plate || startDate || endDate) {
+        // Si se aplican filtros, construye las condiciones
+        let conditions = [];
+        if (plate) {
+            conditions.push('placa LIKE ?');
+            params.push(`%${plate}%`);
+        }
+        if (startDate) {
+            conditions.push('timestamp >= ?');
+            params.push(startDate);  // Asegúrate de que el formato sea compatible
+        }
+        if (endDate) {
+            conditions.push('timestamp <= ?');
+            params.push(endDate);
+        }
+        if (conditions.length > 0) {
+            sql += ' WHERE ' + conditions.join(' AND ');
+        }
+    } else {
+        // Si no se especifican filtros, se devuelven los registros del día actual
+        // Ejemplo: 2025-03-14 00:00:00 hasta 2025-03-14 23:59:59
+        sql += ' WHERE DATE(timestamp) = CURDATE()';
+    }
+
+    db.query(sql, params, (err, results) => {
+        if (err) {
+            console.error('Error en /get-plates:', err);
+            return res.status(500).json({ error: 'Error interno del servidor' });
+        }
+        return res.json(results);
+    });
+});
+
 app.get('/cajero', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'cajero.html'));
 });

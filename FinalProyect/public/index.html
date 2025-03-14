@@ -206,6 +206,65 @@
         .catch(error => console.error("Error fetching plates:", error));
     });
   </script>
+
+ <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    // Al no pasar parámetros, el endpoint /get-plates aplicará la condición: DATE(timestamp) = CURDATE()
+    fetch('/get-plates')
+      .then(response => response.json())
+      .then(data => {
+          const tbody = document.getElementById("plates-table");
+          tbody.innerHTML = "";
+          if (data.length === 0) {
+              tbody.innerHTML = "<tr><td colspan='3'>No se encontraron placas</td></tr>";
+          } else {
+              data.forEach(item => {
+                  const row = document.createElement("tr");
+                  row.innerHTML = `<td>${item.id}</td><td>${item.placa}</td><td>${item.timestamp}</td>`;
+                  tbody.appendChild(row);
+              });
+          }
+      })
+      .catch(error => console.error("Error fetching latest plates:", error));
+  });
+</script>
+
+  <script>
+    document.getElementById("search-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const plate = document.getElementById("plate-search").value;
+      const startDate = document.getElementById("start-date").value;
+      const endDate = document.getElementById("end-date").value;
+
+      // Construir los parámetros de consulta
+      let queryParams = [];
+      if (plate) queryParams.push(`plate=${encodeURIComponent(plate)}`);
+      if (startDate) queryParams.push(`startDate=${encodeURIComponent(startDate)}`);
+      if (endDate) queryParams.push(`endDate=${encodeURIComponent(endDate)}`);
+      const queryString = queryParams.length > 0 ? "?" + queryParams.join("&") : "";
+
+      // Hacer fetch a /get-plates con filtros
+      fetch("/get-plates" + queryString)
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.getElementById("search-results");
+          tbody.innerHTML = ""; // Limpiar tabla
+
+          if (data.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='3'>No se encontraron placas</td></tr>";
+          } else {
+            data.forEach(item => {
+              const row = document.createElement("tr");
+              row.innerHTML = `<td>${item.id}</td><td>${item.placa}</td><td>${item.timestamp}</td>`;
+              tbody.appendChild(row);
+            });
+          }
+        })
+        .catch(error => console.error("Error fetching plates:", error));
+    });
+</script>
+
     
 </body>
 </html>
