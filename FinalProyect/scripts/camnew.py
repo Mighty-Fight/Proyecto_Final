@@ -39,10 +39,9 @@ ocr_queue = queue.Queue(maxsize=1)
 number_samples = []
 letter_samples = []
 candidate_history = []  
-sample_limit = 5
-WINDOW_SIZE = 5
-OVERRIDE_THRESHOLD = 15    # Mínimo número de ocurrencias en la ventana para confirmar un candidato
-    # Lista para acumular candidatos
+sample_limit = 9
+WINDOW_SIZE = 9
+OVERRIDE_THRESHOLD = 9  # Mínimo número de ocurrencias en la ventana para confirmar un candidato
 
 confirmed_plate = ""  # Placa confirmada final
 pending_plate = ""    # Placa pendiente
