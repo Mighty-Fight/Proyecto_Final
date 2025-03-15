@@ -362,7 +362,7 @@ def process_ocr():
                     if frame_b64:
                         payload["frame"] = frame_b64
                     try:
-                        requests.post("http://http://44.211.67.168//update", json=payload)
+                        requests.post("http://44.211.67.168//update", json=payload)
                     except Exception as e:
                         print(f"Error enviando la placa al servidor Node: {e}")
                 # Reiniciar la ventana para la siguiente toma
