@@ -4,6 +4,7 @@ import pytesseract
 import threading
 import queue
 import time
+import base64
 from collections import Counter
 # Descomentar las importaciones para la nube
 from flask import Flask, Response, jsonify
@@ -37,7 +38,11 @@ print("📷 Conectando a la cámara en:", rtsp_url)
 ocr_queue = queue.Queue(maxsize=1)
 number_samples = []
 letter_samples = []
-sample_limit = 3
+candidate_history = []  
+sample_limit = 5
+WINDOW_SIZE = 5
+OVERRIDE_THRESHOLD = 15    # Mínimo número de ocurrencias en la ventana para confirmar un candidato
+    # Lista para acumular candidatos
 
 confirmed_plate = ""  # Placa confirmada final
 pending_plate = ""    # Placa pendiente
@@ -53,6 +58,7 @@ cooldown_seconds = 5  # Tiempo de inactividad para ignorar la misma placa
 # Variable global para mostrar la imagen original
 frame_original = None
 frame_processed = None
+isHighResCaptured = False
 
 ##############################################
 # Inicializar la app Flask para la nube
@@ -115,11 +121,44 @@ def order_points(pts):
     rect[3] = pts[np.argmax(diff)]
     return rect
 
+def unsharp_mask(image, kernel_size=(5,5), sigma=1.0, amount=1.0, threshold=0):
+    blurred = cv2.GaussianBlur(image, kernel_size, sigma)
+    sharpened = float(amount + 1)*image - float(amount)*blurred
+    sharpened = np.clip(sharpened, 0, 255).astype(np.uint8)
+    if threshold > 0:
+        low_contrast_mask = np.abs(image - blurred) < threshold
+        np.copyto(sharpened, image, where=low_contrast_mask)
+    return sharpened
+
+def advanced_preprocessing(image_bgr):
+    gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
+    
+    # CLAHE para aumentar contraste local
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    clahe_img = clahe.apply(gray)
+
+    # Unsharp mask para realzar bordes
+    sharpened = unsharp_mask(clahe_img, kernel_size=(5,5), sigma=1.0, amount=1.5, threshold=0)
+
+    # Umbral adaptativo
+    blur = cv2.GaussianBlur(sharpened, (3,3), 0)
+    adapt = cv2.adaptiveThreshold(blur, 255,
+                                  cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                  cv2.THRESH_BINARY_INV,
+                                  31, 15)
+
+    # Pequeña dilatación y cierre morfológico
+    kernel_close = np.ones((2,2), np.uint8)
+    closed = cv2.morphologyEx(adapt, cv2.MORPH_CLOSE, kernel_close, iterations=1)
+    kernel_dilate = np.ones((2,2), np.uint8)
+    dilated = cv2.dilate(closed, kernel_dilate, iterations=1)
+
+    return dilated
 ##############################################
 # Hilo de procesamiento de frames (original)
 ##############################################
 def process_frames():
-    global frame_original, frame_processed
+    global frame_original, frame_processed, isHighResCaptured
     cap = cv2.VideoCapture(rtsp_url)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
@@ -127,6 +166,7 @@ def process_frames():
         print("[ERROR] No se pudo abrir la cámara RTSP.")
         return
     fallback_count = 0
+
     while True:
         ret, frame = cap.read()
         if not ret or frame is None:
@@ -138,10 +178,12 @@ def process_frames():
 
         frame_original = frame.copy()
         frame_processed = frame.copy()
+
         # Delimitar el área de análisis con un cuadro verde (ROI)
         cv2.rectangle(frame_processed, (roi_x, roi_y),
                       (roi_x + roi_w, roi_y + roi_h),
                       (0, 255, 0), 2)
+
         hsv = cv2.cvtColor(frame_processed, cv2.COLOR_BGR2HSV)
         lower_yellow = np.array([20, 100, 100])
         upper_yellow = np.array([30, 255, 255])
@@ -152,24 +194,60 @@ def process_frames():
         mask_combined = cv2.bitwise_or(mask_yellow, mask_white)
         roi_mask = mask_combined[roi_y:roi_y+roi_h, roi_x:roi_x+roi_w]
 
+        # MISMA CONDICIÓN: si hay suficiente actividad en ROI
         if cv2.countNonZero(roi_mask) > 500:
-            while not ocr_queue.empty():
-                try:
-                    ocr_queue.get_nowait()
-                except Exception:
-                    break
-            ocr_queue.put(frame[roi_y:roi_y+roi_h, roi_x:roi_x+roi_w])
-            fallback_count = 0
-        else:
-            fallback_count += 1
-            if fallback_count >= 30:
-                fallback_count = 0
+            # Si todavía NO hemos capturado alta resolución, lo hacemos UNA vez
+            if not isHighResCaptured:
+                print("Cambio a alta resolución para OCR preciso (una sola vez).")
+                # Cambiar a 1920x1080
+                cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+                cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+                time.sleep(0.1)  # Espera un instante
+
+                ret2, highResFrame = cap.read()
+                if ret2 and highResFrame is not None:
+                    # Limpiar la cola
+                    while not ocr_queue.empty():
+                        try:
+                            ocr_queue.get_nowait()
+                        except Exception:
+                            break
+                    # Poner en la cola la ROI del frame de alta resolución
+                    roi_high = highResFrame[roi_y:roi_y+roi_h, roi_x:roi_x+roi_w]
+                    ocr_queue.put(roi_high)
+                    print("Frame alta resolución agregado. ROI shape:", roi_high.shape)
+
+                    # Volver a la resolución normal
+                    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+                    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+                    isHighResCaptured = True
+                else:
+                    print("Error capturando frame de alta resolución.")
+            else:
+                # Si ya capturamos una vez en alta resolución, sigue la lógica original
                 while not ocr_queue.empty():
                     try:
                         ocr_queue.get_nowait()
                     except Exception:
                         break
                 ocr_queue.put(frame[roi_y:roi_y+roi_h, roi_x:roi_x+roi_w])
+            fallback_count = 0
+
+        else:
+            # Lógica original de fallback
+            fallback_count += 1
+            if fallback_count >= 30:
+                fallback_count = 0
+                # Reiniciamos isHighResCaptured para permitir nueva captura
+                isHighResCaptured = False
+
+                while not ocr_queue.empty():
+                    try:
+                        ocr_queue.get_nowait()
+                    except Exception:
+                        break
+                ocr_queue.put(frame[roi_y:roi_y+roi_h, roi_x:roi_x+roi_w])
+
         time.sleep(0.01)
 
 ##############################################
@@ -187,73 +265,110 @@ def plate_diff(plate1, plate2):
 ##############################################
 # Hilo de OCR (original) con la nueva lógica
 ##############################################
+def auto_crop_plate(bin_img, gap_threshold=0.1, min_gap_rows=20):
+    """
+    Recorta la parte inferior de una imagen binaria (bin_img) si detecta
+    una zona con pocas filas activas (usada para descartar textos extra, 
+    como "BARRANQUILLA").
+    
+    - gap_threshold: porcentaje de píxeles (de la anchura) para considerar
+      que una fila está "vacía".
+    - min_gap_rows: número mínimo de filas consecutivas que deben estar "vacías"
+      para establecer la línea de corte.
+      
+    Retorna la subimagen (desde la parte superior hasta la línea de corte).
+    """
+    h, w = bin_img.shape
+    consecutive_gap = 0
+    cut_line = h  # Por defecto, sin recorte
+
+    # Recorremos desde la última fila hacia la primera
+    for row in range(h - 1, -1, -1):
+        whites = cv2.countNonZero(bin_img[row:row+1, :])
+        if whites < gap_threshold * w:
+            consecutive_gap += 1
+        else:
+            consecutive_gap = 0
+        if consecutive_gap >= min_gap_rows:
+            cut_line = row + min_gap_rows  # Cortamos un poco más arriba
+            break
+
+    return bin_img[:cut_line, :]
+
 def process_ocr():
-    global number_samples, letter_samples, confirmed_plate, pending_plate, pending_count, last_confirmed_time
-    global cooldown_seconds
+    global number_samples, letter_samples, confirmed_plate, candidate_history, last_confirmed_time
+    global cooldown_seconds, sample_limit, WINDOW_SIZE, OVERRIDE_THRESHOLD
+
     while True:
         roi_image = ocr_queue.get()
         if roi_image is None:
             break
         try:
-            # Si la misma placa se confirmó recientemente, saltar procesamiento
+            # Si ya hay una placa confirmada y aún no pasó el cooldown, se ignoran nuevas lecturas
             if confirmed_plate and (time.time() - last_confirmed_time) < cooldown_seconds:
                 continue
 
             plate_rectified = deskew_and_clean(roi_image)
             preprocessed = advanced_preprocessing(plate_rectified)
-            config_tess = "--psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-            detected_text = pytesseract.image_to_string(preprocessed, config=config_tess).strip()
+            
+            # Recortar automáticamente la parte inferior para descartar texto extra
+            cropped = auto_crop_plate(preprocessed, gap_threshold=0.1, min_gap_rows=20)
+            
+            config_tess = "--psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            detected_text = pytesseract.image_to_string(cropped, config=config_tess).strip()
             filtered_text = "".join(ch for ch in detected_text if ch.isalnum()).upper()
-
+            
+            print("Detected text:", detected_text)
+            print("Filtered text:", filtered_text)
+            
+            # Separar letras y números
             letters = "".join(c for c in filtered_text if c.isalpha())
             numbers = "".join(c for c in filtered_text if c.isdigit())
-
-            if len(numbers) == 3:
-                number_samples.append(numbers)
-                if len(number_samples) > sample_limit:
-                    number_samples.pop(0)
-            if len(letters) == 3:
-                letter_samples.append(letters)
-                if len(letter_samples) > sample_limit:
-                    letter_samples.pop(0)
-
-            if len(number_samples) >= sample_limit and len(letter_samples) >= sample_limit:
-                mc_numbers = Counter(number_samples).most_common(1)
-                mc_letters = Counter(letter_samples).most_common(1)
-                if mc_numbers and mc_letters:
-                    new_plate = f"{mc_letters[0][0]} {mc_numbers[0][0]}"
-
-                    # 1) Si es exactamente la misma que la confirmada, ignorar
-                    if new_plate == confirmed_plate:
-                        continue
-
-                    # 2) Si ya tenemos una placa confirmada, revisar cuántos caracteres difieren
-                    if confirmed_plate:
-                        diff_chars = plate_diff(new_plate.replace(" ", ""), confirmed_plate.replace(" ", ""))
-                        if diff_chars <= 3:
-                            continue
-
-                    # 3) Lógica de pending para confirmar en 3 lecturas
-                    if new_plate == pending_plate:
-                        pending_count += 1
-                        if pending_count >= confirmation_threshold:
-                            confirmed_plate = new_plate
-                            last_confirmed_time = time.time()
-                            print(f"[INFO] Placa detectada: {confirmed_plate}")
-                            pending_count = 0
-
-                            # Enviar la placa confirmada al servidor Node (ambiente local)
-                            try:
-                                requests.post("http://44.211.67.168/update", json={"placa": confirmed_plate}) #cambiar por IP de EC2
-                            except Exception as e:
-                                print(f"Error enviando la placa al servidor Node: {e}")
+            
+            # Si se detectan más de 3 letras o dígitos, quedarse solo con los 3 primeros
+            if len(letters) > 3:
+                print(f"[PostCorrection] Ajustando letras: {letters} => {letters[:3]}")
+                letters = letters[:3]
+            if len(numbers) > 3:
+                print(f"[PostCorrection] Ajustando números: {numbers} => {numbers[:3]}")
+                numbers = numbers[:3]
+            
+            # Considerar solo lecturas con exactamente 3 letras y 3 números
+            if len(letters) == 3 and len(numbers) == 3:
+                new_plate = f"{letters} {numbers}"
+                print("Nuevo candidato:", new_plate)
+                
+                # Acumular el candidato en la ventana
+                candidate_history.append(new_plate)
+            
+            # Si se han acumulado suficientes muestras en la ventana
+            if len(candidate_history) >= WINDOW_SIZE:
+                mode_plate, count = Counter(candidate_history).most_common(1)[0]
+                print(f"[STABILITY] Ventana: {candidate_history}")
+                print(f"[STABILITY] Mode: {mode_plate} ({count}/{WINDOW_SIZE})")
+                # Si el candidato más frecuente se repite lo suficiente y es diferente al confirmado
+                if count >= OVERRIDE_THRESHOLD and mode_plate != confirmed_plate:
+                    confirmed_plate = mode_plate
+                    last_confirmed_time = time.time()
+                    print(f"[INFO] Placa confirmada: {confirmed_plate}")
+                    
+                    # Codificar la imagen recortada en base64 para enviarla al servidor
+                    ret_jpg, buf = cv2.imencode('.jpg', cropped)
+                    if ret_jpg:
+                        frame_b64 = base64.b64encode(buf).decode('utf-8')
                     else:
-                        pending_plate = new_plate
-                        pending_count = 1
-
+                        frame_b64 = None
+                    payload = {"placa": confirmed_plate}
+                    if frame_b64:
+                        payload["frame"] = frame_b64
+                    try:
+                        requests.post("http://http://44.211.67.168//update", json=payload)
+                    except Exception as e:
+                        print(f"Error enviando la placa al servidor Node: {e}")
+                # Reiniciar la ventana para la siguiente toma
+                candidate_history = []
         except Exception as e:
             print(f"[ERROR] process_ocr: {e}")
-
 #################################################################
 # Funcionalidades adicionales para detección confiable de placas
 #################################################################
