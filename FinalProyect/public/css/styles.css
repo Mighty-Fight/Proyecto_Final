@@ -155,6 +155,41 @@
 }
 
 
+/* ========================= */
+/* 🔹 MEDIA QUERY PARA RESPONSIVO */
+/* ========================= */
+@media (max-width: 768px) {
+    /* Contenedor principal en una sola columna */
+    .login-container {
+        flex-direction: column;
+        width: 90%; /* Ocupa el 90% del ancho */
+        max-width: 500px; /* Para no exceder en pantallas grandes */
+        height: auto; /* Ajusta la altura */
+        margin: 20px auto; /* Centra */
+    }
+
+    /* El formulario ocupa todo el ancho */
+    .login-form {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 20px;
+    }
+
+    /* Imagen se vuelve más pequeña o centrada */
+    .login-image {
+        width: 100%;
+        background: #1e1d1b;
+        height: 200px; /* Ajusta la altura que quieras */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login-image img {
+        width: 200px; /* Ajusta el tamaño del logo en móvil */
+        height: auto;
+    }
+}
 
 
 /* ========================= */
@@ -547,9 +582,9 @@ nav ul li a:hover {
 }
 
 .feedback-container h3 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: #af267a;
-    text-align: left;
+    text-align: center;
     margin-bottom: 30px;
 }
 
@@ -570,7 +605,8 @@ nav ul li a:hover {
 }
 
 .feedback-container textarea {
-    height: 80px;
+    height: 100px;
+    margin-bottom: 15px;
     resize: none;
 }
 
@@ -702,7 +738,7 @@ nav ul li a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 110vw;
+    width: 100vw;
 }
 
 .contact-section h2 {
@@ -925,6 +961,7 @@ nav ul {
         align-items: center;
         width: 90%;
         margin: auto;
+        box-sizing: border-box;
     }
 
     .service-box {
@@ -938,11 +975,13 @@ nav ul {
         text-align: center;
         width: 90%;
         margin: auto; /* Centra horizontalmente */
+        
     }
 
     .contact-info {
         align-items: center;
         text-align: center;
+        box-sizing: border-box;
     }
 
     .contact-map iframe {
