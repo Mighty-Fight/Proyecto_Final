@@ -199,8 +199,8 @@ def process_frames():
             if not isHighResCaptured:
                 print("Cambio a alta resolución para OCR preciso (una sola vez).")
                 # Cambiar a 1920x1080
-                cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-                cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+                cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1080)
+                cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
                 time.sleep(0.1)  # Espera un instante
 
                 ret2, highResFrame = cap.read()
