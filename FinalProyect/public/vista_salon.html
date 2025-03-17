@@ -21,5 +21,21 @@
         <h2>Vista Salón</h2>
         <p>Aquí se mostrará la distribución de mesas y ocupación del salón.</p>
     </main>
+
+    <script>
+        fetch('/user-info')
+          .then(response => {
+            if (!response.ok) {
+              window.location.href = "/principal.html"; // O "/login.html"
+              return Promise.reject("Usuario no autenticado. Redirigiendo...");
+            }
+            return response.json();
+          })
+          .then(data => {
+            document.getElementById('username-display').textContent = data.username || 'Usuario';
+          })
+          .catch(err => console.error('Error obteniendo información del usuario:', err));
+    </script>
+        
 </body>
 </html>

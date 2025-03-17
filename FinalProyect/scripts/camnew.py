@@ -17,10 +17,10 @@ print("✅ Script camnew.py iniciado...")
 # ===============================
 # Configuración Tesseract
 # ===============================
-pytesseract.pytesseract.tesseract_cmd = r"/usr/local/bin/tesseract"
+#pytesseract.pytesseract.tesseract_cmd = r"/usr/local/bin/tesseract"
 
 # Comentado el path local de Tesseract para funcionamiento local
-#pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # ===============================
 # Parámetros de la cámara y ROI
@@ -361,7 +361,7 @@ def process_ocr():
                     if frame_b64:
                         payload["frame"] = frame_b64
                     try:
-                        requests.post("http://44.211.67.168/update", json=payload)
+                        requests.post("http://localhost/update", json=payload)
                     except Exception as e:
                         print(f"Error enviando la placa al servidor Node: {e}")
                 # Reiniciar la ventana para la siguiente toma
