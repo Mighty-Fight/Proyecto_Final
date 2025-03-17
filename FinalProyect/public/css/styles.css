@@ -324,6 +324,106 @@ nav ul li a {
     background-color: #af267a;
 }
 
+/* 🔹 Asegurar que el contenedor blanco se vea bien */
+.db-container {
+    width: 90%;
+    max-width: 1100px;
+    background: #ffffff;
+    margin: 3rem auto;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    color: black;
+    text-align: center; /* Asegura que el contenido dentro esté centrado */
+}
+
+/* 🔹 Mejorar títulos */
+.db-container h2, .db-container h3 {
+    color: #af267a;
+    font-family: "League Spartan", sans-serif;
+    font-size: 1.8rem;
+    text-align: center; /* Asegura que estén centrados */
+}
+
+/* 🔹 Estilos de la tabla */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+/* 🔹 Cambiar el fondo de las filas vacías */
+.table-container tbody tr {
+    background-color: #f0f0f0; /* Fondo gris claro */
+    color: black;
+}
+
+/* 🔹 Mejorar la visibilidad del input de búsqueda */
+#search-form input {
+    background-color: #dcdcdc !important;
+    color: black !important;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+/* 🔹 Mejorar botones */
+.db-container button, #search-form button {
+    background: #af267a;
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.db-container button:hover, #search-form button:hover {
+    background: #800080;
+}
+
+/* 🔹 Ajustar responsivo */
+@media (max-width: 768px) {
+    .db-container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .table-container table {
+        font-size: 0.9rem;
+    }
+
+    #search-form {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #search-form input {
+        width: 100%;
+    }
+}
+
+/* 🔹 Bordes gruesos y negros para la tabla */
+.table-container table {
+    width: 100%;
+    border-collapse: collapse; /* Quita los espacios entre bordes */
+    background: #f0f0f0; /* Fondo gris claro */
+    color: black;
+    border: 3px solid black; /* Borde exterior grueso y negro */
+}
+
+/* 🔹 Bordes negros en celdas */
+.table-container th, .table-container td {
+    border: 2px solid black !important; /* Borde más grueso y fuerte */
+    padding: 12px;
+    text-align: center;
+    font-weight: bold; /* Hace que el texto sea más visible */
+}
+
+
+
 /* ========================= */
 /* Estilos para vista_salon.html */
 /* ========================= */
@@ -343,12 +443,145 @@ h2 {
 /* Estilos para cajero.html */
 /* ========================= */
 
-main {
-    width: 90%;
-    max-width: 1200px;
-    padding: 2rem;
-    text-align: center;
+/* ===== Cajero Layout ===== */
+
+
+
+/* Contenedor principal que ocupa casi toda la pantalla:
+   - min-height = 100vh menos la altura del header */
+   .cajero-container {
+    width: 100%; /* 90px = altura aprox. del header */
+    background: #fff;               /* Fondo blanco */
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    gap: 20px;       /* Espacio entre izquierda y derecha */
+    box-sizing: border-box;
+  }
+  
+  /* Sección izquierda: cámara */
+  .cajero-left {
+    flex: 1;              /* Ocupar más espacio que la derecha, si deseas */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .cajero-left h2 {
+    color: black !important; /* Fuerza que el texto sea negro */
+    font-weight: bold;
+  }
+
+  #cajero-form input {
+    background-color: white !important;  /* Fondo blanco */
+    color: black !important;  /* Texto negro */
+    border: 1px solid #ccc;  /* Borde sutil */
 }
+
+/* Para corregir el color del placeholder */
+#cajero-form input::placeholder {
+    color: #888 !important;  /* Un gris más claro para diferenciar el placeholder */
+}
+
+/* Solución para cuando el navegador autocompleta */
+#cajero-form input:-webkit-autofill,
+#cajero-form input:-webkit-autofill:hover, 
+#cajero-form input:-webkit-autofill:focus, 
+#cajero-form input:-webkit-autofill:active {
+    background: white !important;
+    color: black !important;
+    -webkit-text-fill-color: black !important;
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+  .cam-feed img {
+    width: 100%;          /* Para que sea lo más grande posible */
+    max-width: 600px;     /* Límite si no quieres que se desborde */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  
+  /* Sección derecha: formulario */
+  .cajero-right {
+    flex: 1;              /* Ocupar algo de espacio */
+    background: #f4f4f4;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  .cajero-right h2 {
+    margin-bottom: 15px;
+    color: #af267a;
+    font-family: "League Spartan", sans-serif;
+    font-size: 1.5rem;
+  }
+  
+  /* Formulario */
+  #cajero-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* espacio vertical */
+  }
+  #cajero-form label {
+    font-weight: bold;
+    color: #333;
+  }
+  #cajero-form input,
+  #cajero-form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  #cajero-form button {
+    margin-top: 15px;
+    background: #af267a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  #cajero-form button:hover {
+    background: #800080; /* un tono más oscuro */
+  }
+  
+  /* Ajuste responsivo para móvil */
+  @media (max-width: 768px) {
+    .cajero-container {
+      flex-direction: column;
+      min-height: auto;    /* Deja que crezca en altura */
+    }
+  
+    .cajero-left, .cajero-right {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  
+    .cam-feed img {
+      max-width: 100%;     /* Para que no se salga */
+    }
+  }
+  
+  .header-logo {
+    width: 120px;   /* Ajusta a tu gusto (era mayor antes) */
+    height: auto;
+  }
+
+  .cajero-container {
+    width: 100%;             /* Ocupa 90% del ancho disponible */
+    max-width: 1000px;      /* No crezcas más de 1000px */
+    background: #fff;
+    margin: 3rem auto;      /* 2rem de espacio arriba y abajo, centrado horizontalmente */
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;    /* Opcional, redondear esquinas */
+  }
+
 
 /* ========================= */
 /* Estilos generales */
