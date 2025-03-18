@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const hamburger = document.querySelector(".menu-icon");
     const registerForm = document.getElementById("register-form");
     const loginForm = document.getElementById("login-form");
+    const feedbackForm = document.getElementById("feedback-form");
 
     // 🔹 Verificar si los elementos existen
     console.log("Menu encontrado:", menu);
@@ -126,7 +127,44 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // ✅ Envío del feedback del cliente
+    if (feedbackForm) {
+        feedbackForm.addEventListener("submit", async (event) => {
+            event.preventDefault(); // Evita el envío estándar del formulario
+
+            const comentario = document.getElementById("feedback-comment").value.trim();
+            const feedbackMessage = document.getElementById("feedback-message");
+
+            if (!comentario) {
+                feedbackMessage.innerText = "Por favor, escribe tu opinión.";
+                feedbackMessage.style.color = "red";
+                return;
+            }
+
+            try {
+                const response = await fetch("/submit-feedback", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ comentario })
+                });
+
+                const data = await response.json();
+                feedbackMessage.innerText = data.message;
+                feedbackMessage.style.color = data.success ? "green" : "red";
+
+                if (data.success) {
+                    feedbackForm.reset(); // Limpiar el formulario tras el envío exitoso
+                }
+            } catch (error) {
+                console.error("Error enviando feedback:", error);
+                feedbackMessage.innerText = "Hubo un error. Inténtalo de nuevo.";
+                feedbackMessage.style.color = "red";
+            }
+        });
+    }
 });
+
 
 
 

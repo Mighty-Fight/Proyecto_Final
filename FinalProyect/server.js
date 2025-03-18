@@ -146,7 +146,24 @@ app.get("/index.html", isAuthenticated, (req, res) => {
     res.redirect("/dashboard");
 });
 
+app.post('/submit-feedback', (req, res) => {
+    const { comentario } = req.body;
 
+    if (!comentario) {
+        return res.status(400).json({ success: false, message: "Comentario vacío" });
+    }
+
+    const sql = 'INSERT INTO feedbacks (comentario) VALUES (?)';
+    
+    db.query(sql, [comentario], (err, result) => {
+        if (err) {
+            console.error('Error al guardar el feedback:', err);
+            return res.status(500).json({ success: false, error: 'Error interno.' });
+        }
+        console.log('Feedback guardado correctamente.');
+        return res.json({ success: true, message: "Gracias por tu opinión!" });
+    });
+});
 
 // Iniciar el servidor en el puerto configurado
 const PORT = process.env.PORT || 80;
