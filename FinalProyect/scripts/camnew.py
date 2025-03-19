@@ -25,7 +25,7 @@ pytesseract.pytesseract.tesseract_cmd = r"/usr/local/bin/tesseract"
 # ===============================
 # Parámetros de la cámara y ROI
 # ===============================
-rtsp_url = "rtsp://admin:abcd1234..@186.119.52.250:554/Streaming/Channels/101"
+rtsp_url = "rtsp://admin:abcd1234..@181.236.141.192:554/Streaming/Channels/101"
 width, height = 1280, 720
 roi_x, roi_y, roi_w, roi_h = 400, 200, 500, 200
 
