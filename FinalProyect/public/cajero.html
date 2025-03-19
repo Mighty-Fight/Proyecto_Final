@@ -23,11 +23,24 @@
       <!-- Izquierda: Sección de cámara -->
       <div class="cajero-left">
         <h2>Live Feed (Cámara)</h2>
+        <!-- 🔹 Sección de Listado de Placas -->
+    <section id="plates-section">
+     
+      <p>
+        <strong>Última Placa Detectada:</strong>
+        <span id="detected-plate">No se ha detectado ninguna placa aún</span>
+        <p>
+        <strong>Timestamp:</strong>
+        <span id="timestamp">--</span>
+        </p>
+      </p> 
+
         <div class="cam-feed">
           <!-- Ajusta el src a tu IP/cámara -->
           <img src="http://44.211.67.168:5001/video_feed" alt="video_feed" />
         </div>
       </div>
+      
 
       <!-- Derecha: Sección de formulario o panel del cajero -->
       <div class="cajero-right">
@@ -74,10 +87,12 @@
   <!-- Scripts para socket y placas (opcional si lo deseas) -->
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io();
-    socket.on("updatePlaca", (data) => {
-      console.log("Se detectó una placa:", data.placa);
-      // Lógica adicional si deseas
+     const socket = io();
+   
+     socket.on('updatePlaca', (data) => {
+     document.getElementById('detected-plate').textContent = data.placa;
+     document.getElementById('timestamp').textContent = data.timestamp;
+     console.log("Se detectó una placa:", data.placa);
     });
   </script>
 
@@ -95,6 +110,7 @@
       })
       .catch(err => console.error('Error obteniendo información del usuario:', err));
   </script>
+  
   
 </body>
 </html>

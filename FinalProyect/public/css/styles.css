@@ -254,7 +254,6 @@ body {
     background: url('../img/nissan.jpg') no-repeat center center fixed;
     background-size: cover; /* Ajuste importante para que se vea completa */
     background-position: center;
-    color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
