@@ -313,7 +313,7 @@ def process_ocr():
             # Recortar automáticamente la parte inferior para descartar texto extra
             cropped = auto_crop_plate(preprocessed, gap_threshold=0.1, min_gap_rows=20)
             
-            config_tess = "--psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            config_tess = "--psm 8 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
             detected_text = pytesseract.image_to_string(cropped, config=config_tess).strip()
             filtered_text = "".join(ch for ch in detected_text if ch.isalnum()).upper()
             
