@@ -146,11 +146,13 @@ def main_loop():
         frame_processed = frame.copy()
         if detectar_por_color(roi) or detectar_por_forma(roi):
             detectar_placa_desde_imagen(frame)
-        cv2.imshow("🎥 Stream en vivo", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        
+        # ❌ NO USAR IM SHOW EN SERVIDOR SIN GUI
+        # cv2.imshow("🎥 Stream en vivo", frame)
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     break
     cap.release()
-    cv2.destroyAllWindows()
+
 
 # === FLASK ENDPOINTS ===
 @app.route("/video_feed")
