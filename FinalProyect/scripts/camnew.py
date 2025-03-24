@@ -23,6 +23,8 @@ app = Flask(__name__)
 frame_original = None
 frame_processed = None
 latest_temp_image = None
+cropped_plate_image = None
+
 
 # === ESTADO ===
 last_plate = None
@@ -84,13 +86,17 @@ def detectar_placa_desde_imagen(image):
     W, H = 300, 100
     M = cv2.getPerspectiveTransform(rect, np.array([[0, 0], [W-1, 0], [W-1, H-1], [0, H-1]], dtype="float32"))
     warped = cv2.warpPerspective(image, M, (W, H))
-    margin_x = 15  # píxeles a recortar de izquierda y derecha
+    margin_x = 3  # píxeles a recortar de izquierda y derecha
     margin_y_top = 10  # píxeles a recortar desde arriba
     margin_y_bottom = 20  # píxeles a recortar desde abajo
 
     cropped = warped[margin_y_top:H - margin_y_bottom, margin_x:W - margin_x]
 
     scaled = cv2.resize(cropped, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+
+    global cropped_plate_image
+    cropped_plate_image = scaled.copy()
+
 
     config = "--psm 8 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     lecturas = [
@@ -184,6 +190,23 @@ def latest_plate():
         "plate": confirmed_plate if confirmed_plate else "No se ha detectado ninguna placa aún",
         "timestamp": last_plate_timestamp
     })
+
+@app.route("/temp_image")
+def temp_image():
+    if latest_temp_image is not None:
+        ret, buffer = cv2.imencode('.jpg', latest_temp_image)
+        if ret:
+            return Response(buffer.tobytes(), mimetype='image/jpeg')
+    return "No hay imagen temporal disponible", 404
+
+@app.route("/cropped_plate")
+def cropped_plate():
+    if cropped_plate_image is not None:
+        ret, buffer = cv2.imencode('.jpg', cropped_plate_image)
+        if ret:
+            return Response(buffer.tobytes(), mimetype='image/jpeg')
+    return "No hay imagen recortada disponible", 404
+
 
 # === INICIAR ===
 if __name__ == "__main__":
