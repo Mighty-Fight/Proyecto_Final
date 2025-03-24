@@ -12,7 +12,10 @@ import requests
 # === CONFIGURACIÓN ===
 rtsp_url = "rtsp://admin:abcd1234..@181.236.141.192:554/Streaming/Channels/101"
 roi_coords = (520, 120, 400, 400)
-pytesseract.pytesseract.tesseract_cmd = "/usr/local/bin/tesseract"
+pytesseract.pytesseract.tesseract_cmd = "/usr/local/bin/tesseract" #INSTANCIA
+#pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" #LOCAL
+
+
 
 
 # === FLASK ===
@@ -81,7 +84,12 @@ def detectar_placa_desde_imagen(image):
     W, H = 300, 100
     M = cv2.getPerspectiveTransform(rect, np.array([[0, 0], [W-1, 0], [W-1, H-1], [0, H-1]], dtype="float32"))
     warped = cv2.warpPerspective(image, M, (W, H))
-    cropped = warped[:int(H*0.8), :]
+    margin_x = 15  # píxeles a recortar de izquierda y derecha
+    margin_y_top = 10  # píxeles a recortar desde arriba
+    margin_y_bottom = 20  # píxeles a recortar desde abajo
+
+    cropped = warped[margin_y_top:H - margin_y_bottom, margin_x:W - margin_x]
+
     scaled = cv2.resize(cropped, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
 
     config = "--psm 8 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
