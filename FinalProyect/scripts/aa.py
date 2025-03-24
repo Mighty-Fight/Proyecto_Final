@@ -59,7 +59,6 @@ def order_points(pts):
 def detectar_placa_desde_imagen(image):
     global last_plate, last_detection_time, last_seen_time, last_plate_timestamp, confirmed_plate
 
-    # Procesamiento de contornos
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(cv2.GaussianBlur(gray, (5, 5), 0), 50, 200)
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -80,13 +79,7 @@ def detectar_placa_desde_imagen(image):
     M = cv2.getPerspectiveTransform(rect, np.array([[0, 0], [W-1, 0], [W-1, H-1], [0, H-1]], dtype="float32"))
     warped = cv2.warpPerspective(image, M, (W, H))
     cropped = warped[:int(H*0.8), :]
-
-    # Guardar la imagen para simular flujo OCR sobre imagen persistente
-    ruta_temp = "D:/Proyecto_Final/Proyecto_Final/FinalProyect/scripts/imagen_temp.png"
-    cv2.imwrite(ruta_temp, cropped)
-
-    image_for_ocr = cv2.imread(ruta_temp)
-    scaled = cv2.resize(image_for_ocr, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    scaled = cv2.resize(cropped, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
 
     config = "--psm 8 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     lecturas = [
@@ -113,23 +106,12 @@ def detectar_placa_desde_imagen(image):
         last_plate_timestamp = timestamp_bogota()
         confirmed_plate = placa
 
-        # 🛰️ Opcional: notificar al servidor Node si tienes endpoint
-        try:
-            import requests
-            requests.post("http://localhost/update", json={
-                "placa": confirmed_plate,
-                "timestamp": last_plate_timestamp
-            })
-        except Exception as e:
-            print(f"❌ No se pudo enviar al servidor Node: {e}")
-
-
 # === STREAM LOOP ===
 cap = cv2.VideoCapture(rtsp_url)
 if not cap.isOpened():
-    raise RuntimeError("No se pudo conectar al stream.")
+    raise RuntimeError("❌ No se pudo conectar al stream.")
 
-print("Stream conectado. Procesando en tiempo real...")
+print("📡 Stream conectado. Procesando en tiempo real...")
 
 # === LOOP DE PROCESAMIENTO ===
 def main_loop():
