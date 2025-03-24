@@ -133,7 +133,7 @@ def main_loop():
         roi = frame[y:y+h, x:x+w]
         cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 255, 0), 2)
         frame_processed = frame.copy()
-
+        print("🧪 Evaluando ROI...")
         if detectar_por_color(roi) or detectar_por_forma(roi):
             print("📸 Detección visual → guardando imagen temporal para OCR")
             cv2.imwrite(TEMP_IMAGE_PATH, frame)
