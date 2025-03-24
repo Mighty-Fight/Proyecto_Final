@@ -10,16 +10,17 @@ from flask import Flask, Response, jsonify
 # === CONFIG ===
 rtsp_url = "rtsp://admin:abcd1234..@181.236.141.192:554/Streaming/Channels/101"
 roi_coords = (180, 120, 300, 200)
-temp_image_path = "/tmp/temp_placa.png"
-pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+TEMP_IMAGE_PATH = "temp_placa.png"
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"  # En Linux
 
 # === FLASK ===
 app = Flask(__name__)
 frame_original = None
 frame_processed = None
 
-# === ESTADO ===
+# === ESTADO GLOBAL ===
 last_plate = None
+last_detection_time = 0
 last_seen_time = 0
 last_plate_timestamp = "--"
 confirmed_plate = ""
@@ -38,6 +39,17 @@ def detectar_por_color(roi):
     total = roi.shape[0] * roi.shape[1]
     return (cv2.countNonZero(blanco) / total) > 0.2 or (cv2.countNonZero(amarillo) / total) > 0.2
 
+def detectar_por_forma(roi):
+    gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+    edges = cv2.Canny(cv2.GaussianBlur(gray, (5,5), 0), 50, 200)
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    for cnt in contours:
+        if cv2.contourArea(cnt) > 800:
+            approx = cv2.approxPolyDP(cnt, 0.02 * cv2.arcLength(cnt, True), True)
+            if 4 <= len(approx) <= 6:
+                return True
+    return False
+
 def order_points(pts):
     rect = np.zeros((4, 2), dtype="float32")
     s, diff = pts.sum(axis=1), np.diff(pts, axis=1)
@@ -45,18 +57,17 @@ def order_points(pts):
     rect[1], rect[3] = pts[np.argmin(diff)], pts[np.argmax(diff)]
     return rect
 
-def detectar_placa_desde_imagen(path):
-    global last_plate, last_seen_time, last_plate_timestamp, confirmed_plate
+def detectar_placa_desde_imagen(image):
+    global last_plate, last_detection_time, last_seen_time, last_plate_timestamp, confirmed_plate
 
-    image = cv2.imread(path)
-    if image is None:
-        return
+    print("🔍 OCR iniciado sobre imagen temporal...")
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(cv2.GaussianBlur(gray, (5, 5), 0), 50, 200)
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     plate_candidate = max((cnt for cnt in contours if cv2.contourArea(cnt) > 1000), default=None, key=cv2.contourArea)
     if plate_candidate is None:
+        print("❌ No se encontró contorno válido en imagen.")
         return
 
     approx = cv2.approxPolyDP(plate_candidate, 0.02 * cv2.arcLength(plate_candidate, True), True)
@@ -77,8 +88,11 @@ def detectar_placa_desde_imagen(path):
         "".join(c for c in pytesseract.image_to_string(scaled, config=config).strip() if c.isalnum()).upper()
         for _ in range(9)
     ]
+    print("🧠 Lecturas OCR:", lecturas)
+
     lecturas = [l for l in lecturas if l]
     if not lecturas:
+        print("❌ OCR falló en todas las pasadas.")
         return
 
     filtrado = Counter(lecturas).most_common(1)[0][0]
@@ -89,19 +103,24 @@ def detectar_placa_desde_imagen(path):
         placa = f"{letras}{numeros}"
         current_time = time.time()
         if placa == last_plate and (current_time - last_seen_time) < PLATE_DISAPPEAR_TIMEOUT:
+            print(f"⏩ Placa repetida ignorada: {placa}")
             last_seen_time = current_time
             return
         last_plate = placa
         last_seen_time = current_time
+        last_detection_time = current_time
         last_plate_timestamp = timestamp_bogota()
         confirmed_plate = placa
+        print(f"✅ Placa detectada y confirmada: {confirmed_plate}")
+    else:
+        print("❌ Lectura OCR inválida.")
 
-# === LOOP PRINCIPAL ===
+# === LOOP DE PROCESAMIENTO ===
 def main_loop():
     global frame_original, frame_processed
     cap = cv2.VideoCapture(rtsp_url)
     if not cap.isOpened():
-        raise RuntimeError("No se pudo conectar al stream.")
+        raise RuntimeError("❌ No se pudo conectar al stream RTSP.")
 
     print("CAMNEW: Stream conectado. Procesando en tiempo real...")
 
@@ -109,20 +128,22 @@ def main_loop():
         ret, frame = cap.read()
         if not ret:
             continue
-
         frame_original = frame.copy()
         x, y, w, h = roi_coords
         roi = frame[y:y+h, x:x+w]
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 255, 0), 2)
         frame_processed = frame.copy()
-        cv2.rectangle(frame_processed, (x, y), (x+w, y+h), (255, 255, 0), 2)
 
-        if detectar_por_color(roi):
-            cv2.imwrite(temp_image_path, frame)
-            detectar_placa_desde_imagen(temp_image_path)
+        if detectar_por_color(roi) or detectar_por_forma(roi):
+            print("📸 Detección visual → guardando imagen temporal para OCR")
+            cv2.imwrite(TEMP_IMAGE_PATH, frame)
+            print(f"💾 Imagen guardada como {TEMP_IMAGE_PATH}")
+            temp_img = cv2.imread(TEMP_IMAGE_PATH)
+            detectar_placa_desde_imagen(temp_img)
 
         time.sleep(0.01)
 
-# === ENDPOINTS FLASK ===
+# === FLASK ENDPOINTS ===
 @app.route("/video_feed")
 def video_feed():
     def gen():
@@ -152,7 +173,7 @@ def latest_plate():
         "timestamp": last_plate_timestamp
     })
 
-# === INICIO SERVIDOR ===
+# === INICIAR APP ===
 if __name__ == "__main__":
     import threading
     threading.Thread(target=main_loop, daemon=True).start()

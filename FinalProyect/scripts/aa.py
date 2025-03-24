@@ -1,169 +1,138 @@
 import cv2
 import numpy as np
 import pytesseract
-import pytz
-import time
-from datetime import datetime
-from collections import Counter
-from flask import Flask, Response, jsonify
 
-# === CONFIG ===
-rtsp_url = "rtsp://admin:abcd1234..@181.236.141.192:554/Streaming/Channels/101"
-roi_coords = (180, 120, 300, 200)
-pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
-
-# === FLASK ===
-app = Flask(__name__)
-frame_original = None
-frame_processed = None
-
-# === ESTADO ===
-last_plate = None
-last_detection_time = 0
-last_seen_time = 0
-last_plate_timestamp = "--"
-confirmed_plate = ""
-PLATE_DISAPPEAR_TIMEOUT = 60  # segundos
-
-# === FUNCIONES ===
-def timestamp_bogota():
-    bogota = pytz.timezone("America/Bogota")
-    now = datetime.now(bogota)
-    return now.strftime("%Y-%m-%d %H:%M:%S")
-
-def detectar_por_color(roi):
-    hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-    blanco = cv2.inRange(hsv, (0, 0, 170), (180, 60, 255))
-    amarillo = cv2.inRange(hsv, (15, 50, 150), (35, 255, 255))
-    total = roi.shape[0] * roi.shape[1]
-    return (cv2.countNonZero(blanco) / total) > 0.2 or (cv2.countNonZero(amarillo) / total) > 0.2
-
-def detectar_por_forma(roi):
-    gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-    edges = cv2.Canny(cv2.GaussianBlur(gray, (5,5), 0), 50, 200)
-    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    for cnt in contours:
-        if cv2.contourArea(cnt) > 800:
-            approx = cv2.approxPolyDP(cnt, 0.02 * cv2.arcLength(cnt, True), True)
-            if 4 <= len(approx) <= 6:
-                return True
-    return False
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 def order_points(pts):
     rect = np.zeros((4, 2), dtype="float32")
-    s, diff = pts.sum(axis=1), np.diff(pts, axis=1)
-    rect[0], rect[2] = pts[np.argmin(s)], pts[np.argmax(s)]
-    rect[1], rect[3] = pts[np.argmin(diff)], pts[np.argmax(diff)]
+    s = pts.sum(axis=1)
+    diff = np.diff(pts, axis=1)
+    rect[0] = pts[np.argmin(s)]
+    rect[2] = pts[np.argmax(s)]
+    rect[1] = pts[np.argmin(diff)]
+    rect[3] = pts[np.argmax(diff)]
     return rect
 
-def detectar_placa_desde_imagen(image):
-    global last_plate, last_detection_time, last_seen_time, last_plate_timestamp, confirmed_plate
+def unsharp_mask(image, kernel_size=(5,5), sigma=1.0, amount=2.0, threshold=0):
+    blurred = cv2.GaussianBlur(image, kernel_size, sigma)
+    sharpened = float(amount + 1) * image - float(amount) * blurred
+    sharpened = np.clip(sharpened, 0, 255).astype(np.uint8)
+    if threshold > 0:
+        low_contrast_mask = np.abs(image - blurred) < threshold
+        np.copyto(sharpened, image, where=low_contrast_mask)
+    return sharpened
+
+def advanced_preprocessing(image_bgr):
+    gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
+
+    # 🎯 ¡Más suave! - quitamos clahe y sharpening agresivo
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # 🔍 Threshold adaptativo pero SUAVE
+    adapt = cv2.adaptiveThreshold(blur, 255,
+                                  cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                  cv2.THRESH_BINARY_INV, 31, 10)
+
+    # 🔧 Morfología ligera (cerrar huequitos sin dañar letras)
+    kernel = np.ones((2, 2), np.uint8)
+    closed = cv2.morphologyEx(adapt, cv2.MORPH_CLOSE, kernel, iterations=1)
+
+    return closed
+
+
+def auto_crop_plate(bin_img, gap_threshold=0.1, min_gap_rows=20):
+    h, w = bin_img.shape
+    consecutive_gap = 0
+    cut_line = h
+    for row in range(h - 1, -1, -1):
+        whites = cv2.countNonZero(bin_img[row:row+1, :])
+        if whites < gap_threshold * w:
+            consecutive_gap += 1
+        else:
+            consecutive_gap = 0
+        if consecutive_gap >= min_gap_rows:
+            cut_line = row + min_gap_rows
+            break
+    return bin_img[:cut_line, :]
+
+def detectar_placa_desde_imagen(path_imagen):
+    print(f"\n🔍 Procesando imagen: {path_imagen}")
+    image = cv2.imread(path_imagen)
+    if image is None:
+        print("❌ No se pudo cargar la imagen.")
+        return
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    edges = cv2.Canny(cv2.GaussianBlur(gray, (5, 5), 0), 50, 200)
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)
+    edges = cv2.Canny(blur, 50, 200)
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    plate_candidate = max((cnt for cnt in contours if cv2.contourArea(cnt) > 1000), default=None, key=cv2.contourArea)
+    plate_candidate = None
+    max_area = 0
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        if area > 1000:
+            peri = cv2.arcLength(cnt, True)
+            approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
+            if len(approx) == 4 and area > max_area:
+                max_area = area
+                plate_candidate = approx
+
     if plate_candidate is None:
+        print("❗ No se encontró ningún contorno válido.")
         return
 
-    approx = cv2.approxPolyDP(plate_candidate, 0.02 * cv2.arcLength(plate_candidate, True), True)
+    image_with_contour = image.copy()
+    cv2.drawContours(image_with_contour, [plate_candidate], -1, (0, 255, 0), 2)
+    cv2.imshow("1️⃣ Imagen con placa detectada", image_with_contour)
 
-    if len(approx) != 4:
-        x, y, w, h = cv2.boundingRect(plate_candidate)
-        rect = order_points(np.array([[x, y], [x+w, y], [x+w, y+h], [x, y+h]], dtype="float32"))
-    else:
-        rect = order_points(approx.reshape(4, 2))
+    pts = plate_candidate.reshape(4, 2)
+    rect = order_points(pts)
+
+    width = np.linalg.norm(rect[0] - rect[1])
+    height = np.linalg.norm(rect[0] - rect[3])
+    print(f"📐 Tamaño placa: ancho={int(width)}, alto={int(height)}")
+
+    if width < 80 or height < 25:
+        print("⚠️ Placa demasiado pequeña para OCR.")
+        return
 
     W, H = 300, 100
-    M = cv2.getPerspectiveTransform(rect, np.array([[0, 0], [W-1, 0], [W-1, H-1], [0, H-1]], dtype="float32"))
-    warped = cv2.warpPerspective(image, M, (W, H))
-    cropped = warped[:int(H*0.8), :]
+    dst = np.array([[0, 0], [W-1, 0], [W-1, H-1], [0, H-1]], dtype="float32")
+    M = cv2.getPerspectiveTransform(rect, dst)
+    rectified = cv2.warpPerspective(image, M, (W, H))
+    cv2.imshow("2️⃣ Placa recortada (sin procesar)", rectified)
+
+    # Recorte opcional para eliminar texto inferior ("BARRANQUILLA")
+    cropped = rectified[:int(H * 0.8), :]
+    cv2.imshow("3️⃣ Placa recortada (directa sin procesamiento)", cropped)
+
+    # Escalar para mejorar lectura OCR
     scaled = cv2.resize(cropped, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
 
-    config = "--psm 8 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    lecturas = [
-        "".join(c for c in pytesseract.image_to_string(scaled, config=config).strip() if c.isalnum()).upper()
-        for _ in range(9)
-    ]
-    lecturas = [l for l in lecturas if l]
-    if not lecturas:
-        return
+    # OCR sin procesamiento destructivo
+    config_tess = "--psm 8 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    detected_text = pytesseract.image_to_string(scaled, config=config_tess).strip()
+    filtered_text = "".join(c for c in detected_text if c.isalnum()).upper()
 
-    filtrado = Counter(lecturas).most_common(1)[0][0]
-    letras = "".join(c for c in filtrado if c.isalpha())[:3]
-    numeros = "".join(c for c in filtrado if c.isdigit())[:3]
+    print("📷 OCR crudo:", detected_text)
+    print("🔤 Filtrado:", filtered_text)
+
+    letras = "".join(c for c in filtered_text if c.isalpha())[:3]
+    numeros = "".join(c for c in filtered_text if c.isdigit())[:3]
 
     if len(letras) == 3 and len(numeros) == 3:
-        placa = f"{letras}{numeros}"
-        current_time = time.time()
-        if placa == last_plate and (current_time - last_seen_time) < PLATE_DISAPPEAR_TIMEOUT:
-            last_seen_time = current_time
-            return
-        last_plate = placa
-        last_seen_time = current_time
-        last_detection_time = current_time
-        last_plate_timestamp = timestamp_bogota()
-        confirmed_plate = placa
+        placa_final = f"{letras} {numeros}"
+        print(f"✅ Placa detectada: {placa_final}")
+    else:
+        print("❗ No se pudo detectar una placa válida.")
 
-# === STREAM LOOP ===
-cap = cv2.VideoCapture(rtsp_url)
-if not cap.isOpened():
-    raise RuntimeError("❌ No se pudo conectar al stream.")
-
-print("📡 Stream conectado. Procesando en tiempo real...")
-
-# === LOOP DE PROCESAMIENTO ===
-def main_loop():
-    global frame_original, frame_processed
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            continue
-        frame_original = frame.copy()
-        x, y, w, h = roi_coords
-        roi = frame[y:y+h, x:x+w]
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 255, 0), 2)
-        frame_processed = frame.copy()
-        if detectar_por_color(roi) or detectar_por_forma(roi):
-            detectar_placa_desde_imagen(frame)
-        cv2.imshow("🎥 Stream en vivo", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    cap.release()
+    cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# === FLASK ENDPOINTS ===
-@app.route("/video_feed")
-def video_feed():
-    def gen():
-        while True:
-            if frame_original is not None:
-                ret, buffer = cv2.imencode('.jpg', frame_original)
-                if ret:
-                    yield (b"--frame\r\n"
-                           b"Content-Type: image/jpeg\r\n\r\n" + buffer.tobytes() + b"\r\n")
-    return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
-@app.route("/processed_feed")
-def processed_feed():
-    def gen():
-        while True:
-            if frame_processed is not None:
-                ret, buffer = cv2.imencode('.jpg', frame_processed)
-                if ret:
-                    yield (b"--frame\r\n"
-                           b"Content-Type: image/jpeg\r\n\r\n" + buffer.tobytes() + b"\r\n")
-    return Response(gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
-
-@app.route("/latest_plate")
-def latest_plate():
-    return jsonify({
-        "plate": confirmed_plate if confirmed_plate else "No se ha detectado ninguna placa aún",
-        "timestamp": last_plate_timestamp
-    })
-
-if __name__ == "__main__":
-    import threading
-    threading.Thread(target=main_loop, daemon=True).start()
-    app.run(host="0.0.0.0", port=5001, debug=False)
+# ========================
+# PRUEBA
+# ========================
+detectar_placa_desde_imagen("D:/Proyecto_Final/Proyecto_Final/FinalProyect/scripts/imagen.png")
