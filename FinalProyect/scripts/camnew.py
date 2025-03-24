@@ -111,6 +111,7 @@ def detectar_placa_desde_imagen(image):
     filtrado = Counter(lecturas).most_common(1)[0][0]
     letras = "".join(c for c in filtrado if c.isalpha())
     numeros = "".join(c for c in filtrado if c.isdigit())
+    print(f"Lectura: {lecturas} → Letras: {letras}, Números: {numeros}")
 
     if len(letras) == 3 and len(numeros) == 3:
         placa = f"{letras}{numeros}"
