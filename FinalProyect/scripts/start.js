@@ -14,7 +14,7 @@ serverProcess.stderr.on("data", (data) => console.error(`SERVER ERROR: ${data}`)
 
 // Iniciar el script de Python (camnew.py)
 console.log("Iniciando el reconocimiento de placas con camnew.py...");
-const camnewProcess = exec(`python ${camnewPath}`); // Usa 'python' en lugar de 'py' para compatibilidad
+const camnewProcess = exec(`python3 ${camnewPath}`); // Usa 'python' en lugar de 'py' para compatibilidad
 
 camnewProcess.stdout.on("data", (data) => console.log(`CAMNEW: ${data}`));
 camnewProcess.stderr.on("data", (data) => console.error(`CAMNEW ERROR: ${data}`));
