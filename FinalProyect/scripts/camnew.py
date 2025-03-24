@@ -12,7 +12,7 @@ import requests
 # === CONFIGURACIÓN ===
 rtsp_url = "rtsp://admin:abcd1234..@181.236.141.192:554/Streaming/Channels/101"
 roi_coords = (520, 120, 400, 400)
-pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+pytesseract.pytesseract.tesseract_cmd = "/usr/local/bin/tesseract"
 
 
 # === FLASK ===
