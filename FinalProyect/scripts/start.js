@@ -3,7 +3,7 @@ const path = require("path");
 
 // Corrección: Asegurar rutas absolutas
 const serverPath = path.join(__dirname, "..", "server.js"); // Apunta correctamente a la raíz
-const camnewPath = path.join(__dirname, "camnew.py"); // Dentro de scripts/
+//const camnewPath = path.join(__dirname, "camnew.py"); // Dentro de scripts/
 
 // Iniciar el servidor Node.js
 console.log("Iniciando el servidor...");
