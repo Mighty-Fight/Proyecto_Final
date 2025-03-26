@@ -8,7 +8,7 @@ from collections import Counter
 from flask import Flask, Response, jsonify
 
 # === CONFIG ===
-rtsp_url = "rtsp://admin:abcd1234..@181.236.141.192:554/Streaming/Channels/101"
+rtsp_url = "rtsp://admin:abcd1234..@181.236.149.17:554/Streaming/Channels/101"
 roi_coords = (180, 120, 300, 200)
 #pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 pytesseract.pytesseract.tesseract_cmd = r"/usr/local/bin/tesseract"

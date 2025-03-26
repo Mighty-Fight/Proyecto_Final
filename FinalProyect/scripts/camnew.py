@@ -12,7 +12,7 @@ import logging
 import os
 
 # === CONFIGURACIÓN (vía variables de entorno o valores por defecto) ===
-RTSP_URL = os.getenv("RTSP_URL", "rtsp://admin:abcd1234..@181.236.141.192:554/Streaming/Channels/101")
+RTSP_URL = os.getenv("RTSP_URL", "rtsp://admin:abcd1234..@181.236.149.17:554/Streaming/Channels/101")
 ROI_COORDS = (520, 120, 400, 400)
 TESSERACT_CMD = os.getenv("TESSERACT_CMD", r"C:\Program Files\Tesseract-OCR\tesseract.exe")
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD

@@ -4,6 +4,7 @@ const path = require("path");
 // Corrección: Asegurar rutas absolutas
 const serverPath = path.join(__dirname, "..", "server.js"); // Apunta correctamente a la raíz
 //const camnewPath = path.join(__dirname, "camnew.py"); // Dentro de scripts/
+const videofeedPath = path.join(__dirname, "videofeed.py");
 
 // Iniciar el servidor Node.js
 console.log("Iniciando el servidor...");
@@ -18,3 +19,10 @@ serverProcess.stderr.on("data", (data) => console.error(`SERVER ERROR: ${data}`)
 
 //camnewProcess.stdout.on("data", (data) => console.log(`CAMNEW: ${data}`));
 //camnewProcess.stderr.on("data", (data) => console.error(`CAMNEW ERROR: ${data}`));
+
+// Iniciar videofeed.py (solo streaming)
+console.log("🔵 Iniciando transmisión de video con videofeed.py...");
+const videofeedProcess = exec(`python ${videofeedPath}`);
+
+videofeedProcess.stdout.on("data", (data) => console.log(`VIDEOFEED: ${data}`));
+videofeedProcess.stderr.on("data", (data) => console.error(`VIDEOFEED ERROR: ${data}`));

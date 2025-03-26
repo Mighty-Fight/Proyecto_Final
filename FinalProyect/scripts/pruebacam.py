@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 # === CONFIGURACIÓN ===
-rtsp_url = "rtsp://admin:abcd1234..@181.236.141.192:554/Streaming/Channels/101"
+rtsp_url = "rtsp://admin:abcd1234..@181.236.149.17:554/Streaming/Channels/101"
 save_path = "D:/Proyecto_Final/Proyecto_Final/FinalProyect/scripts/imagen_papi2.png"
 roi_coords = (180, 120, 300, 200)  # x, y, w, h
 
