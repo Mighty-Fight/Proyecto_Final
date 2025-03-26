@@ -6,6 +6,7 @@
   <title>Cajero - Cámaras</title>
   <link rel="stylesheet" href="css/styles.css"/>
 </head>
+
 <body>
   <header>
     <img src="/img/loguito.jpeg" alt="Logo" class="header-logo"/>
@@ -48,38 +49,55 @@
         <form id="cajero-form">
           <label>Nombre del cliente</label>
           <input type="text" placeholder="Nombre del cliente" />
-
+        
           <label>Número de teléfono</label>
           <input type="text" placeholder="Número de teléfono" />
-
-          <label>Lista de servicios</label>
-          <select>
-            <option>Lavado rápido</option>
-            <option>Lavado general</option>
-            <option>Lavado completo</option>
+        
+          <label>Categoría</label>
+          <select id="categoria-select">
+            <option value="">Categoría</option>
+            <option value="lavados">Lavados</option>
+            <option value="manoObra">Mano de Obra</option>
+            <option value="especializados">Servicios Especializados</option>
+            <option value="tecnicentro">Tecnicentro</option>
           </select>
+        
+          <!-- Este div se mostrará solo cuando se elija una categoría -->
+          <div id="servicio-group" style="display: none;">
+            <label>Servicio</label>
+            <select id="servicio-select">
+              <option value="">Servicio</option>
+            </select>
+          </div>
 
+          <div id="precio-estimado" style="margin-top: 10px; font-weight: bold; color: #af267a;"></div>
+
+          
+
+        
           <label>Tipo de carro</label>
           <select>
             <option>Sedan</option>
             <option>Hatchback</option>
             <option>SUV</option>
           </select>
-
+        
           <label>Trabajadores asignados</label>
           <select>
             <option>Trabajador 1</option>
             <option>Trabajador 2</option>
           </select>
-
+        
           <label>Ofertas</label>
           <select>
             <option>Ninguna</option>
             <option>Descuento 10%</option>
           </select>
-
+        
           <button type="submit">Enviar</button>
         </form>
+        
+
       </div>
     </div>
   </main>
@@ -110,8 +128,126 @@
       })
       .catch(err => console.error('Error obteniendo información del usuario:', err));
   </script>
-  
-  
+
+  <script>
+    const serviciosPorCategoria = {
+      lavados: [
+        { nombre: "Lavado Automóvil", precio: 30000 },
+        { nombre: "Lavado Campero", precio: 35000 },
+        { nombre: "Lavado Moto", precio: 15000 },
+        { nombre: "Adicional Barro", precio: 15000 },
+        { nombre: "Combo 2 Automóvil", precio: 45000 },
+        { nombre: "Combo 2 Campero", precio: 55000 },
+        { nombre: "Combo 2 Moto", precio: 20000 },
+        { nombre: "Combo 3 Automóvil", precio: 56000 },
+        { nombre: "Combo 3 Campero", precio: 64000 }
+      ],
+      manoObra: [
+        { nombre: "Banco de prueba", precio: 60000 },
+        { nombre: "Domicilio", precio: 10000 },
+        { nombre: "Arreglo Carter", precio: 200000 },
+        { nombre: "Amortiguadores Delanteros", precio: 50000 },
+        { nombre: "Amortiguadores Traseros", precio: 40000 },
+        { nombre: "Brazo Axiales", precio: 30000 },
+        { nombre: "Cambio Correa de Tiempo", precio: 190000 },
+        { nombre: "Cambio Empaque", precio: 60000 },
+        { nombre: "Cambio Líquido de Frenos", precio: 130000 },
+        { nombre: "Cambio Refrigerante", precio: 40000 },
+        { nombre: "Cambio Tijeras", precio: 40000 },
+        { nombre: "Filtro Combustible", precio: 30000 },
+        { nombre: "Soporte Amortiguador", precio: 40000 },
+        { nombre: "Soporte Motor", precio: 40000 },
+        { nombre: "Servicio Scanner", precio: 60000 }
+      ],
+      especializados: [
+        { nombre: "Impermeabilización M.O", precio: 500000 },
+        { nombre: "Overhaul Automóvil", precio: 280000 },
+        { nombre: "Overhaul Campero", precio: 300000 },
+        { nombre: "Polichado Automóvil", precio: 150000 },
+        { nombre: "Polichado Campero", precio: 180000 },
+        { nombre: "Porcelanizado Automóvil", precio: 253000 },
+        { nombre: "Porcelanizado Campero", precio: 276000 },
+        { nombre: "Restauración de Farolas", precio: 40000 },
+        { nombre: "Restauración Partes Negras", precio: 20000 }
+      ],
+      tecnicentro: [
+        { nombre: "Alineación Automóvil", precio: 45000 },
+        { nombre: "Alineación Campero", precio: 50000 },
+        { nombre: "Alineación Taxi", precio: 20000 },
+        { nombre: "Alineación de Luces", precio: 35000 },
+        { nombre: "Alineación + Balanceo + Rotación Automóvil", precio: 70000 },
+        { nombre: "Alineación + Balanceo Taxi", precio: 45000 },
+        { nombre: "Alineación + Balanceo + Lavado Automóvil", precio: 85000 },
+        { nombre: "Alineación + Balanceo + Lavado Campero", precio: 95000 },
+        { nombre: "Balanceado Automóvil x Llanta", precio: 15000 },
+        { nombre: "Balanceo Completo Automóvil", precio: 40000 },
+        { nombre: "Balanceo Completo Campero", precio: 50000 },
+        { nombre: "Balanceo Taxi x Llanta", precio: 7000 },
+        { nombre: "Calibración de Válvula", precio: 80000 },
+        { nombre: "Desvare", precio: 40000 },
+        { nombre: "Diagnóstico", precio: 25000 },
+        { nombre: "Montaje Blindado", precio: 30000 },
+        { nombre: "Montaje Llanta Automóvil", precio: 15000 },
+        { nombre: "Montaje Llanta Campero", precio: 20000 },
+        { nombre: "Montaje Taxi", precio: 5000 },
+        { nombre: "Recarga de Batería", precio: 12000 },
+        { nombre: "Reparación Llanta Automóvil", precio: 22000 },
+        { nombre: "Reparación Llanta Campero", precio: 27000 },
+        { nombre: "Revisión de Frenos", precio: 30000 },
+        { nombre: "Revisión Sincronización", precio: 25000 },
+        { nombre: "Rotación Automóvil", precio: 15000 },
+        { nombre: "Rotación Campero", precio: 20000 },
+        { nombre: "Servicio Cambio de Aceite", precio: 40000 }
+      ]
+    };
+
+    const categoriaSelect = document.getElementById("categoria-select");
+    const servicioSelect = document.getElementById("servicio-select");
+    const servicioGroup = document.getElementById("servicio-group");
+    const precioDiv = document.getElementById("precio-estimado");
+
+    if (categoriaSelect && servicioSelect && servicioGroup && precioDiv) {
+      categoriaSelect.addEventListener("change", function () {
+        const categoria = this.value;
+        const servicios = serviciosPorCategoria[categoria] || [];
+
+        if (!categoria) {
+          servicioGroup.style.display = "none";
+          servicioSelect.innerHTML = '<option value="">Servicio</option>';
+          precioDiv.innerHTML = "";
+          return;
+        }
+
+        servicioGroup.style.display = "block";
+        servicioSelect.innerHTML = '<option value="">-- Selecciona un servicio --</option>';
+
+        servicios.forEach(servicio => {
+          const option = document.createElement("option");
+          option.value = servicio.nombre;
+          option.textContent = servicio.nombre;
+          option.dataset.precio = servicio.precio;
+          servicioSelect.appendChild(option);
+        });
+
+        precioDiv.innerHTML = "";
+      });
+
+      servicioSelect.addEventListener("change", function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const precio = selectedOption.dataset.precio;
+
+        if (precio) {
+          precioDiv.innerHTML = `💰 Precio estimado: <strong>$${parseInt(precio).toLocaleString("es-CO")}</strong>`;
+        } else {
+          precioDiv.innerHTML = "";
+        }
+      });
+    }
+  </script>
+
+
+
+
 </body>
 </html>
 
