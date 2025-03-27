@@ -22,7 +22,7 @@ serverProcess.stderr.on("data", (data) => console.error(`SERVER ERROR: ${data}`)
 
 // Iniciar videofeed.py (solo streaming)
 console.log("🔵 Iniciando transmisión de video con videofeed.py...");
-const videofeedProcess = exec(`python ${videofeedPath}`);
+const videofeedProcess = exec(`python3 ${videofeedPath}`);
 
 videofeedProcess.stdout.on("data", (data) => console.log(`VIDEOFEED: ${data}`));
 videofeedProcess.stderr.on("data", (data) => console.error(`VIDEOFEED ERROR: ${data}`));
