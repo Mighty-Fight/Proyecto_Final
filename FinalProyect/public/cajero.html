@@ -24,7 +24,7 @@
       <!-- Izquierda: Sección de cámara -->
       <div class="cajero-left">
         <h2>Live Feed (Cámara)</h2>
-        <!-- 🔹 Sección de Listado de Placas -->
+        <!-- Sección de Listado de Placas -->
         <section id="plates-section">
           <p>
             <strong>Última Placa Detectada:</strong>
@@ -45,10 +45,10 @@
             style="max-width: 400px; border: 1px solid #ccc;"
           />
 
-          <!-- Sección de la imagen OCR (la placa recortada) -->
-          <h3>Placa Detectada</h3>
+          <!-- Sección de la imagen OCR (la placa detectada) -->
+          <h3>Placa Detectada (Imagen OCR)</h3>
           <img 
-            src="http://44.211.67.168:5001/confirmed_plate_image" 
+            src="http://44.211.67.168/last-ocr-image" 
             alt="ocr_feed"
             style="max-width: 400px; border: 1px solid #ccc;"
           />
@@ -109,38 +109,40 @@
     </div>
   </main>
 
-  <!-- Scripts para socket y placas -->
+  <!-- Scripts para Socket.IO y lógica del cliente -->
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
 
-    // Escucha el evento 'updatePlaca' que envía el server.js
+    // Cuando se recibe un update de placa, se actualizan los textos correspondientes
     socket.on('updatePlaca', (data) => {
       document.getElementById('detected-plate').textContent = data.placa;
       document.getElementById('timestamp').textContent = data.timestamp;
       console.log("Se detectó una placa:", data.placa);
+
+      // Opcional: Forzar la recarga de la imagen OCR para evitar caché
+      const ocrImage = document.querySelector('img[alt="ocr_feed"]');
+      ocrImage.src = "http://44.211.67.168/last-ocr-image?time=" + new Date().getTime();
     });
   </script>
 
-  <!-- Script para verificar si el usuario está autenticado -->
+  <!-- Script para verificación de usuario autenticado -->
   <script>
     fetch('/user-info')
       .then(response => {
         if (!response.ok) {
-          // Si no está autenticado, redirigir a principal o login
           window.location.href = "/principal.html"; 
           return Promise.reject("Usuario no autenticado. Redirigiendo...");
         }
         return response.json();
       })
       .then(data => {
-        // Mostrar el nombre de usuario en algún lugar si quieres
         console.log("Usuario autenticado:", data.username);
       })
       .catch(err => console.error('Error obteniendo información del usuario:', err));
   </script>
 
-  <!-- Script para manejar las categorías y servicios -->
+  <!-- Script para manejo de categorías y servicios -->
   <script>
     const serviciosPorCategoria = {
       lavados: [

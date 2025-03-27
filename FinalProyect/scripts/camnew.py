@@ -13,6 +13,7 @@ import os
 import signal
 import sys
 import atexit
+import base64
 
 # === CONFIGURACIÓN (vía variables de entorno o valores por defecto) ===
 RTSP_URL = os.getenv("RTSP_URL", "rtsp://admin:abcd1234..@181.236.149.17:554/Streaming/Channels/101")
@@ -126,6 +127,7 @@ def realizar_ocr_y_confirmar_placa(warped):
     Realiza el OCR de la imagen ya recortada de la placa.
     Usa múltiples lecturas para una votación mayoritaria y valida 3 letras + 3 números.
     Actualiza el estado compartido si la placa es válida.
+    Además, convierte la imagen OCR a Base64 y la envía al servidor Node.js.
     """
     H, W, _ = warped.shape
     margin_x = 5
@@ -174,10 +176,15 @@ def realizar_ocr_y_confirmar_placa(warped):
 
         logging.info("Placa confirmada: %s (%s)", placa, shared_state["last_plate_timestamp"])
 
+        # Convertir la imagen OCR a Base64
+        _, buffer = cv2.imencode('.jpg', scaled)
+        jpg_as_text = base64.b64encode(buffer).decode('utf-8')
+
         try:
             requests.post("http://44.211.67.168/update", json={
                 "placa": placa,
-                "timestamp": shared_state["last_plate_timestamp"]
+                "timestamp": shared_state["last_plate_timestamp"],
+                "frame": jpg_as_text
             }, timeout=5)
         except Exception as e:
             logging.error("Error al enviar POST al servidor: %s", e)

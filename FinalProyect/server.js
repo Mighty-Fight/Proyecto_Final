@@ -21,7 +21,6 @@ app.use(session({
     saveUninitialized: true
 }));
 
-
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -41,7 +40,6 @@ app.get("/", (req, res) => {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 // Ruta para obtener información del usuario autenticado
 app.get("/user-info", (req, res) => {
     if (!req.session.user) {
@@ -50,9 +48,10 @@ app.get("/user-info", (req, res) => {
     res.json({ username: req.session.user.username });
 });
 
-
 // Comunicación con Socket.IO
 let placaStatus = 'No se ha detectado ninguna placa aún';
+let lastPlate = ''; // Última placa registrada
+let lastPlateImageBase64 = ''; // Aquí se guardará la imagen OCR en Base64
 
 io.on('connection', (socket) => {
     console.log('Usuario conectado');
@@ -63,9 +62,7 @@ io.on('connection', (socket) => {
     });
 });
 
-// Recibir placas desde `camnew.py`
-let lastPlate = ''; // Variable para almacenar la última placa registrada
-
+// Recibir placas desde camnew.py
 app.post('/update', (req, res) => {
     const { placa, frame } = req.body;
     const timestamp = new Date();
@@ -83,8 +80,16 @@ app.post('/update', (req, res) => {
     lastPlate = placa;
     console.log(`Nueva placa recibida: ${placa}`);
     placaStatus = placa;
+
+    // Guardar la imagen OCR en Base64, si se envía
+    if (frame) {
+        lastPlateImageBase64 = frame;
+    }
+
+    // Emitir el evento de socket con la placa y la imagen (opcional)
     io.emit('updatePlaca', { placa, timestamp: timestamp.toLocaleString(), frame });
-    
+
+    // Insertar la placa en la base de datos
     db.query('INSERT INTO placas (placa, timestamp) VALUES (?, ?)', [placa, timestamp], (err) => {
         if (err) {
             console.error('Error al insertar en la base de datos:', err.message);
@@ -96,13 +101,26 @@ app.post('/update', (req, res) => {
     });
 });
 
+// Endpoint para servir la imagen OCR convertida a imagen JPEG
+app.get('/last-ocr-image', (req, res) => {
+    if (!lastPlateImageBase64) {
+        return res.status(404).send('No hay imagen de placa');
+    }
+    // Convertir la cadena Base64 a Buffer
+    const imgBuffer = Buffer.from(lastPlateImageBase64, 'base64');
+    res.writeHead(200, {
+        'Content-Type': 'image/jpeg',
+        'Content-Length': imgBuffer.length
+    });
+    return res.end(imgBuffer);
+});
+
 app.get('/get-plates', (req, res) => {
     let { plate, startDate, endDate } = req.query;
     let sql = 'SELECT id, placa, timestamp FROM placas';
     let params = [];
 
     if (plate || startDate || endDate) {
-        // Si se aplican filtros, construye las condiciones
         let conditions = [];
         if (plate) {
             conditions.push('placa LIKE ?');
@@ -110,7 +128,7 @@ app.get('/get-plates', (req, res) => {
         }
         if (startDate) {
             conditions.push('timestamp >= ?');
-            params.push(startDate);  // Asegúrate de que el formato sea compatible
+            params.push(startDate);
         }
         if (endDate) {
             conditions.push('timestamp <= ?');
@@ -120,8 +138,6 @@ app.get('/get-plates', (req, res) => {
             sql += ' WHERE ' + conditions.join(' AND ');
         }
     } else {
-        // Si no se especifican filtros, se devuelven los registros del día actual
-        // Ejemplo: 2025-03-14 00:00:00 hasta 2025-03-14 23:59:59
         sql += ' WHERE DATE(timestamp) = CURDATE()';
     }
 
@@ -165,7 +181,6 @@ app.post('/submit-feedback', (req, res) => {
     });
 });
 
-// Iniciar el servidor en el puerto configurado
 const PORT = process.env.PORT || 80;
 server.listen(PORT, () => {
     console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
