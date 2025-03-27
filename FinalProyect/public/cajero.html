@@ -25,24 +25,36 @@
       <div class="cajero-left">
         <h2>Live Feed (Cámara)</h2>
         <!-- 🔹 Sección de Listado de Placas -->
-    <section id="plates-section">
-     
-      <p>
-        <strong>Última Placa Detectada:</strong>
-        <span id="detected-plate">No se ha detectado ninguna placa aún</span>
-        <p>
-        <strong>Timestamp:</strong>
-        <span id="timestamp">--</span>
-        </p>
-      </p> 
+        <section id="plates-section">
+          <p>
+            <strong>Última Placa Detectada:</strong>
+            <span id="detected-plate">No se ha detectado ninguna placa aún</span>
+          </p>
+          <p>
+            <strong>Timestamp:</strong>
+            <span id="timestamp">--</span>
+          </p>
+        </section>
 
         <div class="cam-feed">
-          <!-- Ajusta el src a tu IP/cámara -->
-          <img src="http://44.211.67.168:5001/video_feed" alt="video_feed" />
+          <!-- Sección de la cámara en vivo -->
+          <h3>Cámara en vivo</h3>
+          <img 
+            src="http://44.211.67.168:5001/video_feed" 
+            alt="video_feed" 
+            style="max-width: 400px; border: 1px solid #ccc;"
+          />
+
+          <!-- Sección de la imagen OCR (la placa recortada) -->
+          <h3>Placa Detectada</h3>
+          <img 
+            src="http://44.211.67.168:5001/confirmed_plate_image" 
+            alt="ocr_feed"
+            style="max-width: 400px; border: 1px solid #ccc;"
+          />
         </div>
       </div>
       
-
       <!-- Derecha: Sección de formulario o panel del cajero -->
       <div class="cajero-right">
         <h2>Formulario de Servicio</h2>
@@ -72,9 +84,6 @@
 
           <div id="precio-estimado" style="margin-top: 10px; font-weight: bold; color: #af267a;"></div>
 
-          
-
-        
           <label>Tipo de carro</label>
           <select>
             <option>Sedan</option>
@@ -96,39 +105,42 @@
         
           <button type="submit">Enviar</button>
         </form>
-        
-
       </div>
     </div>
   </main>
 
-  <!-- Scripts para socket y placas (opcional si lo deseas) -->
+  <!-- Scripts para socket y placas -->
   <script src="/socket.io/socket.io.js"></script>
   <script>
-     const socket = io();
-   
-     socket.on('updatePlaca', (data) => {
-     document.getElementById('detected-plate').textContent = data.placa;
-     document.getElementById('timestamp').textContent = data.timestamp;
-     console.log("Se detectó una placa:", data.placa);
+    const socket = io();
+
+    // Escucha el evento 'updatePlaca' que envía el server.js
+    socket.on('updatePlaca', (data) => {
+      document.getElementById('detected-plate').textContent = data.placa;
+      document.getElementById('timestamp').textContent = data.timestamp;
+      console.log("Se detectó una placa:", data.placa);
     });
   </script>
 
+  <!-- Script para verificar si el usuario está autenticado -->
   <script>
     fetch('/user-info')
       .then(response => {
         if (!response.ok) {
-          window.location.href = "/principal.html"; // O "/login.html"
+          // Si no está autenticado, redirigir a principal o login
+          window.location.href = "/principal.html"; 
           return Promise.reject("Usuario no autenticado. Redirigiendo...");
         }
         return response.json();
       })
       .then(data => {
-        document.getElementById('username-display').textContent = data.username || 'Usuario';
+        // Mostrar el nombre de usuario en algún lugar si quieres
+        console.log("Usuario autenticado:", data.username);
       })
       .catch(err => console.error('Error obteniendo información del usuario:', err));
   </script>
 
+  <!-- Script para manejar las categorías y servicios -->
   <script>
     const serviciosPorCategoria = {
       lavados: [
@@ -244,13 +256,5 @@
       });
     }
   </script>
-
-
-
-
 </body>
 </html>
-
-
-
-    
