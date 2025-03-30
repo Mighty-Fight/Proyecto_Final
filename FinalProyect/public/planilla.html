@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Salón</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <img src="/img/logo.png" alt="Logo" class="header-logo">
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="camara.html">Camara</a></li>
+                <li><a href="vista_salon.html">Vista Salón</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <!-- Filtro de fecha -->
+<input type="date" id="fecha-filtro" onchange="filtrarPlanilla()">
+
+<!-- Tabla para mostrar los registros -->
+<table id="planilla-table">
+  <thead>
+    <tr>
+      <th>Placa</th>
+      <th>Tipo de carro</th>
+      <th>Servicios</th>
+      <th>Precio Total</th>
+      <th>Operarios</th>
+      <th>Fecha</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Los registros de la base de datos se insertarán aquí -->
+  </tbody>
+</table>
+    </main>
+
+    <script>
+        function filtrarPlanilla() {
+          const fechaSeleccionada = document.getElementById('fecha-filtro').value;
+      
+          fetch(`/planilla?fecha=${fechaSeleccionada}`)
+            .then(response => response.json())
+            .then(data => {
+              const tbody = document.querySelector('#planilla-table tbody');
+              tbody.innerHTML = ""; // Limpiar tabla
+      
+              data.forEach(registro => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                  <td>${registro.placa}</td>
+                  <td>${registro.tipo_carro}</td>
+                  <td>${registro.servicios}</td>
+                  <td>$${registro.precio_total}</td>
+                  <td>${registro.operarios}</td>
+                `;
+                tbody.appendChild(row);
+              });
+            })
+            .catch(err => console.error("Error al filtrar planilla:", err));
+        }
+    </script>
+
+    <script>
+        fetch('/user-info')
+          .then(response => {
+            if (!response.ok) {
+              window.location.href = "/principal.html"; // O "/login.html"
+              return Promise.reject("Usuario no autenticado. Redirigiendo...");
+            }
+            return response.json();
+          })
+          .then(data => {
+            document.getElementById('username-display').textContent = data.username || 'Usuario';
+          })
+          .catch(err => console.error('Error obteniendo información del usuario:', err));
+    </script>
+        
+</body>
+</html>

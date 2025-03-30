@@ -12,8 +12,9 @@
     <img src="/img/loguito.jpeg" alt="Logo" class="header-logo"/>
     <nav>
       <ul>
-        <li><a href="index.html">Base de datos</a></li>
-        <li><a href="vista_salon.html">Turno trabajadores</a></li>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="vista_salon.html">Vista Salón</a></li>
+        <li><a href="planilla.html">Planilla</a></li>
       </ul>
     </nav>
   </header>
@@ -60,10 +61,10 @@
         <h2>Formulario de Servicio</h2>
         <form id="cajero-form">
           <label>Nombre del cliente</label>
-          <input type="text" placeholder="Nombre del cliente" />
+          <input type="text" id="nombre-dueno" placeholder="Nombre del dueño" />
         
           <label>Número de teléfono</label>
-          <input type="text" placeholder="Número de teléfono" />
+          <input type="text" id="telefono" placeholder="Número de teléfono" />
         
           <label>Categoría</label>
           <select id="categoria-select">
@@ -85,22 +86,22 @@
           <div id="precio-estimado" style="margin-top: 10px; font-weight: bold; color: #af267a;"></div>
 
           <label>Tipo de carro</label>
-          <select>
-            <option>Sedan</option>
-            <option>Hatchback</option>
-            <option>SUV</option>
+          <select id="tipo-carro">
+            <option value="Sedan">Sedan</option>
+            <option value="Hatchback">Hatchback</option>
+            <option value="SUV">SUV</option>
           </select>
         
-          <label>Trabajadores asignados</label>
-          <select>
-            <option>Trabajador 1</option>
-            <option>Trabajador 2</option>
+          <label>Operarios asignados</label>
+          <select id="operarios">
+            <option value="Grupo 1">Grupo 1</option>
+            <option value="Grupo 2">Grupo 2</option>
           </select>
         
           <label>Ofertas</label>
           <select>
-            <option>Ninguna</option>
-            <option>Descuento 10%</option>
+            <option value="Ninguna">Ninguna</option>
+            <option value="Descuento 10%">Descuento 10%</option>
           </select>
         
           <button type="submit">Enviar</button>
@@ -112,18 +113,61 @@
   <!-- Scripts para Socket.IO y lógica del cliente -->
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io();
+     const socket = io();
 
-    // Cuando se recibe un update de placa, se actualizan los textos correspondientes
-    socket.on('updatePlaca', (data) => {
-      document.getElementById('detected-plate').textContent = data.placa;
-      document.getElementById('timestamp').textContent = data.timestamp;
-      console.log("Se detectó una placa:", data.placa);
+// Cuando se recibe un update de placa, se actualizan los textos correspondientes
+socket.on('updatePlaca', (data) => {
+  document.getElementById('detected-plate').textContent = data.placa;
+  document.getElementById('timestamp').textContent = data.timestamp;
+  console.log("Se detectó una placa:", data.placa);
 
-      // Opcional: Forzar la recarga de la imagen OCR para evitar caché
-      const ocrImage = document.querySelector('img[alt="ocr_feed"]');
-      ocrImage.src = "http://44.211.67.168/last-ocr-image?time=" + new Date().getTime();
-    });
+  // Verificar la placa y actualizar los datos automáticamente en el formulario
+  verificarPlacaYMostrarDatos(data.placa);
+
+  // Opcional: Forzar la recarga de la imagen OCR para evitar caché
+  const ocrImage = document.querySelector('img[alt="ocr_feed"]');
+  ocrImage.src = "http://44.211.67.168/last-ocr-image?time=" + new Date().getTime();
+});
+
+// Función que verifica si la placa está registrada y llena los campos del formulario
+function verificarPlacaYMostrarDatos(placa) {
+  // Hacer una consulta a la API para verificar si la placa ya existe en la base de datos
+  fetch(`/verificar-vehiculo?placa=${placa}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.nombre_dueno && data.telefono) {
+        // Si la placa está registrada, llenar los campos con la información del cliente
+        document.getElementById('nombre-dueno').value = data.nombre_dueno;
+        document.getElementById('telefono').value = data.telefono;
+      } else {
+        // Si no está registrada, los campos deben quedar vacíos
+        document.getElementById('nombre-dueno').value = '';
+        document.getElementById('telefono').value = '';
+      }
+    })
+    .catch(err => console.error('Error al verificar la placa:', err));
+}
+  </script>
+
+  <script>
+    // Función que verifica si la placa está registrada y llena los campos del formulario
+    function verificarPlacaYMostrarDatos(placa) {
+      // Hacer una consulta a la API para verificar si la placa ya existe en la base de datos
+      fetch(`/verificar-vehiculo?placa=${placa}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.nombre_dueno && data.telefono) {
+            // Si la placa está registrada, llenar los campos con la información del cliente
+            document.getElementById('nombre-dueno').value = data.nombre_dueno;
+            document.getElementById('telefono').value = data.telefono;
+          } else {
+            // Si no está registrada, los campos deben quedar vacíos
+            document.getElementById('nombre-dueno').value = '';
+            document.getElementById('telefono').value = '';
+          }
+        })
+        .catch(err => console.error('Error al verificar la placa:', err));
+    }
   </script>
 
   <!-- Script para verificación de usuario autenticado -->
@@ -172,46 +216,6 @@
         { nombre: "Soporte Amortiguador", precio: 40000 },
         { nombre: "Soporte Motor", precio: 40000 },
         { nombre: "Servicio Scanner", precio: 60000 }
-      ],
-      especializados: [
-        { nombre: "Impermeabilización M.O", precio: 500000 },
-        { nombre: "Overhaul Automóvil", precio: 280000 },
-        { nombre: "Overhaul Campero", precio: 300000 },
-        { nombre: "Polichado Automóvil", precio: 150000 },
-        { nombre: "Polichado Campero", precio: 180000 },
-        { nombre: "Porcelanizado Automóvil", precio: 253000 },
-        { nombre: "Porcelanizado Campero", precio: 276000 },
-        { nombre: "Restauración de Farolas", precio: 40000 },
-        { nombre: "Restauración Partes Negras", precio: 20000 }
-      ],
-      tecnicentro: [
-        { nombre: "Alineación Automóvil", precio: 45000 },
-        { nombre: "Alineación Campero", precio: 50000 },
-        { nombre: "Alineación Taxi", precio: 20000 },
-        { nombre: "Alineación de Luces", precio: 35000 },
-        { nombre: "Alineación + Balanceo + Rotación Automóvil", precio: 70000 },
-        { nombre: "Alineación + Balanceo Taxi", precio: 45000 },
-        { nombre: "Alineación + Balanceo + Lavado Automóvil", precio: 85000 },
-        { nombre: "Alineación + Balanceo + Lavado Campero", precio: 95000 },
-        { nombre: "Balanceado Automóvil x Llanta", precio: 15000 },
-        { nombre: "Balanceo Completo Automóvil", precio: 40000 },
-        { nombre: "Balanceo Completo Campero", precio: 50000 },
-        { nombre: "Balanceo Taxi x Llanta", precio: 7000 },
-        { nombre: "Calibración de Válvula", precio: 80000 },
-        { nombre: "Desvare", precio: 40000 },
-        { nombre: "Diagnóstico", precio: 25000 },
-        { nombre: "Montaje Blindado", precio: 30000 },
-        { nombre: "Montaje Llanta Automóvil", precio: 15000 },
-        { nombre: "Montaje Llanta Campero", precio: 20000 },
-        { nombre: "Montaje Taxi", precio: 5000 },
-        { nombre: "Recarga de Batería", precio: 12000 },
-        { nombre: "Reparación Llanta Automóvil", precio: 22000 },
-        { nombre: "Reparación Llanta Campero", precio: 27000 },
-        { nombre: "Revisión de Frenos", precio: 30000 },
-        { nombre: "Revisión Sincronización", precio: 25000 },
-        { nombre: "Rotación Automóvil", precio: 15000 },
-        { nombre: "Rotación Campero", precio: 20000 },
-        { nombre: "Servicio Cambio de Aceite", precio: 40000 }
       ]
     };
 
@@ -258,5 +262,51 @@
       });
     }
   </script>
+
+  <script>
+    document.getElementById('cajero-form').addEventListener('submit', function(event) {
+      event.preventDefault(); // Previene el comportamiento por defecto del formulario (recarga de página)
+      
+      const placa = document.getElementById('detected-plate').textContent;  // La placa detectada
+      const nombre_dueno = document.getElementById('nombre-dueno').value;
+      const telefono = document.getElementById('telefono').value;
+      const categoria = document.getElementById('categoria-select').value;
+      
+      // Ahora obtenemos correctamente el valor seleccionado para el tipo de carro
+      const tipo_carro = document.querySelector('select[id="tipo-carro"]').value;  // Tipo de carro
+      const operarios = document.querySelector('select[id="operarios"]').value;  // Operarios asignados
+      const servicios = document.getElementById('servicio-select').value;
+      const precio_total = document.getElementById('precio-estimado').textContent.match(/\d+/g).join('');
+
+      // Enviar los datos al servidor
+      fetch('/guardar-registro', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              placa,
+              nombre_dueno,
+              telefono,
+              categoria,
+              tipo_carro,  // Enviamos el valor correcto
+              operarios,  // Enviamos el operario seleccionado
+              servicios,
+              precio_total
+          })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              alert("Registro guardado correctamente.");
+              // Aquí puedes agregar lógica para limpiar los campos o dar retroalimentación al usuario
+          } else {
+              alert("Hubo un error al guardar el registro.");
+          }
+      })
+      .catch(err => console.error('Error al enviar el formulario:', err));
+  });
+</script>
+
 </body>
 </html>
