@@ -7,3 +7,5 @@ base-baileys-mysql/bot_sessions/
 *.log
 node_modules/
 .env
+# Ignorar la carpeta base-baileys-mysql y sus archivos
+base-baileys-mysql/
