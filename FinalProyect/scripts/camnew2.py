@@ -117,7 +117,7 @@ def detectar_placa_desde_imagen(image):
         # 🛰️ Opcional: notificar al servidor Node si tienes endpoint
         try:
             import requests
-            requests.post("http://44.211.67.168/update", json={
+            requests.post("http://localhost/update", json={
                 "placa": confirmed_plate,
                 "timestamp": last_plate_timestamp
             })
