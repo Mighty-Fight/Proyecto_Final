@@ -1,2 +1,9 @@
 node_modules
 .env
+# Ignorar archivos generados por el bot
+qr.png
+base-baileys-mysql/bot_sessions/
+*.json
+*.log
+node_modules/
+.env
