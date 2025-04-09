@@ -20,4 +20,4 @@ jobs:
 
       - name: 🚀 Desplegar en EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@44.211.67.168 'bash ~/deploy.sh'
+          ssh -o StrictHostKeyChecking=no ec2-user@3.82.125.113 'bash ~/deploy.sh'
