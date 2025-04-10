@@ -16,8 +16,7 @@ import atexit
 import base64
 
 # === CONFIGURACIÓN (vía variables de entorno o valores por defecto) ===
-RTSP_URL = os.getenv("RTSP_URL", "rtsp://admin:abcd1234..@181.236.138.128:554/Streaming/Channels/101")
-
+RTSP_URL = os.getenv("RTSP_URL", "rtsp://admin:abcd1234..@161.10.93.129:554/Streaming/Channels/101")
 # ROI donde esperamos encontrar la placa. Ajusta estas coordenadas:
 ROI_COORDS = (520, 120, 400, 400)
 
