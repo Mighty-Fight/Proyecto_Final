@@ -1,23 +1,24 @@
-name: Deploy a AWS EC2
+name: Deploy to AWS EC2
 
 on:
   push:
     branches:
-      - main  # Se ejecuta cuando hay cambios en main
+      - main  # Ejecutará cuando haya cambios en la rama 'main'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚀 Obtener el código desde GitHub
+      - name: Checkout the code
         uses: actions/checkout@v4
 
-      - name: 🔑 Configurar clave SSH
+      - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.AWS_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: 🚀 Desplegar en EC2
+      - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@44.211.67.168 'bash ~/deploy.sh'
+          ssh -o StrictHostKeyChecking=no ec2-user@3.82.125.113 'bash ~/deploy.sh'
+

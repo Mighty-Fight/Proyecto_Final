@@ -307,5 +307,5 @@ app.post('/submit-feedback', (req, res) => {
 
 const PORT = process.env.PORT || 80;
 server.listen(PORT, () => {
-    console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`✅ Servidor corriendoo en http://localhost:${PORT}`);
 });
