@@ -6,8 +6,8 @@
     <title>Vista Salón</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        /* Estilos */
-        .main-container {
+         /* Estilos ya existentes */
+         .main-container {
             display: flex;
             justify-content: space-between;
             margin: 30px auto;
@@ -92,6 +92,24 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 999;
+        }
+
+        /* Estilo para el mensaje de alerta */
+        #alerta-finalizado {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #af267a;
+            color: white;
+            padding: 40px 60px; /* Incremento en el espacio interior */
+            font-size: 36px; /* Tamaño de fuente mayor para que se vea nítido */
+            font-weight: bold;
+            border-radius: 15px;
+            z-index: 1001; /* Sobre el overlay */
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
     </style>
 </head>
