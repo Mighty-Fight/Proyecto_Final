@@ -180,7 +180,7 @@ def realizar_ocr_y_confirmar_placa(warped):
         jpg_as_text = base64.b64encode(buffer).decode('utf-8')
 
         try:
-            requests.post("http://44.211.67.168/update", json={
+            requests.post("http://3.82.125.113/update", json={
                 "placa": placa,
                 "timestamp": shared_state["last_plate_timestamp"],
                 "frame": jpg_as_text
