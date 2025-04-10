@@ -5,6 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vista Salón</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos */
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px auto;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            width: 48%;
+        }
+
+        .vehicle-box {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 25px;
+            margin-top: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 3px solid #af267a;
+        }
+
+        .vehicle-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: #ff007f;
+        }
+
+        .carros-atendidos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+            height: auto;
+            align-items: stretch;
+            overflow-y: auto;
+        }
+
+        .carros-en-espera {
+            background-color: #d5f3f0;
+            padding: 20px;
+            height: auto;
+            overflow-y: auto;
+            list-style-type: none;
+        }
+
+        .content-container {
+            background-color: #f7f7f7;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .vista-salon-title {
+            background-color: #af267a;
+            padding: 10px;
+            text-align: center;
+            font-size: 30px;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sombreado en el fondo cuando el mensaje aparece */
+        .body-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -17,25 +106,149 @@
             </ul>
         </nav>
     </header>
+
     <main>
-        <h2>Vista Salón</h2>
-        <p>Aquí se mostrará la distribución de mesas y ocupación del salón.</p>
+        <div class="content-container">
+            <div class="vista-salon-title">Vista Salón</div>
+
+            <div class="main-container">
+                <!-- Sección de Carros Siendo Atendidos -->
+                <div class="section">
+                    <h3>Carros siendo atendidos</h3>
+                    <div class="carros-atendidos" id="carros-atendidos"></div>
+                </div>
+
+                <!-- Sección de Carros en Espera -->
+                <div class="section">
+                    <h3>En espera</h3>
+                    <ul class="carros-en-espera" id="carros-en-espera"></ul>
+                </div>
+            </div>
+        </div>
     </main>
 
+    <!-- Recuadro de "Finalizado" -->
+    <div id="alerta-finalizado">
+        Carro de la placa <span id="placa-finalizado"></span> Servicio Finalizado.
+    </div>
+
+    <!-- Sombreado de fondo -->
+    <div class="body-overlay" id="body-overlay"></div>
+
+    <!-- Sonido de alerta -->
+    <audio id="alerta-sound" src="/img/alarma.mp3" preload="auto"></audio>
+
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        fetch('/user-info')
-          .then(response => {
-            if (!response.ok) {
-              window.location.href = "/principal.html"; // O "/login.html"
-              return Promise.reject("Usuario no autenticado. Redirigiendo...");
+        const socket = io();
+
+        // Función para obtener los vehículos en espera y siendo atendidos según la fecha
+        function cargarCarros(fecha) {
+            fetch(`/planilla?fecha=${fecha}`)
+                .then(response => response.json())
+                .then(data => {
+                    const carrosEnEspera = document.getElementById('carros-en-espera');
+                    const carrosAtendidos = document.getElementById('carros-atendidos');
+
+                    carrosEnEspera.innerHTML = "";
+                    carrosAtendidos.innerHTML = "";
+
+                    data.forEach(vehiculo => {
+                        const vehicleBox = document.createElement('li');
+                        vehicleBox.classList.add('vehicle-box');
+                        vehicleBox.innerHTML = `
+                            <span>${vehiculo.placa} - ${vehiculo.servicios}</span>
+                            <br>
+                            <span>Operario: ${vehiculo.operarios}</span>
+                        `;
+
+                        if (vehiculo.estado === 'en_espera') {
+                            carrosEnEspera.appendChild(vehicleBox);
+                        } else if (vehiculo.estado === 'en_atencion') {
+                            carrosAtendidos.appendChild(vehicleBox);
+                        }
+                    });
+                })
+                .catch(err => console.error('Error cargando carros:', err));
+        }
+
+        // Función para mostrar el recuadro de "Finalizado"
+        function mostrarAlerta(placa) {
+            const alerta = document.getElementById('alerta-finalizado');
+            const placaElemento = document.getElementById('placa-finalizado');
+            const overlay = document.getElementById('body-overlay');
+            
+            placaElemento.textContent = placa;
+            alerta.style.display = 'block';
+            overlay.style.display = 'block';  // Mostrar sombreado en el fondo
+
+            // Reproducir el sonido
+            const alertaSound = document.getElementById('alerta-sound');
+            alertaSound.play();
+
+            // Ocultar el recuadro después de 9 segundos
+            setTimeout(() => {
+                alerta.style.display = 'none';
+                overlay.style.display = 'none';  // Ocultar sombreado
+            }, 9000);
+        }
+
+        // Escuchar el evento estadoCambiado
+        socket.on('estadoCambiado', (data) => {
+            cargarCarros(); // Recargar los carros con el nuevo estado
+            if (data.estado === 'finalizado') {
+                mostrarAlerta(data.placa); // Mostrar la alerta si el estado es "finalizado"
             }
-            return response.json();
-          })
-          .then(data => {
-            document.getElementById('username-display').textContent = data.username || 'Usuario';
-          })
-          .catch(err => console.error('Error obteniendo información del usuario:', err));
+        });
+
+        // Función para actualizar la vista salón según la fecha seleccionada en planilla
+        function actualizarVistaSalon(fechaSeleccionada) {
+            cargarCarros(fechaSeleccionada); // Llamar la función de carga con la nueva fecha
+        }
+
+        // Cargar los vehículos al cargar la página
+        window.onload = () => {
+            const fechaSeleccionada = localStorage.getItem('fechaSeleccionada') || new Date().toISOString().split('T')[0]; // Usar la fecha seleccionada o la fecha actual
+            actualizarVistaSalon(fechaSeleccionada); // Asegura que se cargue la fecha seleccionada
+        };
     </script>
-        
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -16,69 +16,127 @@
                 <li><a href="vista_salon.html">Vista Salón</a></li>
             </ul>
         </nav>
+        <span id="username-display">Usuario</span>
     </header>
-    <main>
-        <!-- Filtro de fecha -->
-<input type="date" id="fecha-filtro" onchange="filtrarPlanilla()">
 
-<!-- Tabla para mostrar los registros -->
-<table id="planilla-table">
-  <thead>
-    <tr>
-      <th>Placa</th>
-      <th>Tipo de carro</th>
-      <th>Servicios</th>
-      <th>Precio Total</th>
-      <th>Operarios</th>
-      <th>Fecha</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Los registros de la base de datos se insertarán aquí -->
-  </tbody>
-</table>
+    <main>
+        <!-- Filtro de fecha con valor por defecto del día actual -->
+        <input type="date" id="fecha-filtro" onchange="filtrarPlanilla()" value="" />
+
+        <!-- Mensaje de carga -->
+        <div id="loading-message" style="display:none;">Cargando datos...</div>
+
+        <!-- Mensaje cuando no hay registros -->
+        <div id="no-data-message" style="display:none;">No hay vehículos registrados para el día de hoy.</div>
+
+        <!-- Tabla para mostrar los registros -->
+        <table id="planilla-table">
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Tipo de carro</th>
+                    <th>Servicios</th>
+                    <th>Precio Total</th>
+                    <th>Operarios</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Los registros de la base de datos se insertarán aquí -->
+            </tbody>
+        </table>
     </main>
 
     <script>
+        // Función para cargar los registros de la planilla sin tener que elegir fecha
+        function cargarPlanilla(fecha) {
+            // Mostrar mensaje de carga
+            document.getElementById("loading-message").style.display = "block";
+
+            // Si no se pasa una fecha, se usa la fecha actual
+            if (!fecha) {
+                fecha = new Date().toISOString().split('T')[0];  // Obtener fecha actual en formato YYYY-MM-DD
+            }
+
+            // Asignar la fecha al input
+            document.getElementById('fecha-filtro').value = fecha;
+
+            fetch(`/planilla?fecha=${fecha}`) // Pasar la fecha seleccionada o la fecha actual
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#planilla-table tbody');
+                    tbody.innerHTML = ""; // Limpiar tabla
+
+                    // Si no hay datos, mostrar mensaje
+                    if (data.length === 0) {
+                        document.getElementById("no-data-message").style.display = "block";
+                    } else {
+                        document.getElementById("no-data-message").style.display = "none";
+                        data.forEach(registro => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${registro.placa}</td>
+                                <td>${registro.tipo_carro}</td>
+                                <td>${registro.servicios}</td>
+                                <td>$${registro.precio_total}</td>
+                                <td>${registro.operarios}</td>
+                                <td>${registro.fecha}</td>
+                                <td>${registro.estado}</td>
+                                <td><button onclick="atenderDetener('${registro.placa}', '${registro.estado}')">${registro.estado === 'en_espera' ? 'Atender' : 'Detener'}</button></td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    }
+                })
+                .catch(err => console.error("Error al cargar planilla:", err))
+                .finally(() => {
+                    // Ocultar mensaje de carga
+                    document.getElementById("loading-message").style.display = "none";
+                });
+        }
+
+        // Función para filtrar los registros de la planilla según la fecha seleccionada
         function filtrarPlanilla() {
-          const fechaSeleccionada = document.getElementById('fecha-filtro').value;
-      
-          fetch(`/planilla?fecha=${fechaSeleccionada}`)
+            const fechaSeleccionada = document.getElementById('fecha-filtro').value;
+            localStorage.setItem('fechaSeleccionada', fechaSeleccionada); // Guardar fecha en localStorage
+            cargarPlanilla(fechaSeleccionada);
+        }
+
+        // Función para atender o detener un vehículo, actualizando su estado en la base de datos
+        function atenderDetener(placa, estado) {
+            const nuevoEstado = estado === 'en_espera' ? 'en_atencion' : 'finalizado';
+            const accion = estado === 'en_espera' ? 'Atender' : 'Detener';
+            
+            fetch('/atender-detener', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ placa, nuevoEstado })
+            })
             .then(response => response.json())
             .then(data => {
-              const tbody = document.querySelector('#planilla-table tbody');
-              tbody.innerHTML = ""; // Limpiar tabla
-      
-              data.forEach(registro => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                  <td>${registro.placa}</td>
-                  <td>${registro.tipo_carro}</td>
-                  <td>${registro.servicios}</td>
-                  <td>$${registro.precio_total}</td>
-                  <td>${registro.operarios}</td>
-                `;
-                tbody.appendChild(row);
-              });
+                if (data.success) {
+                    alert(`Vehículo con placa ${placa} ha sido ${accion.toLowerCase()}.`);
+                    // Refrescar la tabla para mostrar que el vehículo ha cambiado de estado
+                    cargarPlanilla(document.getElementById('fecha-filtro').value); // Mantener la fecha actual
+                } else {
+                    alert(`No se pudo ${accion.toLowerCase()} el vehículo`);
+                }
             })
-            .catch(err => console.error("Error al filtrar planilla:", err));
+            .catch(err => console.error(`Error al ${accion.toLowerCase()} el vehículo:`, err));
         }
-    </script>
 
-    <script>
-        fetch('/user-info')
-          .then(response => {
-            if (!response.ok) {
-              window.location.href = "/principal.html"; // O "/login.html"
-              return Promise.reject("Usuario no autenticado. Redirigiendo...");
-            }
-            return response.json();
-          })
-          .then(data => {
-            document.getElementById('username-display').textContent = data.username || 'Usuario';
-          })
-          .catch(err => console.error('Error obteniendo información del usuario:', err));
+        // Llamar a la función al cargar la página para mostrar los registros del día actual
+        window.onload = () => cargarPlanilla(localStorage.getItem('fechaSeleccionada'));  // Cargar la planilla con la fecha almacenada
     </script>
-        
 </body>
 </html>
+
+
+
+
+
+
+
+

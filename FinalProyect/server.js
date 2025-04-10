@@ -142,60 +142,90 @@ app.get('/verificar-vehiculo', (req, res) => {
   });
 
 // Guardar el registro de un vehículo y su servicio
+// Dentro de /guardar-registro
 app.post('/guardar-registro', (req, res) => {
     const { placa, tipo_carro, servicios, precio_total, operarios, nombre_dueno, telefono } = req.body;
-  
-    // Verificar si la placa ya existe en la tabla de vehiculos
-    const vehiculosQuery = 'SELECT * FROM vehiculos WHERE placa = ?';
     
+    // Aquí se validan o insertan datos en la tabla "vehiculos"
+    const vehiculosQuery = 'SELECT * FROM vehiculos WHERE placa = ?';
     db.query(vehiculosQuery, [placa], (err, result) => {
-      if (err) {
-        console.error('Error al verificar la placa:', err.message);
-        return res.status(500).json({ success: false, message: "Error al verificar la placa" });
-      }
-  
-      if (result.length === 0) {
-        // Si la placa no existe, insertar en la tabla 'vehiculos'
-        const insertVehiculo = `
-          INSERT INTO vehiculos (placa, nombre_dueno, telefono)
-          VALUES (?, ?, ?)
-        `;
-        db.query(insertVehiculo, [placa, nombre_dueno, telefono], (err) => {
-          if (err) {
-            console.error('Error al guardar el vehículo:', err.message);
-            return res.status(500).json({ success: false, message: "Error al guardar el vehículo" });
-          }
-        });
-      }
-  
-      // Insertar en la tabla 'planilla'
-      const insertPlanilla = `
-        INSERT INTO planilla (placa, tipo_carro, servicios, precio_total, operarios, fecha)
-        VALUES (?, ?, ?, ?, ?, ?)
-      `;
-      
-      const fechaActual = new Date().toISOString().split('T')[0];  // Formato YYYY-MM-DD
-  
-      db.query(insertPlanilla, [placa, tipo_carro, servicios, precio_total, operarios, fechaActual], (err) => {
         if (err) {
-          console.error('Error al guardar el registro en planilla:', err.message);
-          return res.status(500).json({ success: false, message: "Error al guardar el registro en planilla" });
+            console.error('Error al verificar la placa:', err.message);
+            return res.status(500).json({ success: false, message: "Error al verificar la placa" });
         }
-  
-        res.json({ success: true, message: "Registro guardado correctamente" });
-      });
+        if (result.length === 0) {
+            const insertVehiculo = `
+                INSERT INTO vehiculos (placa, nombre_dueno, telefono)
+                VALUES (?, ?, ?)
+            `;
+            db.query(insertVehiculo, [placa, nombre_dueno, telefono], (err) => {
+                if (err) {
+                    console.error('Error al guardar el vehículo:', err.message);
+                    return res.status(500).json({ success: false, message: "Error al guardar el vehículo" });
+                }
+            });
+        }
+
+        // Insertar en la tabla 'planilla' incluyendo el campo 'estado'
+        const insertPlanilla = `
+            INSERT INTO planilla (placa, tipo_carro, servicios, precio_total, operarios, fecha, estado)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        const fechaActual = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+        db.query(insertPlanilla, [placa, tipo_carro, servicios, precio_total, operarios, fechaActual, 'en_espera'], (err) => {
+            if (err) {
+                console.error('Error al guardar el registro en planilla:', err.message);
+                return res.status(500).json({ success: false, message: "Error al guardar el registro en planilla" });
+            }
+            res.json({ success: true, message: "Registro guardado correctamente" });
+        });
     });
-  });
+});
+
+// Endpoint para atender o finalizar un vehículo
+app.post('/atender-detener', (req, res) => {
+    const { placa, nuevoEstado } = req.body;
+    
+    if (!placa || !nuevoEstado) {
+        return res.status(400).json({ success: false, message: "Faltan datos" });
+    }
+
+    const updateStatusQuery = 'UPDATE planilla SET estado = ? WHERE placa = ?';
+    
+    db.query(updateStatusQuery, [nuevoEstado, placa], (err, result) => {
+        if (err) {
+            console.error('Error al actualizar el estado:', err);
+            return res.status(500).json({ success: false, message: 'Error interno' });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(400).json({ success: false, message: 'El vehículo no existe o no se puede actualizar' });
+        }
+
+        // Emitir el evento estadoCambiado a todos los clientes conectados
+        io.emit('estadoCambiado', { placa, estado: nuevoEstado });
+
+        return res.json({ success: true, message: `El estado del vehículo con placa ${placa} ha sido actualizado a ${nuevoEstado}` });
+    });
+});
+
+
+
 
 // Obtener registros de placas
 app.get('/planilla', (req, res) => {
-    const { fecha } = req.query;
-    let sql = 'SELECT placa, tipo_carro, servicios, precio_total, operarios, fecha FROM planilla';
+    const { fecha } = req.query;  // Toma la fecha desde la solicitud
+    let sql = 'SELECT placa, tipo_carro, servicios, precio_total, operarios, fecha, estado FROM planilla';
     let params = [];
 
+    // Si se pasa una fecha, usarla para la consulta
     if (fecha) {
         sql += ' WHERE fecha = ?';
         params.push(fecha);
+    } else {
+        // Si no se pasa fecha, se filtra por la fecha actual
+        const fechaActual = new Date().toISOString().split('T')[0];
+        sql += ' WHERE fecha = ?';
+        params.push(fechaActual);
     }
 
     db.query(sql, params, (err, results) => {
@@ -206,6 +236,7 @@ app.get('/planilla', (req, res) => {
         res.json(results);
     });
 });
+
 
 // Obtener registros de placas
 app.get('/get-plates', (req, res) => {
