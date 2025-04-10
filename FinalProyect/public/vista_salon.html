@@ -138,80 +138,82 @@
     <!-- Sonido de alerta -->
     <audio id="alerta-sound" src="/img/alarma.mp3" preload="auto"></audio>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
 
-        // Función para obtener los vehículos en espera y siendo atendidos según la fecha
-        function cargarCarros(fecha) {
-            fetch(`/planilla?fecha=${fecha}`)
-                .then(response => response.json())
-                .then(data => {
-                    const carrosEnEspera = document.getElementById('carros-en-espera');
-                    const carrosAtendidos = document.getElementById('carros-atendidos');
+    // Función para obtener los vehículos en espera y siendo atendidos según la fecha
+    function cargarCarros(fecha) {
+        fetch(`/planilla?fecha=${fecha}`)
+            .then(response => response.json())
+            .then(data => {
+                const carrosEnEspera = document.getElementById('carros-en-espera');
+                const carrosAtendidos = document.getElementById('carros-atendidos');
 
-                    carrosEnEspera.innerHTML = "";
-                    carrosAtendidos.innerHTML = "";
+                carrosEnEspera.innerHTML = "";
+                carrosAtendidos.innerHTML = "";
 
-                    data.forEach(vehiculo => {
-                        const vehicleBox = document.createElement('li');
-                        vehicleBox.classList.add('vehicle-box');
-                        vehicleBox.innerHTML = `
-                            <span>${vehiculo.placa} - ${vehiculo.servicios}</span>
-                            <br>
-                            <span>Operario: ${vehiculo.operarios}</span>
-                        `;
+                data.forEach(vehiculo => {
+                    const vehicleBox = document.createElement('li');
+                    vehicleBox.classList.add('vehicle-box');
+                    vehicleBox.innerHTML = `
+                        <span>${vehiculo.placa} - ${vehiculo.servicios}</span>
+                        <br>
+                        <span>Operario: ${vehiculo.operarios}</span>
+                    `;
 
-                        if (vehiculo.estado === 'en_espera') {
-                            carrosEnEspera.appendChild(vehicleBox);
-                        } else if (vehiculo.estado === 'en_atencion') {
-                            carrosAtendidos.appendChild(vehicleBox);
-                        }
-                    });
-                })
-                .catch(err => console.error('Error cargando carros:', err));
+                    if (vehiculo.estado === 'en_espera') {
+                        carrosEnEspera.appendChild(vehicleBox);
+                    } else if (vehiculo.estado === 'en_atencion') {
+                        carrosAtendidos.appendChild(vehicleBox);
+                    }
+                });
+            })
+            .catch(err => console.error('Error cargando carros:', err));
+    }
+
+    // Función para mostrar el recuadro de "Finalizado"
+    function mostrarAlerta(placa) {
+        const alerta = document.getElementById('alerta-finalizado');
+        const placaElemento = document.getElementById('placa-finalizado');
+        const overlay = document.getElementById('body-overlay');
+        
+        placaElemento.textContent = placa;
+        alerta.style.display = 'block';
+        overlay.style.display = 'block';  // Mostrar sombreado en el fondo
+
+        // Reproducir el sonido
+        const alertaSound = document.getElementById('alerta-sound');
+        alertaSound.play();
+
+        // Ocultar el recuadro después de 9 segundos
+        setTimeout(() => {
+            alerta.style.display = 'none';
+            overlay.style.display = 'none';  // Ocultar sombreado
+        }, 9000);
+    }
+
+    // Escuchar el evento estadoCambiado
+    socket.on('estadoCambiado', (data) => {
+        // Obtener la fecha almacenada o usar la fecha actual
+        const fechaSeleccionada = localStorage.getItem('fechaSeleccionada') || new Date().toISOString().split('T')[0];
+        cargarCarros(fechaSeleccionada); // Recargar los vehículos con la fecha correcta
+        if (data.estado === 'finalizado') {
+            mostrarAlerta(data.placa); // Mostrar la alerta si el estado es "finalizado"
         }
+    });
 
-        // Función para mostrar el recuadro de "Finalizado"
-        function mostrarAlerta(placa) {
-            const alerta = document.getElementById('alerta-finalizado');
-            const placaElemento = document.getElementById('placa-finalizado');
-            const overlay = document.getElementById('body-overlay');
-            
-            placaElemento.textContent = placa;
-            alerta.style.display = 'block';
-            overlay.style.display = 'block';  // Mostrar sombreado en el fondo
+    // Función para actualizar la vista salón según la fecha seleccionada en planilla
+    function actualizarVistaSalon(fechaSeleccionada) {
+        cargarCarros(fechaSeleccionada); // Llamar la función de carga con la nueva fecha
+    }
 
-            // Reproducir el sonido
-            const alertaSound = document.getElementById('alerta-sound');
-            alertaSound.play();
-
-            // Ocultar el recuadro después de 9 segundos
-            setTimeout(() => {
-                alerta.style.display = 'none';
-                overlay.style.display = 'none';  // Ocultar sombreado
-            }, 9000);
-        }
-
-        // Escuchar el evento estadoCambiado
-        socket.on('estadoCambiado', (data) => {
-            cargarCarros(); // Recargar los carros con el nuevo estado
-            if (data.estado === 'finalizado') {
-                mostrarAlerta(data.placa); // Mostrar la alerta si el estado es "finalizado"
-            }
-        });
-
-        // Función para actualizar la vista salón según la fecha seleccionada en planilla
-        function actualizarVistaSalon(fechaSeleccionada) {
-            cargarCarros(fechaSeleccionada); // Llamar la función de carga con la nueva fecha
-        }
-
-        // Cargar los vehículos al cargar la página
-        window.onload = () => {
-            const fechaSeleccionada = localStorage.getItem('fechaSeleccionada') || new Date().toISOString().split('T')[0]; // Usar la fecha seleccionada o la fecha actual
-            actualizarVistaSalon(fechaSeleccionada); // Asegura que se cargue la fecha seleccionada
-        };
-    </script>
+    // Cargar los vehículos al cargar la página
+    window.onload = () => {
+        const fechaSeleccionada = localStorage.getItem('fechaSeleccionada') || new Date().toISOString().split('T')[0]; // Usar la fecha almacenada o la fecha actual
+        actualizarVistaSalon(fechaSeleccionada); // Asegura que se cargue la fecha seleccionada
+    };
+</script>
 </body>
 </html>
 
