@@ -4,7 +4,7 @@ import cv2
 app = Flask(__name__)
 
 # URL de tu cámara RTSP
-RTSP_URL = "rtsp://admin:abcd1234..@181.236.149.17:554/Streaming/Channels/101"
+RTSP_URL = "rtsp://admin:abcd1234..@192.168.0.198:554/Streaming/Channels/101"
 
 def generate_frames():
     cap = cv2.VideoCapture(RTSP_URL)
