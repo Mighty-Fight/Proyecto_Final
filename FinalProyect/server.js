@@ -9,11 +9,13 @@ const plateRoutes = require('./routes/plateRoutes');
 const { isAuthenticated } = require('./middleware/authMiddleware');
 const db = require('./config/db');
 
+// 1) Se importa dotenv y moment-timezone
+require('dotenv').config();
+const moment = require('moment-timezone'); // <--- AÑADIDO
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
-
-require('dotenv').config();
 
 app.use(session({
     secret: 'mi_secreto_super_seguro',
@@ -55,7 +57,10 @@ let lastPlateImageBase64 = ''; // Aquí se guardará la imagen OCR en Base64
 
 io.on('connection', (socket) => {
     console.log('Usuario conectado');
-    socket.emit('updatePlaca', { placa: placaStatus, timestamp: new Date().toLocaleString() });
+    
+    // 2) Forzamos la hora a Bogotá en vez de usar new Date()
+    const fechaBogota = moment().tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss");
+    socket.emit('updatePlaca', { placa: placaStatus, timestamp: fechaBogota });
 
     socket.on('disconnect', () => {
         console.log('Usuario desconectado');
@@ -65,7 +70,9 @@ io.on('connection', (socket) => {
 // Recibir placas desde camnew.py
 app.post('/update', (req, res) => {
     const { placa, frame } = req.body;
-    const timestamp = new Date();
+
+    // 3) Generamos la hora de Bogotá
+    const fechaBogota = moment().tz("America/Bogota").format("YYYY-MM-DD HH:mm:ss");
 
     if (!placa || placa === "No se ha detectado ninguna placa aún") {
         console.warn('Placa no válida recibida.');
@@ -86,11 +93,11 @@ app.post('/update', (req, res) => {
         lastPlateImageBase64 = frame;
     }
 
-    // Emitir el evento de socket con la placa y la imagen (opcional)
-    io.emit('updatePlaca', { placa, timestamp: timestamp.toLocaleString(), frame });
+    // 4) Emitimos la hora de Bogotá al front
+    io.emit('updatePlaca', { placa, timestamp: fechaBogota, frame });
 
-    // Insertar la placa en la base de datos
-    db.query('INSERT INTO placas (placa, timestamp) VALUES (?, ?)', [placa, timestamp], (err) => {
+    // 5) Insertar la placa en la base de datos con hora Bogotá
+    db.query('INSERT INTO placas (placa, timestamp) VALUES (?, ?)', [placa, fechaBogota], (err) => {
         if (err) {
             console.error('Error al insertar en la base de datos:', err.message);
             return res.status(500).json({ success: false, error: 'Error interno.' });
@@ -115,7 +122,6 @@ app.get('/last-ocr-image', (req, res) => {
     return res.end(imgBuffer);
 });
 
-// Verificar si la placa ya está registrada en la base de datos
 // Verificar si la placa ya está registrada en la base de datos
 app.get('/verificar-vehiculo', (req, res) => {
     const { placa } = req.query;
@@ -142,7 +148,6 @@ app.get('/verificar-vehiculo', (req, res) => {
   });
 
 // Guardar el registro de un vehículo y su servicio
-// Dentro de /guardar-registro
 app.post('/guardar-registro', (req, res) => {
     const { placa, tipo_carro, servicios, precio_total, operarios, nombre_dueno, telefono } = req.body;
     
@@ -166,12 +171,13 @@ app.post('/guardar-registro', (req, res) => {
             });
         }
 
-        // Insertar en la tabla 'planilla' incluyendo el campo 'estado'
+        // 6) Reemplazar fechaActual usando moment-timezone
         const insertPlanilla = `
             INSERT INTO planilla (placa, tipo_carro, servicios, precio_total, operarios, fecha, estado)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-        const fechaActual = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+        const fechaActual = moment().tz('America/Bogota').format('YYYY-MM-DD'); // En lugar de new Date()
+
         db.query(insertPlanilla, [placa, tipo_carro, servicios, precio_total, operarios, fechaActual, 'en_espera'], (err) => {
             if (err) {
                 console.error('Error al guardar el registro en planilla:', err.message);
@@ -208,9 +214,6 @@ app.post('/atender-detener', (req, res) => {
     });
 });
 
-
-
-
 // Obtener registros de placas
 app.get('/planilla', (req, res) => {
     const { fecha } = req.query;  // Toma la fecha desde la solicitud
@@ -222,8 +225,8 @@ app.get('/planilla', (req, res) => {
         sql += ' WHERE fecha = ?';
         params.push(fecha);
     } else {
-        // Si no se pasa fecha, se filtra por la fecha actual
-        const fechaActual = new Date().toISOString().split('T')[0];
+        // 7) También reemplazamos aquí la fecha actual
+        const fechaActual = moment().tz('America/Bogota').format('YYYY-MM-DD');
         sql += ' WHERE fecha = ?';
         params.push(fechaActual);
     }
@@ -236,7 +239,6 @@ app.get('/planilla', (req, res) => {
         res.json(results);
     });
 });
-
 
 // Obtener registros de placas
 app.get('/get-plates', (req, res) => {
@@ -262,6 +264,10 @@ app.get('/get-plates', (req, res) => {
             sql += ' WHERE ' + conditions.join(' AND ');
         }
     } else {
+        // Esto sigue usando CURDATE() en MySQL,
+        // si deseas forzar hora Bogotá también puedes cambiarlo por 
+        // "DATE(timestamp) = DATE(CONVERT_TZ(NOW(),'UTC','America/Bogota'))" 
+        // o seguir usándolo así si te funciona bien.
         sql += ' WHERE DATE(timestamp) = CURDATE()';
     }
 
