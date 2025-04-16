@@ -22,7 +22,7 @@ from google.oauth2 import service_account
 RTSP_URL = os.getenv("RTSP_URL", "rtsp://admin:abcd1234..@192.168.0.198:554/Streaming/Channels/101")
 
 # ROI donde esperamos encontrar la placa (x, y, w, h)
-ROI_COORDS = (500, 600, 300, 300)
+ROI_COORDS = (400, 600, 600, 200)
 
 # Ajuste de logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
