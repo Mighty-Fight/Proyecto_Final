@@ -8,6 +8,7 @@ import requests
 import atexit
 import signal
 import sys
+import re  # <--- AGREGADO para poder filtrar el formato de la placa
 
 from flask import Flask, Response, jsonify
 from datetime import datetime
@@ -22,7 +23,7 @@ from google.oauth2 import service_account
 RTSP_URL = os.getenv("RTSP_URL", "rtsp://admin:abcd1234..@192.168.0.198:554/Streaming/Channels/101")
 
 # ROI donde esperamos encontrar la placa (x, y, w, h)
-ROI_COORDS = (400, 600, 600, 400)
+ROI_COORDS = (410, 418, 750, 400) #xywh
 
 # Ajuste de logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -104,29 +105,34 @@ def capture_frames():
     cap.release()
 
 # ============= LÓGICA DE DETECCIÓN (Roboflow + Google Vision) =============
+# ───────────────── DETECCIÓN / OCR ─────────────────
 def procesar_placa_con_roboflow(roi):
     """
-    Llama a Roboflow para detectar placa en 'roi'. Luego hace OCR con Google Vision.
-    Aplica cooldown para no saturar la API.
+    Envía el ROI a Roboflow → recorta la placa → OCR con Vision.
+    Registra placas repetidas y respeta un cool‑down.
     """
     try:
-        # 1) Guardamos ROI en un archivo temporal
+        # 1. Guardamos ROI como JPG temporal
         temp_path = "roi_temp.jpg"
         cv2.imwrite(temp_path, roi)
 
-        # 2) Llamada a Roboflow
+        # 2. Roboflow
         result = roboflow_client.infer(temp_path, model_id=MODEL_ID)
         predictions = result.get("predictions", [])
+
         if not predictions:
-            logging.info("No se detectó placa en la ROI.")
+            logging.info("❌ Roboflow NO detectó placa en la ROI.")
             return
 
+        logging.info(f"✅ Roboflow detectó {len(predictions)} placa(s).")
+
+        # Escogemos la de mayor confianza
         pred = max(predictions, key=lambda p: p["confidence"])
         confidence = pred["confidence"]
-        logging.info(f"Placa detectada: confianza {confidence:.3f}")
+        logging.info("Placa con confianza %.3f", confidence)
 
-        # Calculamos bounding box
-        x_pred = int(pred["x"] - pred["width"] / 2)
+        # Bounding‑box relativo al ROI
+        x_pred = int(pred["x"] - pred["width"]  / 2)
         y_pred = int(pred["y"] - pred["height"] / 2)
         w_pred = int(pred["width"])
         h_pred = int(pred["height"])
@@ -141,33 +147,48 @@ def procesar_placa_con_roboflow(roi):
             logging.info("El recorte está vacío. Coordenadas fuera de rango.")
             return
 
-        # 3) COOLDOWN
+        # 3. Cool‑down
         now = time.time()
         with state_lock:
             elapsed = now - shared_state["last_detection_time"]
             if elapsed < COOLDOWN:
-                logging.info("Aún en cooldown (%.2fs de %.2fs). No llamamos a OCR.", elapsed, COOLDOWN)
+                logging.info(
+                    "Aún en cool‑down (%.2fs de %.2fs). Se ignora.",
+                    elapsed, COOLDOWN
+                )
                 return
             shared_state["last_detection_time"] = now
 
-        # 4) OCR con Google Vision
-        texto_ocr = google_vision_ocr(placa_crop).strip().upper()
-        if texto_ocr:
-            logging.info(f"OCR extrajo: {texto_ocr}")
-            with state_lock:
-                shared_state["last_plate"] = texto_ocr
-                shared_state["last_plate_timestamp"] = time.strftime("%Y-%m-%d %H:%M:%S")
-                shared_state["plate_image"] = placa_crop.copy()
+        # 4. OCR Google Vision
+        texto_ocr_raw = google_vision_ocr(placa_crop)
+        texto_ocr_raw = texto_ocr_raw.replace('\n', ' ').upper().strip()
+        logging.info("OCR (bruto): %s", texto_ocr_raw)
 
-            # Enviamos al servidor
-            enviar_a_servidor(texto_ocr, placa_crop)
-        else:
-            logging.info("OCR no devolvió texto.")
+        match = re.search(r'\b([A-Z]{3}\s?\d{3})\b', texto_ocr_raw)
+        texto_ocr = match.group(1) if match else ""
+
+        if not texto_ocr:
+            logging.info("OCR sin texto válido tras filtrar formato.")
+            return
+
+        # 5. Comprobamos repetición
+        with state_lock:
+            if texto_ocr == shared_state["last_plate"]:
+                logging.info("🔁 Placa repetida (%s); se ignora.", texto_ocr)
+                return
+
+            # Nueva placa → se guarda y se envía
+            shared_state["last_plate"] = texto_ocr
+            shared_state["last_plate_timestamp"] = \
+                time.strftime("%Y-%m-%d %H:%M:%S")
+            shared_state["plate_image"] = placa_crop.copy()
+
+        logging.info("🆕 Placa confirmada: %s", texto_ocr)
+        enviar_a_servidor(texto_ocr, placa_crop)
 
     except Exception as e:
-        logging.error("Error procesando placa con Roboflow/OCR: %s", e)
+        logging.error("Error procesando placa: %s", e)
     finally:
-        # Liberamos la bandera
         with state_lock:
             shared_state["ocr_running"] = False
 
