@@ -4,9 +4,9 @@ const QRPortalWeb = require('@bot-whatsapp/portal')
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MockAdapter = require('@bot-whatsapp/database/mock')
 
-const flowCombos = addKeyword('5').addAnswer(
+const flowCombos = addKeyword('5').addAnswer( 
     `🎁 *Precios - Combos:*
-- Brillado máquina automóvil: $90.000
+- Brillado máquina automóvil: $150.000 //debe ser 90.000
 - Brillado máquina campero: $100.000
 - Combo diamond automóvil: $276.000
 - Combo diamond campero: $300.000
