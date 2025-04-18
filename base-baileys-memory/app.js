@@ -123,7 +123,10 @@ const flowRedes = addKeyword('2')
     ])
 
 const flowQuejas = addKeyword('3')
-    .addAnswer('📢 Cuéntanos tu queja o reclamo...')
+    .addAnswer(['📢 Cuéntanos tu queja o reclamo...',
+        'Escribe *Hola* para volver al menu principal'
+
+    ])
 
 const flowSushi = addKeyword('4')
     .addAnswer(['🍣 Este es nuestro menú de Sushi...',
