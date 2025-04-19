@@ -158,20 +158,28 @@ const main = async () => {
     });
 
     // Endpoint robusto que verifica si el provider está listo
-    app.get('/enviar', async (req, res) => {
+    app.use(express.json()); // 👈 Necesario para leer JSON en el body
+
+    app.post('/enviar', async (req, res) => {
+        const { numero, mensaje } = req.body;
+
+        if (!numero || !mensaje) {
+            return res.status(400).json({ success: false, message: 'Faltan datos (número o mensaje).' });
+        }
+
         const sock = adapterProvider.getInstance();
-    
+
         if (!sock || !sock.user) {
             return res.status(500).send('WhatsApp no está conectado aún.');
         }
-    
+
         try {
-            await sock.sendMessage('573023238005@s.whatsapp.net', {
-                text: 'Hola Val, esto proviene de mi chat bot automatizado'
+            await sock.sendMessage(`${numero}@s.whatsapp.net`, {
+                text: mensaje
             });
-            res.send('Mensaje enviado exitosamente!');
+            res.json({ success: true, message: 'Mensaje enviado exitosamente!' });
         } catch (error) {
-            console.error("Error al enviar mensaje:", error);
+            console.error("❌ Error al enviar mensaje:", error);
             res.status(500).send('Error al enviar el mensaje');
         }
     });

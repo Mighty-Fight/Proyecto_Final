@@ -217,11 +217,13 @@ app.post('/atender-detener', (req, res) => {
             if (!err && result.length > 0) {
                 const numero = result[0].telefono;
                 const mensaje = `🚗 Tu vehículo con placa ${placa} ha cambiado de estado a *${nuevoEstado}*. Gracias por confiar en LubriWash.`;
+                const payload = { numero, mensaje };
+                console.log('📦 Enviando mensaje al bot:', JSON.stringify(payload, null, 2));
 
-                fetch('http://localhost:3001/enviar-mensaje', {
+                fetch('http://localhost:5000/enviar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ numero, mensaje })
+                    body: JSON.stringify(payload)
                 })
                 .then(res => res.json())
                 .then(data => console.log("📩 Mensaje enviado:", data))
