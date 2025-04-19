@@ -191,28 +191,49 @@ app.post('/guardar-registro', (req, res) => {
 // Endpoint para atender o finalizar un vehículo
 app.post('/atender-detener', (req, res) => {
     const { placa, nuevoEstado } = req.body;
-    
+
     if (!placa || !nuevoEstado) {
         return res.status(400).json({ success: false, message: "Faltan datos" });
     }
 
     const updateStatusQuery = 'UPDATE planilla SET estado = ? WHERE placa = ?';
-    
+
     db.query(updateStatusQuery, [nuevoEstado, placa], (err, result) => {
         if (err) {
             console.error('Error al actualizar el estado:', err);
             return res.status(500).json({ success: false, message: 'Error interno' });
         }
+
         if (result.affectedRows === 0) {
             return res.status(400).json({ success: false, message: 'El vehículo no existe o no se puede actualizar' });
         }
 
-        // Emitir el evento estadoCambiado a todos los clientes conectados
+        // ✅ Emitimos el cambio a todos los clientes conectados
         io.emit('estadoCambiado', { placa, estado: nuevoEstado });
 
+        // ✅ Aquí va la consulta del número y envío de WhatsApp
+        const queryTelefono = 'SELECT telefono FROM vehiculos WHERE placa = ?';
+        db.query(queryTelefono, [placa], (err, result) => {
+            if (!err && result.length > 0) {
+                const numero = result[0].telefono;
+                const mensaje = `🚗 Tu vehículo con placa ${placa} ha cambiado de estado a *${nuevoEstado}*. Gracias por confiar en LubriWash.`;
+
+                fetch('http://localhost:3001/enviar-mensaje', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ numero, mensaje })
+                })
+                .then(res => res.json())
+                .then(data => console.log("📩 Mensaje enviado:", data))
+                .catch(err => console.error("❌ Error al enviar mensaje WhatsApp:", err));
+            }
+        });
+
+        // ✅ Cerramos la respuesta del endpoint
         return res.json({ success: true, message: `El estado del vehículo con placa ${placa} ha sido actualizado a ${nuevoEstado}` });
     });
 });
+
 
 // Obtener registros de placas
 app.get('/planilla', (req, res) => {
@@ -310,6 +331,8 @@ app.post('/submit-feedback', (req, res) => {
         return res.json({ success: true, message: "Gracias por tu opinión!" });
     });
 });
+
+
 
 const PORT = process.env.PORT || 80;
 server.listen(PORT, () => {

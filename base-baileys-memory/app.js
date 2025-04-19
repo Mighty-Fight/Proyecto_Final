@@ -1,8 +1,8 @@
-const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot')
-
-const QRPortalWeb = require('@bot-whatsapp/portal')
-const BaileysProvider = require('@bot-whatsapp/provider/baileys')
-const MockAdapter = require('@bot-whatsapp/database/mock')
+const { createBot, createProvider, createFlow, addKeyword } = require('@bot-whatsapp/bot');
+const QRPortalWeb = require('@bot-whatsapp/portal');
+const BaileysProvider = require('@bot-whatsapp/provider/baileys');
+const MockAdapter = require('@bot-whatsapp/database/mock');
+const express = require('express');
 
 const flowCombos = addKeyword('5').addAnswer( 
     `🎁 *Precios - Combos:*
@@ -134,7 +134,7 @@ const flowSushi = addKeyword('4')
         'Escribe *Hola* para volver al menu principal'
     ])
 
-// --- Flow Principal ---
+
 const flowPrincipal = addKeyword(['hola'])
     .addAnswer('🙌 ¡Hola! Bienvenido a *LubryWash* 🚗✨')
     .addAnswer([
@@ -146,17 +146,41 @@ const flowPrincipal = addKeyword(['hola'])
     ], null, null, [flowPrecios, flowRedes, flowQuejas, flowSushi])
 
 const main = async () => {
-    const adapterDB = new MockAdapter()
-    const adapterFlow = createFlow([flowPrincipal])
-    const adapterProvider = createProvider(BaileysProvider)
+    const app = express();
+    const adapterDB = new MockAdapter();
+    const adapterFlow = createFlow([flowPrincipal]);
+    const adapterProvider = createProvider(BaileysProvider);
 
-    createBot({
+    await createBot({
         flow: adapterFlow,
         provider: adapterProvider,
         database: adapterDB,
-    })
+    });
 
-    QRPortalWeb()
-}
+    // Endpoint robusto que verifica si el provider está listo
+    app.get('/enviar', async (req, res) => {
+        const sock = adapterProvider.getInstance();
+    
+        if (!sock || !sock.user) {
+            return res.status(500).send('WhatsApp no está conectado aún.');
+        }
+    
+        try {
+            await sock.sendMessage('573023238005@s.whatsapp.net', {
+                text: 'Hola Val, esto proviene de mi chat bot automatizado'
+            });
+            res.send('Mensaje enviado exitosamente!');
+        } catch (error) {
+            console.error("Error al enviar mensaje:", error);
+            res.status(500).send('Error al enviar el mensaje');
+        }
+    });
 
-main()
+    app.listen(5000, () => {
+        console.log('🟢 Servidor Express escuchando en http://localhost:5000');
+    });
+
+    QRPortalWeb();
+};
+
+main();
