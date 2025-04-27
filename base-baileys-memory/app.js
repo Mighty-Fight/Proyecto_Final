@@ -134,6 +134,31 @@ const flowSushi = addKeyword('4')
         'Escribe *Hola* para volver al menu principal'
     ])
 
+const flowPagarEfectivo = addKeyword('1')
+.addAnswer(['✅ Perfecto, por favor acércate a caja para realizar tu pago. ¡Te esperamos con esos billetes! 🏦',
+    '',
+    'Escribe *Hola* para volver al menu principal'
+]);
+
+const flowPagarTransferencia = addKeyword('2')
+.addAnswer([
+    '✅ Realiza tu pago por transferencia en el siguiente link:',
+    '👉 [https://pago-seguro.lubrywash.com](https://pago-seguro.lubrywash.com)',
+    '',
+    'Recuerda enviar el comprobante de pago aquí por WhatsApp 📲.',
+    '',
+    'Escribe *Hola* para volver al menu principal'
+]);
+    
+const flowPagoServicio = addKeyword('1')
+.addAnswer([
+    '💵 ¿Cómo deseas pagar tu servicio?',
+    '',
+    '1️⃣ Efectivo',
+    '2️⃣ Transferencia'
+], null, null, [flowPagarEfectivo, flowPagarTransferencia]);
+
+
 
 const flowEstadoServicio = addKeyword('5')
 .addAction(async (ctx, { flowDynamic }) => {
@@ -144,18 +169,36 @@ const flowEstadoServicio = addKeyword('5')
 
         if (data.success && data.existe) {
             if (data.estado) {
-                await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.placa}* está actualmente en estado *${data.estado}*.`);
+                await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.datos.placa}* está en estado *${data.estado}*.`);
             } else {
-                await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.placa}* no tiene actualmente ningún servicio activo.`);
+                await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.datos.placa}* no tiene servicios activos.`);
             }
         } else {
             await flowDynamic('😕 No encontramos un vehículo registrado con tu número.');
+            return; // No seguir si no tiene vehículo
         }
+
+        // 🔥 Luego ofrecer directamente pagar
+        await flowDynamic([
+            '',
+            '1️⃣ Pagar mi servicio'
+        ]);
     } catch (error) {
         console.error('❌ Error consultando estado de servicio:', error);
         await flowDynamic('😕 Ups, hubo un problema consultando tu servicio.');
     }
+})
+.addAnswer(['Escribe *1* si deseas pagar tu servicio ahora.'], {
+    capture: true
+}, async (ctx, { fallBack, gotoFlow }) => {
+    if (ctx.body.trim() === '1') {
+        return gotoFlow(flowPagoServicio); // 👈 Saltamos SOLO si pone 1
+    } else {
+        return fallBack('Por favor escribe *1* si quieres pagar.');
+    }
 });
+
+
 
     
     
