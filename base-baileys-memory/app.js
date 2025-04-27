@@ -135,15 +135,48 @@ const flowSushi = addKeyword('4')
     ])
 
 
+const flowEstadoServicio = addKeyword('5')
+.addAction(async (ctx, { flowDynamic }) => {
+    try {
+        const telefono = ctx.from.replace('@s.whatsapp.net', '');
+        const response = await fetch(`http://localhost:80/verificar-telefono?telefono=${telefono}`);
+        const data = await response.json();
+
+        if (data.success && data.existe) {
+            if (data.estado) {
+                await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.placa}* está actualmente en estado *${data.estado}*.`);
+            } else {
+                await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.placa}* no tiene actualmente ningún servicio activo.`);
+            }
+        } else {
+            await flowDynamic('😕 No encontramos un vehículo registrado con tu número.');
+        }
+    } catch (error) {
+        console.error('❌ Error consultando estado de servicio:', error);
+        await flowDynamic('😕 Ups, hubo un problema consultando tu servicio.');
+    }
+});
+
+    
+    
+    
+
+
 const flowPrincipal = addKeyword(['hola'])
-    .addAnswer('🙌 ¡Hola! Bienvenido a *LubryWash* 🚗✨')
-    .addAnswer([
-        'Selecciona una opción:',
-        '1️⃣ Consulta de precios',
-        '2️⃣ Redes sociales',
-        '3️⃣ Quejas',
-        '4️⃣ Menú Sushi'
-    ], null, null, [flowPrecios, flowRedes, flowQuejas, flowSushi])
+.addAnswer([
+    '🙌 ¡Hola! Bienvenido a *LubryWash* 🚗✨',
+    '',
+    'Selecciona una opción:',
+    '1️⃣ Consulta de precios',
+    '2️⃣ Redes sociales',
+    '3️⃣ Quejas',
+    '4️⃣ Menú Sushi',
+    '5️⃣ Estado de mi servicio'
+], null, null, [flowPrecios, flowRedes, flowQuejas, flowSushi, flowEstadoServicio]);
+
+
+    
+
 
 const main = async () => {
     const app = express();

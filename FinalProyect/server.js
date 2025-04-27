@@ -314,6 +314,57 @@ app.get("/index.html", isAuthenticated, (req, res) => {
     res.redirect("/dashboard");
 });
 
+app.get('/verificar-telefono', (req, res) => {
+    const { telefono } = req.query;
+
+    if (!telefono) {
+        return res.status(400).json({ success: false, message: 'Falta el número de teléfono' });
+    }
+
+    const queryVehiculo = 'SELECT * FROM vehiculos WHERE telefono = ?';
+    db.query(queryVehiculo, [telefono], (err, vehiculoResult) => {
+        if (err) {
+            console.error('Error al buscar el teléfono:', err.message);
+            return res.status(500).json({ success: false, message: 'Error interno' });
+        }
+
+        if (vehiculoResult.length === 0) {
+            return res.json({ success: true, existe: false });
+        }
+
+        const vehiculo = vehiculoResult[0];
+        const placa = vehiculo.placa;
+        const fechaActual = moment().tz('America/Bogota').format('YYYY-MM-DD');
+
+        const queryPlanilla = 'SELECT estado FROM planilla WHERE placa = ? AND fecha = ? ORDER BY id DESC LIMIT 1';
+        db.query(queryPlanilla, [placa, fechaActual], (err, planillaResult) => {
+            if (err) {
+                console.error('Error al buscar estado en planilla:', err.message);
+                return res.status(500).json({ success: false, message: 'Error interno buscando estado' });
+            }
+
+            if (planillaResult.length > 0) {
+                return res.json({
+                    success: true,
+                    existe: true,
+                    datos: vehiculo,
+                    placa: placa,
+                    estado: planillaResult[0].estado
+                });
+            } else {
+                return res.json({
+                    success: true,
+                    existe: true,
+                    datos: vehiculo,
+                    placa: placa,
+                    estado: null // No tiene registro en planilla
+                });
+            }
+        });
+    });
+});
+
+
 app.post('/submit-feedback', (req, res) => {
     const { comentario } = req.body;
 
