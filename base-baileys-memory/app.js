@@ -4,6 +4,8 @@ const BaileysProvider = require('@bot-whatsapp/provider/baileys');
 const MockAdapter = require('@bot-whatsapp/database/mock');
 const express = require('express');
 
+let precioServicio = 0; // 🔥 Variable global
+
 const flowCombos = addKeyword('5').addAnswer( 
     `🎁 *Precios - Combos:*
 - Brillado máquina automóvil: $90.000
@@ -140,15 +142,29 @@ const flowPagarEfectivo = addKeyword('1')
     'Escribe *Hola* para volver al menu principal'
 ]);
 
-const flowPagarTransferencia = addKeyword('2')
-.addAnswer([
-    '✅ Realiza tu pago por transferencia en el siguiente link:',
-    '👉 [https://pago-seguro.lubrywash.com](https://pago-seguro.lubrywash.com)',
-    '',
-    'Recuerda enviar el comprobante de pago aquí por WhatsApp 📲.',
-    '',
-    'Escribe *Hola* para volver al menu principal'
-]);
+
+
+
+
+
+const flowPagarTransferencia = addKeyword('2') // palabra clave inventada
+.addAction(async (ctx, { flowDynamic }) => {
+    console.log('💵 Precio al momento de enviar mensaje transferencia:', precioServicio);
+
+    await flowDynamic([
+        `✅ Debes pagar el valor de *$${precioServicio.toLocaleString('es-CO')}* a través del siguiente link:`,
+        '',
+        '👉 [https://pago-seguro.lubrywash.com/mi-pago](https://pago-seguro.lubrywash.com/mi-pago)',
+        '',
+        'Recuerda enviar el comprobante de pago aquí por WhatsApp 📲.',
+        '',
+        'Escribe *Hola* para volver al menú principal.'
+    ]);
+});
+
+
+
+
     
 const flowPagoServicio = addKeyword('1')
 .addAnswer([
@@ -156,35 +172,45 @@ const flowPagoServicio = addKeyword('1')
     '',
     '1️⃣ Efectivo',
     '2️⃣ Transferencia'
-], null, null, [flowPagarEfectivo, flowPagarTransferencia]);
+], { capture: true }, async (ctx, { gotoFlow, fallBack }) => {
+    const opcion = ctx.body.trim();
+
+    if (opcion === '1') {
+        return gotoFlow(flowPagarEfectivo);
+    } else if (opcion === '2') {
+        return gotoFlow(flowPagarTransferencia);
+    } else {
+        return fallBack('Por favor selecciona una opción válida: *1* o *2*.');
+    }
+});
+
+
 
 
 
 const flowEstadoServicio = addKeyword('5')
-.addAction(async (ctx, { flowDynamic }) => {
+.addAction(async (ctx, { flowDynamic, state }) => {
     try {
         const telefono = ctx.from.replace('@s.whatsapp.net', '');
         const response = await fetch(`http://localhost:80/verificar-telefono?telefono=${telefono}`);
         const data = await response.json();
 
         if (data.success && data.existe) {
-            if (data.estado) {
-                await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.datos.placa}* está en estado *${data.estado}*.`);
-            } else {
-                await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.datos.placa}* no tiene servicios activos.`);
-            }
+            precioServicio = data.precio_total || 0; // 🔥 Aquí guardamos el precio en la variable
+            console.log('💵 Precio guardado:', precioServicio);
+
+            await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.datos.placa}* está en estado *${data.estado}*.`);
         } else {
             await flowDynamic('😕 No encontramos un vehículo registrado con tu número.');
-            return; // No seguir si no tiene vehículo
+            return;
         }
 
-        // 🔥 Luego ofrecer directamente pagar
         await flowDynamic([
             '',
             '1️⃣ Pagar mi servicio'
         ]);
     } catch (error) {
-        console.error('❌ Error consultando estado de servicio:', error);
+        console.error('❌ Error en flowEstadoServicio:', error);
         await flowDynamic('😕 Ups, hubo un problema consultando tu servicio.');
     }
 })
@@ -192,11 +218,12 @@ const flowEstadoServicio = addKeyword('5')
     capture: true
 }, async (ctx, { fallBack, gotoFlow }) => {
     if (ctx.body.trim() === '1') {
-        return gotoFlow(flowPagoServicio); // 👈 Saltamos SOLO si pone 1
+        return gotoFlow(flowPagoServicio);
     } else {
         return fallBack('Por favor escribe *1* si quieres pagar.');
     }
 });
+
 
 
 
@@ -224,7 +251,10 @@ const flowPrincipal = addKeyword(['hola'])
 const main = async () => {
     const app = express();
     const adapterDB = new MockAdapter();
-    const adapterFlow = createFlow([flowPrincipal]);
+    const adapterFlow = createFlow([flowPrincipal,
+        flowPagarEfectivo,
+        flowPagarTransferencia
+    ]);
     const adapterProvider = createProvider(BaileysProvider);
 
     await createBot({

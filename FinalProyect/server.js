@@ -336,7 +336,7 @@ app.get('/verificar-telefono', (req, res) => {
         const placa = vehiculo.placa;
         const fechaActual = moment().tz('America/Bogota').format('YYYY-MM-DD');
 
-        const queryPlanilla = 'SELECT estado FROM planilla WHERE placa = ? AND fecha = ? ORDER BY id DESC LIMIT 1';
+        const queryPlanilla = 'SELECT estado, precio_total FROM planilla WHERE placa = ? AND fecha = ? ORDER BY id DESC LIMIT 1';
         db.query(queryPlanilla, [placa, fechaActual], (err, planillaResult) => {
             if (err) {
                 console.error('Error al buscar estado en planilla:', err.message);
@@ -349,7 +349,8 @@ app.get('/verificar-telefono', (req, res) => {
                     existe: true,
                     datos: vehiculo,
                     placa: placa,
-                    estado: planillaResult[0].estado
+                    estado: planillaResult[0].estado,
+                    precio_total: planillaResult[0].precio_total
                 });
             } else {
                 return res.json({
@@ -357,7 +358,8 @@ app.get('/verificar-telefono', (req, res) => {
                     existe: true,
                     datos: vehiculo,
                     placa: placa,
-                    estado: null // No tiene registro en planilla
+                    estado: null,
+                    precio_total: null // No tiene registro en planilla
                 });
             }
         });
