@@ -247,18 +247,18 @@ function verificarPlacaYMostrarDatos(placa) {
 <script>
   async function cargarGruposConTiempos() {
     const select = document.getElementById("operarios");
-    select.innerHTML = '<option value="">Seleccione un grupo</option>';
+    select.innerHTML = ''; // Limpiar el select
 
     try {
-      // 1. Obtener lista de grupos
       const grupos = await fetch('/grupos').then(res => res.json());
-
-      // 2. Obtener tiempos restantes por grupo
       const tiemposRes = await fetch('/tiempos-restantes').then(res => res.json());
       const tiempos = tiemposRes.success ? tiemposRes.data : [];
 
-      // 3. Agrupar tiempos por grupo
       const tiemposPorGrupo = {};
+      grupos.forEach(grupo => {
+        tiemposPorGrupo[grupo.nombre] = []; // Asegurarse de que todos estén presentes
+      });
+
       tiempos.forEach(entry => {
         const grupo = entry.operarios;
         if (!tiemposPorGrupo[grupo]) {
@@ -267,28 +267,44 @@ function verificarPlacaYMostrarDatos(placa) {
         tiemposPorGrupo[grupo].push(entry.minutos_restantes);
       });
 
-      // 4. Crear opciones dinámicas
-      grupos.forEach(grupo => {
+      const opciones = grupos.map(grupo => {
         const nombre = grupo.nombre;
-        const tiemposDelGrupo = tiemposPorGrupo[nombre];
-        const tiempoMinimo = tiemposDelGrupo ? Math.min(...tiemposDelGrupo) : null;
+        const tiemposGrupo = tiemposPorGrupo[nombre];
+        const tiempoMinimo = tiemposGrupo.length ? Math.min(...tiemposGrupo) : null;
+        return {
+          nombre,
+          label: tiempoMinimo !== null
+            ? `${nombre} (Tiempo restante: ${tiempoMinimo} min)`
+            : `${nombre} (Sin servicios activos)`,
+          tiempo: tiempoMinimo !== null ? tiempoMinimo : -1  // sin tareas = prioridad máxima
+        };
+      });
 
-        const option = document.createElement("option");
-        option.value = nombre;
-        option.textContent = tiempoMinimo !== null
-          ? `${nombre} (Tiempo restante: ${tiempoMinimo} min)`
-          : `${nombre} (Sin servicios activos)`;
-        select.appendChild(option);
+      // Ordenar: primero sin servicios, luego por menor tiempo restante
+      opciones.sort((a, b) => a.tiempo - b.tiempo);
+
+      // Agregar las opciones ordenadas al select
+      opciones.forEach((opcion, index) => {
+        const opt = document.createElement("option");
+        opt.value = opcion.nombre;
+        opt.textContent = opcion.label;
+        if (index === 0) {
+          opt.selected = true; // ✅ seleccionar la mejor opción automáticamente
+        }
+        select.appendChild(opt);
       });
 
     } catch (err) {
       console.error("❌ Error cargando grupos con tiempos:", err);
+      select.innerHTML = '<option value="">Error al cargar grupos</option>';
     }
   }
 
   // Ejecutar al cargar la página
   document.addEventListener("DOMContentLoaded", cargarGruposConTiempos);
 </script>
+
+
 
 
 
