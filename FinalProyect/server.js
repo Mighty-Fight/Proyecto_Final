@@ -148,16 +148,42 @@ app.get('/verificar-vehiculo', (req, res) => {
   });
 
 // Guardar el registro de un vehículo y su servicio
-app.post('/guardar-registro', (req, res) => {
+app.post('/guardar-registro', (req, res) => {   
     const { placa, tipo_carro, servicios, precio_total, operarios, nombre_dueno, telefono } = req.body;
-    
-    // Aquí se validan o insertan datos en la tabla "vehiculos"
+
     const vehiculosQuery = 'SELECT * FROM vehiculos WHERE placa = ?';
     db.query(vehiculosQuery, [placa], (err, result) => {
         if (err) {
             console.error('Error al verificar la placa:', err.message);
             return res.status(500).json({ success: false, message: "Error al verificar la placa" });
         }
+
+        const continuarConPlanilla = () => {
+            // Buscar tiempo estimado
+            const obtenerTiempoEstimado = 'SELECT tiempo_estimado FROM servicios WHERE nombre = ?';
+            db.query(obtenerTiempoEstimado, [servicios], (err, resultadoTiempo) => {
+                if (err || resultadoTiempo.length === 0) {
+                    console.error('Error al obtener tiempo estimado:', err?.message);
+                    return res.status(500).json({ success: false, message: "Error al consultar tiempo estimado" });
+                }
+
+                const tiempo_estimado = resultadoTiempo[0].tiempo_estimado;
+                const fechaActual = moment().tz('America/Bogota').format('YYYY-MM-DD');
+
+                const insertPlanilla = `
+                    INSERT INTO planilla (placa, tipo_carro, servicios, precio_total, operarios, fecha, estado, tiempo_estimado)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                `;
+                db.query(insertPlanilla, [placa, tipo_carro, servicios, precio_total, operarios, fechaActual, 'en_espera', tiempo_estimado], (err) => {
+                    if (err) {
+                        console.error('Error al guardar en planilla:', err.message);
+                        return res.status(500).json({ success: false, message: "Error al guardar en planilla" });
+                    }
+                    res.json({ success: true, message: "Registro guardado correctamente" });
+                });
+            });
+        };
+
         if (result.length === 0) {
             const insertVehiculo = `
                 INSERT INTO vehiculos (placa, nombre_dueno, telefono)
@@ -168,25 +194,14 @@ app.post('/guardar-registro', (req, res) => {
                     console.error('Error al guardar el vehículo:', err.message);
                     return res.status(500).json({ success: false, message: "Error al guardar el vehículo" });
                 }
+                continuarConPlanilla(); // solo después de insertar correctamente
             });
+        } else {
+            continuarConPlanilla(); // si ya existe el vehículo
         }
-
-        // 6) Reemplazar fechaActual usando moment-timezone
-        const insertPlanilla = `
-            INSERT INTO planilla (placa, tipo_carro, servicios, precio_total, operarios, fecha, estado)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `;
-        const fechaActual = moment().tz('America/Bogota').format('YYYY-MM-DD'); // En lugar de new Date()
-
-        db.query(insertPlanilla, [placa, tipo_carro, servicios, precio_total, operarios, fechaActual, 'en_espera'], (err) => {
-            if (err) {
-                console.error('Error al guardar el registro en planilla:', err.message);
-                return res.status(500).json({ success: false, message: "Error al guardar el registro en planilla" });
-            }
-            res.json({ success: true, message: "Registro guardado correctamente" });
-        });
     });
 });
+
 
 // Endpoint para atender o finalizar un vehículo
 app.post('/atender-detener', (req, res) => {
@@ -196,9 +211,18 @@ app.post('/atender-detener', (req, res) => {
         return res.status(400).json({ success: false, message: "Faltan datos" });
     }
 
-    const updateStatusQuery = 'UPDATE planilla SET estado = ? WHERE placa = ?';
+    // Si el estado es "en_atencion", también actualizamos inicio_servicio
+    let updateQuery, updateParams;
+    if (nuevoEstado === 'en_atencion') {
+        const fechaInicio = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
+        updateQuery = 'UPDATE planilla SET estado = ?, inicio_servicio = ? WHERE placa = ?';
+        updateParams = [nuevoEstado, fechaInicio, placa];
+    } else {
+        updateQuery = 'UPDATE planilla SET estado = ? WHERE placa = ?';
+        updateParams = [nuevoEstado, placa];
+    }
 
-    db.query(updateStatusQuery, [nuevoEstado, placa], (err, result) => {
+    db.query(updateQuery, updateParams, (err, result) => {
         if (err) {
             console.error('Error al actualizar el estado:', err);
             return res.status(500).json({ success: false, message: 'Error interno' });
@@ -208,10 +232,10 @@ app.post('/atender-detener', (req, res) => {
             return res.status(400).json({ success: false, message: 'El vehículo no existe o no se puede actualizar' });
         }
 
-        // ✅ Emitimos el cambio a todos los clientes conectados
+        // 🔄 Emitimos evento a todos los clientes conectados por socket
         io.emit('estadoCambiado', { placa, estado: nuevoEstado });
 
-        // ✅ Aquí va la consulta del número y envío de WhatsApp
+        // 🔔 Enviamos mensaje por WhatsApp usando el bot
         const queryTelefono = 'SELECT telefono FROM vehiculos WHERE placa = ?';
         db.query(queryTelefono, [placa], (err, result) => {
             if (!err && result.length > 0) {
@@ -231,10 +255,15 @@ app.post('/atender-detener', (req, res) => {
             }
         });
 
-        // ✅ Cerramos la respuesta del endpoint
-        return res.json({ success: true, message: `El estado del vehículo con placa ${placa} ha sido actualizado a ${nuevoEstado}` });
+        // 🟢 Finalizamos con respuesta al cliente
+        return res.json({
+            success: true,
+            message: `El estado del vehículo con placa ${placa} ha sido actualizado a ${nuevoEstado}`
+        });
     });
 });
+
+
 
 // Obtener registros de placas
 app.get('/planilla', (req, res) => {
@@ -397,8 +426,95 @@ app.get('/servicios', (req, res) => {
     });
   });
   
+app.get('/grupos', (req, res) => {
+    const sql = 'SELECT id, nombre FROM grupos ORDER BY nombre';
+    db.query(sql, (err, results) => {
+        if (err) {
+        console.error('Error al obtener grupos:', err);
+        return res.status(500).json({ error: 'Error al consultar grupos' });
+        }
+        res.json(results);
+    });
+});
+
+function consultarTrabajosDeHoyPorGrupo() {
+    const hoy = moment().tz('America/Bogota').format('YYYY-MM-DD');
+    const sql = `
+        SELECT operarios, servicios, placa 
+        FROM planilla 
+        WHERE fecha = ? 
+        ORDER BY operarios
+    `;
+
+    db.query(sql, [hoy], (err, results) => {
+        if (err) {
+            console.error('❌ Error al consultar trabajos de hoy:', err.message);
+            return;
+        }
+
+        if (results.length === 0) {
+            console.log('📭 No hay trabajos asignados para hoy.');
+            return;
+        }
+
+        const trabajosPorGrupo = {};
+
+        results.forEach(row => {
+            const grupo = row.operarios;
+            if (!trabajosPorGrupo[grupo]) {
+                trabajosPorGrupo[grupo] = [];
+            }
+            trabajosPorGrupo[grupo].push({
+                placa: row.placa,
+                servicio: row.servicios
+            });
+        });
+
+        console.log('📋 Trabajos asignados para hoy:');
+        for (const grupo in trabajosPorGrupo) {
+            console.log(`\n🔧 ${grupo}:`);
+            trabajosPorGrupo[grupo].forEach(trabajo => {
+                console.log(`   🚗 Placa: ${trabajo.placa} | Servicio: ${trabajo.servicio}`);
+            });
+        }
+    });
+}
+
+app.get('/tiempos-restantes', (req, res) => {
+    const sql = `
+        SELECT 
+            placa,
+            operarios,
+            servicios,
+            tiempo_estimado,
+            inicio_servicio,
+            TIMESTAMPDIFF(MINUTE, inicio_servicio, NOW()) AS minutos_transcurridos,
+            GREATEST(0, tiempo_estimado - TIMESTAMPDIFF(MINUTE, inicio_servicio, NOW())) AS minutos_restantes
+        FROM planilla
+        WHERE estado = 'en_atencion' AND inicio_servicio IS NOT NULL
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('❌ Error al calcular tiempos restantes:', err.message);
+            return res.status(500).json({ success: false, error: 'Error interno al consultar tiempos' });
+        }
+
+        res.json({
+            success: true,
+            data: results
+        });
+    });
+});
+
+
+  
 
 const PORT = process.env.PORT || 80;
 server.listen(PORT, () => {
     console.log(`✅ Servidor corriendoo en http://localhost:${PORT}`);
+    consultarTrabajosDeHoyPorGrupo();
 });
+
+
+

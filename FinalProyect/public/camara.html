@@ -94,8 +94,7 @@
         
           <label>Operarios asignados</label>
           <select id="operarios">
-            <option value="Grupo 1">Grupo 1</option>
-            <option value="Grupo 2">Grupo 2</option>
+            <option value="">Seleccione un grupo</option>
           </select>
         
           <label>Ofertas</label>
@@ -244,6 +243,54 @@ function verificarPlacaYMostrarDatos(placa) {
       });
     }
   </script>
+
+<script>
+  async function cargarGruposConTiempos() {
+    const select = document.getElementById("operarios");
+    select.innerHTML = '<option value="">Seleccione un grupo</option>';
+
+    try {
+      // 1. Obtener lista de grupos
+      const grupos = await fetch('/grupos').then(res => res.json());
+
+      // 2. Obtener tiempos restantes por grupo
+      const tiemposRes = await fetch('/tiempos-restantes').then(res => res.json());
+      const tiempos = tiemposRes.success ? tiemposRes.data : [];
+
+      // 3. Agrupar tiempos por grupo
+      const tiemposPorGrupo = {};
+      tiempos.forEach(entry => {
+        const grupo = entry.operarios;
+        if (!tiemposPorGrupo[grupo]) {
+          tiemposPorGrupo[grupo] = [];
+        }
+        tiemposPorGrupo[grupo].push(entry.minutos_restantes);
+      });
+
+      // 4. Crear opciones dinámicas
+      grupos.forEach(grupo => {
+        const nombre = grupo.nombre;
+        const tiemposDelGrupo = tiemposPorGrupo[nombre];
+        const tiempoMinimo = tiemposDelGrupo ? Math.min(...tiemposDelGrupo) : null;
+
+        const option = document.createElement("option");
+        option.value = nombre;
+        option.textContent = tiempoMinimo !== null
+          ? `${nombre} (Tiempo restante: ${tiempoMinimo} min)`
+          : `${nombre} (Sin servicios activos)`;
+        select.appendChild(option);
+      });
+
+    } catch (err) {
+      console.error("❌ Error cargando grupos con tiempos:", err);
+    }
+  }
+
+  // Ejecutar al cargar la página
+  document.addEventListener("DOMContentLoaded", cargarGruposConTiempos);
+</script>
+
+
 
   <script>
     document.getElementById('cajero-form').addEventListener('submit', function(event) {
