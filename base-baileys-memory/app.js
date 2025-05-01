@@ -107,6 +107,7 @@ const flowLavados = addKeyword('1').addAnswer(
 Escribe *Hola* para volver al menu principal`);
 
 
+
 const flowPrecios = addKeyword('1')
     .addAnswer([
         '📋 *Estos son los precios disponibles*. Por favor, escribe el número correspondiente a la categoría que deseas consultar:',
@@ -224,12 +225,6 @@ const flowEstadoServicio = addKeyword('5')
     }
 });
 
-
-
-
-    
-    
-    
 
 
 const flowPrincipal = addKeyword(['hola'])

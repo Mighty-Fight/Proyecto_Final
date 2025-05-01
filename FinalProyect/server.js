@@ -386,6 +386,18 @@ app.post('/submit-feedback', (req, res) => {
     });
 });
 
+app.get('/servicios', (req, res) => {
+    const sql = 'SELECT nombre, categoria, precio FROM servicios ORDER BY categoria, nombre';
+    db.query(sql, (err, results) => {
+      if (err) {
+        console.error('Error al obtener servicios:', err);
+        return res.status(500).json({ error: 'Error al consultar servicios' });
+      }
+      res.json(results);
+    });
+  });
+  
+
 const PORT = process.env.PORT || 80;
 server.listen(PORT, () => {
     console.log(`✅ Servidor corriendoo en http://localhost:${PORT}`);

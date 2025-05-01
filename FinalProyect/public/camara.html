@@ -116,17 +116,17 @@
      const socket = io();
 
 // Cuando se recibe un update de placa, se actualizan los textos correspondientes
-socket.on('updatePlaca', (data) => {
-  document.getElementById('detected-plate').textContent = data.placa;
-  document.getElementById('timestamp').textContent = data.timestamp;
-  console.log("Se detectó una placa:", data.placa);
+    socket.on('updatePlaca', (data) => {
+      document.getElementById('detected-plate').textContent = data.placa;
+      document.getElementById('timestamp').textContent = data.timestamp;
+      console.log("Se detectó una placa:", data.placa);
 
-  // Verificar la placa y actualizar los datos automáticamente en el formulario
-  verificarPlacaYMostrarDatos(data.placa);
+      // Verificar la placa y actualizar los datos automáticamente en el formulario
+      verificarPlacaYMostrarDatos(data.placa);
 
-  // Opcional: Forzar la recarga de la imagen OCR para evitar caché
-  const ocrImage = document.querySelector('img[alt="ocr_feed"]');
-  ocrImage.src = "http://3.82.125.113/last-ocr-image?time=" + new Date().getTime();
+      // Opcional: Forzar la recarga de la imagen OCR para evitar caché
+      const ocrImage = document.querySelector('img[alt="ocr_feed"]');
+      ocrImage.src = "http://3.82.125.113/last-ocr-image?time=" + new Date().getTime();
 });
 
 // Función que verifica si la placa está registrada y llena los campos del formulario
@@ -186,43 +186,25 @@ function verificarPlacaYMostrarDatos(placa) {
       .catch(err => console.error('Error obteniendo información del usuario:', err));
   </script>
 
-  <!-- Script para manejo de categorías y servicios -->
   <script>
-    const serviciosPorCategoria = {
-      lavados: [
-        { nombre: "Lavado Automóvil", precio: 30000 },
-        { nombre: "Lavado Campero", precio: 35000 },
-        { nombre: "Lavado Moto", precio: 15000 },
-        { nombre: "Adicional Barro", precio: 15000 },
-        { nombre: "Combo 2 Automóvil", precio: 45000 },
-        { nombre: "Combo 2 Campero", precio: 55000 },
-        { nombre: "Combo 2 Moto", precio: 20000 },
-        { nombre: "Combo 3 Automóvil", precio: 56000 },
-        { nombre: "Combo 3 Campero", precio: 64000 }
-      ],
-      manoObra: [
-        { nombre: "Banco de prueba", precio: 60000 },
-        { nombre: "Domicilio", precio: 10000 },
-        { nombre: "Arreglo Carter", precio: 200000 },
-        { nombre: "Amortiguadores Delanteros", precio: 50000 },
-        { nombre: "Amortiguadores Traseros", precio: 40000 },
-        { nombre: "Brazo Axiales", precio: 30000 },
-        { nombre: "Cambio Correa de Tiempo", precio: 190000 },
-        { nombre: "Cambio Empaque", precio: 60000 },
-        { nombre: "Cambio Líquido de Frenos", precio: 130000 },
-        { nombre: "Cambio Refrigerante", precio: 40000 },
-        { nombre: "Cambio Tijeras", precio: 40000 },
-        { nombre: "Filtro Combustible", precio: 30000 },
-        { nombre: "Soporte Amortiguador", precio: 40000 },
-        { nombre: "Soporte Motor", precio: 40000 },
-        { nombre: "Servicio Scanner", precio: 60000 }
-      ]
-    };
-
     const categoriaSelect = document.getElementById("categoria-select");
     const servicioSelect = document.getElementById("servicio-select");
     const servicioGroup = document.getElementById("servicio-group");
     const precioDiv = document.getElementById("precio-estimado");
+  
+    let serviciosPorCategoria = {};
+
+    fetch('/servicios')
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(servicio => {
+          if (!serviciosPorCategoria[servicio.categoria]) {
+            serviciosPorCategoria[servicio.categoria] = [];
+          }
+          serviciosPorCategoria[servicio.categoria].push(servicio);
+        });
+      })
+      .catch(err => console.error("Error cargando servicios:", err));
 
     if (categoriaSelect && servicioSelect && servicioGroup && precioDiv) {
       categoriaSelect.addEventListener("change", function () {
