@@ -8,6 +8,7 @@ import requests
 import atexit
 import signal
 import sys
+import re  # <--- AGREGADO para poder filtrar el formato de la placa
 
 from flask import Flask, Response, jsonify
 from datetime import datetime
@@ -22,7 +23,7 @@ from google.oauth2 import service_account
 RTSP_URL = os.getenv("RTSP_URL", "rtsp://admin:abcd1234..@192.168.0.198:554/Streaming/Channels/101")
 
 # ROI donde esperamos encontrar la placa (x, y, w, h)
-ROI_COORDS = (400, 600, 600, 400)
+ROI_COORDS = (420, 480, 650, 500)
 
 # Ajuste de logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -31,11 +32,11 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 COOLDOWN = 10
 
 # Reducir la frecuencia de llamadas al OCR/detección (tiempo de sleep en el loop principal)
-DETECTION_LOOP_SLEEP = 0.3  # ~3-4 llamadas por segundo
+DETECTION_LOOP_SLEEP = 0.2  # ~5-6 llamadas por segundo
 
 # ============= CONFIGURACIÓN ROBOFLOW =============
-ROBOFLOW_API_KEY = "jE9ZRJhcQmeW0pOj5UQG"
-MODEL_ID = "placas-colombia/2"
+ROBOFLOW_API_KEY = "StsdfEQah77vIyYA1T0q"
+MODEL_ID = "placas-vehiculares-yo0d5/1"
 roboflow_client = InferenceHTTPClient(
     api_url="https://detect.roboflow.com",
     api_key=ROBOFLOW_API_KEY
@@ -104,29 +105,46 @@ def capture_frames():
     cap.release()
 
 # ============= LÓGICA DE DETECCIÓN (Roboflow + Google Vision) =============
+# ───────────────── DETECCIÓN / OCR ─────────────────
+def filtrar_placa_ocr(texto_ocr_raw):
+    """
+    Filtra el texto OCR para asegurarse de que sea un formato válido de placa colombiana (ABC 123),
+    y normaliza el formato, quitando guiones y espacios.
+    """
+    # Reemplaza guiones por espacio
+    texto_ocr_raw = texto_ocr_raw.replace("-", " ")
+
+    # Filtra el formato que esperamos
+    match = re.match(r'\b([A-Z]{3}\s?\d{3})\b', texto_ocr_raw)
+    return match.group(1) if match else None
+
 def procesar_placa_con_roboflow(roi):
     """
-    Llama a Roboflow para detectar placa en 'roi'. Luego hace OCR con Google Vision.
-    Aplica cooldown para no saturar la API.
+    Envía el ROI a Roboflow → recorta la placa → OCR con Vision.
+    Registra placas repetidas y respeta un cool‑down.
     """
     try:
-        # 1) Guardamos ROI en un archivo temporal
+        # 1. Guardamos ROI como JPG temporal
         temp_path = "roi_temp.jpg"
         cv2.imwrite(temp_path, roi)
 
-        # 2) Llamada a Roboflow
+        # 2. Roboflow
         result = roboflow_client.infer(temp_path, model_id=MODEL_ID)
         predictions = result.get("predictions", [])
+
         if not predictions:
-            logging.info("No se detectó placa en la ROI.")
+            logging.info("❌ Roboflow NO detectó placa en la ROI.")
             return
 
+        logging.info(f"✅ Roboflow detectó {len(predictions)} placa(s).")
+
+        # Escogemos la de mayor confianza
         pred = max(predictions, key=lambda p: p["confidence"])
         confidence = pred["confidence"]
-        logging.info(f"Placa detectada: confianza {confidence:.3f}")
+        logging.info("Placa con confianza %.3f", confidence)
 
-        # Calculamos bounding box
-        x_pred = int(pred["x"] - pred["width"] / 2)
+        # Bounding‑box relativo al ROI
+        x_pred = int(pred["x"] - pred["width"]  / 2)
         y_pred = int(pred["y"] - pred["height"] / 2)
         w_pred = int(pred["width"])
         h_pred = int(pred["height"])
@@ -141,33 +159,48 @@ def procesar_placa_con_roboflow(roi):
             logging.info("El recorte está vacío. Coordenadas fuera de rango.")
             return
 
-        # 3) COOLDOWN
+        # 3. Cool‑down
         now = time.time()
         with state_lock:
             elapsed = now - shared_state["last_detection_time"]
             if elapsed < COOLDOWN:
-                logging.info("Aún en cooldown (%.2fs de %.2fs). No llamamos a OCR.", elapsed, COOLDOWN)
+                logging.info(
+                    "Aún en cool‑down (%.2fs de %.2fs). Se ignora.",
+                    elapsed, COOLDOWN
+                )
                 return
             shared_state["last_detection_time"] = now
 
-        # 4) OCR con Google Vision
-        texto_ocr = google_vision_ocr(placa_crop).strip().upper()
-        if texto_ocr:
-            logging.info(f"OCR extrajo: {texto_ocr}")
-            with state_lock:
-                shared_state["last_plate"] = texto_ocr
-                shared_state["last_plate_timestamp"] = time.strftime("%Y-%m-%d %H:%M:%S")
-                shared_state["plate_image"] = placa_crop.copy()
+        # 4. OCR Google Vision
+        texto_ocr_raw, confidence_ocr = google_vision_ocr(placa_crop)
+        texto_ocr_raw = texto_ocr_raw.replace('\n', ' ').upper().strip()
+        logging.info("OCR (bruto): %s", texto_ocr_raw)
+        logging.info("Confianza OCR: %.3f", confidence_ocr)
 
-            # Enviamos al servidor
-            enviar_a_servidor(texto_ocr, placa_crop)
-        else:
-            logging.info("OCR no devolvió texto.")
+        placa_detectada = filtrar_placa_ocr(texto_ocr_raw)
+
+        if not placa_detectada:
+            logging.info("❌ OCR sin texto válido tras filtrar formato.")
+            return
+
+        # 5. Comprobamos repetición
+        with state_lock:
+            if placa_detectada == shared_state["last_plate"]:
+                logging.info("🔁 Placa repetida (%s); se ignora.", placa_detectada)
+                return
+
+            # Nueva placa → se guarda y se envía
+            shared_state["last_plate"] = placa_detectada
+            shared_state["last_plate_timestamp"] = \
+                time.strftime("%Y-%m-%d %H:%M:%S")
+            shared_state["plate_image"] = placa_crop.copy()
+
+        logging.info("🆕 Placa confirmada: %s", placa_detectada)
+        enviar_a_servidor(placa_detectada, placa_crop)
 
     except Exception as e:
-        logging.error("Error procesando placa con Roboflow/OCR: %s", e)
+        logging.error("Error procesando placa: %s", e)
     finally:
-        # Liberamos la bandera
         with state_lock:
             shared_state["ocr_running"] = False
 
@@ -176,35 +209,32 @@ def google_vision_ocr(img):
     Envía 'img' a Google Vision para hacer OCR, pasando las credenciales
     directamente en el código sin usar variables de entorno.
     """
-    # >>>>> Asegúrate de poner la ruta correcta a tu archivo .json de Service Account <<<<<
     cred_path = r"C:\Users\mateo\Downloads\sincere-concept-455516-s4-f9c13ffc844a.json"
 
-    # Leemos credenciales directamente
     credentials = service_account.Credentials.from_service_account_file(cred_path)
 
-    # Creamos el cliente Vision usando esas credenciales
     client = vision.ImageAnnotatorClient(credentials=credentials)
 
-    # Guardamos la imagen en disco (para subirla)
     temp_ocr_path = "placa_ocr.jpg"
     cv2.imwrite(temp_ocr_path, img)
 
     with open(temp_ocr_path, "rb") as image_file:
         content = image_file.read()
 
-    # Creamos objeto Image para Vision
     vision_image = vision.Image(content=content)
     response = client.text_detection(image=vision_image)
 
     if response.error.message:
         logging.error("Error de Vision API: %s", response.error.message)
-        return ""
+        return "", 0.0
 
     annotations = response.text_annotations
     if len(annotations) > 0:
-        return annotations[0].description  # Primer item => texto completo
+        detected_text = annotations[0].description  # Primer item => texto completo
+        confidence = annotations[0].confidence if 'confidence' in annotations[0] else 0.0
+        return detected_text, confidence
     else:
-        return ""
+        return "", 0.0
 
 def enviar_a_servidor(placa, placa_img):
     """Envía la placa y la imagen en Base64 a tu servidor (3.82.125.113)."""
