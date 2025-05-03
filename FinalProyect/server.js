@@ -180,6 +180,16 @@ app.post('/guardar-registro', (req, res) => {
                         return res.status(500).json({ success: false, message: "Error al guardar en planilla" });
                     }
                     res.json({ success: true, message: "Registro guardado correctamente" });
+                    io.emit('nuevoRegistroPlanilla', {
+                        placa,
+                        tipo_carro,
+                        servicios,
+                        precio_total,
+                        operarios,
+                        fecha: fechaActual,
+                        estado: 'en_espera'
+                    });
+                    
                 });
             });
         };

@@ -116,6 +116,7 @@
 
 // Cuando se recibe un update de placa, se actualizan los textos correspondientes
     socket.on('updatePlaca', (data) => {
+      document.querySelector('button[type="submit"]').disabled = false;
       document.getElementById('detected-plate').textContent = data.placa;
       document.getElementById('timestamp').textContent = data.timestamp;
       console.log("Se detectó una placa:", data.placa);
@@ -344,6 +345,12 @@ function verificarPlacaYMostrarDatos(placa) {
       .then(data => {
           if (data.success) {
               alert("Registro guardado correctamente.");
+              document.getElementById('cajero-form').reset();
+
+              document.getElementById('detected-plate').textContent = "No se ha detectado ninguna placa aún";
+              document.getElementById('timestamp').textContent = "--";
+
+              document.querySelector('button[type="submit"]').disabled = true;
               // Aquí puedes agregar lógica para limpiar los campos o dar retroalimentación al usuario
           } else {
               alert("Hubo un error al guardar el registro.");

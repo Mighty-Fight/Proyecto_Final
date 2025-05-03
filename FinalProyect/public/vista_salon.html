@@ -220,6 +220,17 @@
             mostrarAlerta(data.placa); // Mostrar la alerta si el estado es "finalizado"
         }
     });
+    // 🔄 Cuando se registre un nuevo vehículo desde camara.html
+    socket.on('nuevoRegistroPlanilla', (registro) => {
+        const fechaSeleccionada = localStorage.getItem('fechaSeleccionada') || new Date().toISOString().split('T')[0];
+        const hoy = new Date().toISOString().split('T')[0];
+
+        // Solo actualiza si estamos viendo la fecha de hoy
+        if (fechaSeleccionada === hoy) {
+            cargarCarros(fechaSeleccionada);
+        }
+    });
+
 
     // Función para actualizar la vista salón según la fecha seleccionada en planilla
     function actualizarVistaSalon(fechaSeleccionada) {
@@ -234,6 +245,7 @@
 </script>
 </body>
 </html>
+
 
 
 

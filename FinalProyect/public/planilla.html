@@ -6,6 +6,7 @@
     <title>Vista Salón</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <header>
         <img src="/img/logo.png" alt="Logo" class="header-logo">
@@ -130,6 +131,48 @@
         // Llamar a la función al cargar la página para mostrar los registros del día actual
         window.onload = () => cargarPlanilla(localStorage.getItem('fechaSeleccionada'));  // Cargar la planilla con la fecha almacenada
     </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+      
+        socket.on('nuevoRegistroPlanilla', (registro) => {
+            let fechaFiltro = document.getElementById('fecha-filtro').value;
+            if (!fechaFiltro) {
+            fechaFiltro = new Date().toISOString().split('T')[0];
+            }
+
+          const fechaHoy = new Date().toISOString().split('T')[0];
+      
+          // Solo actualizar si la fecha seleccionada es hoy
+          if (fechaFiltro === fechaHoy) {
+            const tbody = document.querySelector('#planilla-table tbody');
+      
+            // Evitar duplicados
+            const yaExiste = [...tbody.rows].some(row => row.cells[0].textContent === registro.placa);
+            if (yaExiste) return;
+      
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${registro.placa}</td>
+              <td>${registro.tipo_carro}</td>
+              <td>${registro.servicios}</td>
+              <td>$${registro.precio_total}</td>
+              <td>${registro.operarios}</td>
+              <td>${registro.fecha}</td>
+              <td>${registro.estado}</td>
+              <td><button onclick="atenderDetener('${registro.placa}', '${registro.estado}')">${registro.estado === 'en_espera' ? 'Atender' : 'Detener'}</button></td>
+            `;
+      
+            // Insertar al inicio de la tabla
+            tbody.insertBefore(row, tbody.firstChild);
+      
+            // Ocultar el mensaje de "no hay datos"
+            document.getElementById("no-data-message").style.display = "none";
+          }
+        });
+      </script>
+
+          
 </body>
 </html>
 
