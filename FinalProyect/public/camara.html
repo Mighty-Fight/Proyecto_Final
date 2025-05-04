@@ -303,6 +303,7 @@ function verificarPlacaYMostrarDatos(placa) {
 
   // Ejecutar al cargar la página
   document.addEventListener("DOMContentLoaded", cargarGruposConTiempos);
+  setInterval(cargarGruposConTiempos, 30000);
 </script>
 
 
@@ -351,6 +352,7 @@ function verificarPlacaYMostrarDatos(placa) {
               document.getElementById('timestamp').textContent = "--";
 
               document.querySelector('button[type="submit"]').disabled = true;
+              cargarGruposConTiempos();
               // Aquí puedes agregar lógica para limpiar los campos o dar retroalimentación al usuario
           } else {
               alert("Hubo un error al guardar el registro.");

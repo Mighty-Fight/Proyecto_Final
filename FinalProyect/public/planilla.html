@@ -41,6 +41,7 @@
                     <th>Operarios</th>
                     <th>Fecha</th>
                     <th>Estado</th>
+                    <th>Rendimiento</th>
                     <th>Acción</th>
                 </tr>
             </thead>
@@ -85,6 +86,7 @@
                                 <td>${registro.operarios}</td>
                                 <td>${registro.fecha}</td>
                                 <td>${registro.estado}</td>
+                                <td>${registro.rendimiento ?? '-'}</td>
                                 <td><button onclick="atenderDetener('${registro.placa}', '${registro.estado}')">${registro.estado === 'en_espera' ? 'Atender' : 'Detener'}</button></td>
                             `;
                             tbody.appendChild(row);
@@ -135,42 +137,11 @@
     <script>
         const socket = io();
       
-        socket.on('nuevoRegistroPlanilla', (registro) => {
-            let fechaFiltro = document.getElementById('fecha-filtro').value;
-            if (!fechaFiltro) {
-            fechaFiltro = new Date().toISOString().split('T')[0];
-            }
-
-          const fechaHoy = new Date().toISOString().split('T')[0];
-      
-          // Solo actualizar si la fecha seleccionada es hoy
-          if (fechaFiltro === fechaHoy) {
-            const tbody = document.querySelector('#planilla-table tbody');
-      
-            // Evitar duplicados
-            const yaExiste = [...tbody.rows].some(row => row.cells[0].textContent === registro.placa);
-            if (yaExiste) return;
-      
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${registro.placa}</td>
-              <td>${registro.tipo_carro}</td>
-              <td>${registro.servicios}</td>
-              <td>$${registro.precio_total}</td>
-              <td>${registro.operarios}</td>
-              <td>${registro.fecha}</td>
-              <td>${registro.estado}</td>
-              <td><button onclick="atenderDetener('${registro.placa}', '${registro.estado}')">${registro.estado === 'en_espera' ? 'Atender' : 'Detener'}</button></td>
-            `;
-      
-            // Insertar al inicio de la tabla
-            tbody.insertBefore(row, tbody.firstChild);
-      
-            // Ocultar el mensaje de "no hay datos"
-            document.getElementById("no-data-message").style.display = "none";
-          }
+        socket.on('nuevoRegistroPlanilla', () => {
+        const fechaSeleccionada = document.getElementById('fecha-filtro').value || new Date().toISOString().split('T')[0];
+        cargarPlanilla(fechaSeleccionada);
         });
-      </script>
+    </script>
 
           
 </body>

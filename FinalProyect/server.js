@@ -179,7 +179,7 @@ app.post('/guardar-registro', (req, res) => {
                         console.error('Error al guardar en planilla:', err.message);
                         return res.status(500).json({ success: false, message: "Error al guardar en planilla" });
                     }
-                    res.json({ success: true, message: "Registro guardado correctamente" });
+                    
                     io.emit('nuevoRegistroPlanilla', {
                         placa,
                         tipo_carro,
@@ -189,6 +189,7 @@ app.post('/guardar-registro', (req, res) => {
                         fecha: fechaActual,
                         estado: 'en_espera'
                     });
+                    res.json({ success: true, message: "Registro guardado correctamente" });
                     
                 });
             });
@@ -221,64 +222,153 @@ app.post('/atender-detener', (req, res) => {
         return res.status(400).json({ success: false, message: "Faltan datos" });
     }
 
-    // Si el estado es "en_atencion", también actualizamos inicio_servicio
-    let updateQuery, updateParams;
     if (nuevoEstado === 'en_atencion') {
         const fechaInicio = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
-        updateQuery = 'UPDATE planilla SET estado = ?, inicio_servicio = ? WHERE placa = ?';
-        updateParams = [nuevoEstado, fechaInicio, placa];
-    } else {
-        updateQuery = 'UPDATE planilla SET estado = ? WHERE placa = ?';
-        updateParams = [nuevoEstado, placa];
-    }
+        const updateQuery = 'UPDATE planilla SET estado = ?, inicio_servicio = ? WHERE placa = ?';
+        const updateParams = [nuevoEstado, fechaInicio, placa];
 
-    db.query(updateQuery, updateParams, (err, result) => {
-        if (err) {
-            console.error('Error al actualizar el estado:', err);
-            return res.status(500).json({ success: false, message: 'Error interno' });
-        }
-
-        if (result.affectedRows === 0) {
-            return res.status(400).json({ success: false, message: 'El vehículo no existe o no se puede actualizar' });
-        }
-
-        // 🔄 Emitimos evento a todos los clientes conectados por socket
-        io.emit('estadoCambiado', { placa, estado: nuevoEstado });
-
-        // 🔔 Enviamos mensaje por WhatsApp usando el bot
-        const queryTelefono = 'SELECT telefono FROM vehiculos WHERE placa = ?';
-        db.query(queryTelefono, [placa], (err, result) => {
-            if (!err && result.length > 0) {
-                const numero = result[0].telefono;
-                const mensaje = `🚗 Tu vehículo con placa ${placa} ha cambiado de estado a *${nuevoEstado}*. Gracias por confiar en LubriWash.`;
-                const payload = { numero, mensaje };
-                console.log('📦 Enviando mensaje al bot:', JSON.stringify(payload, null, 2));
-
-                fetch('http://localhost:5000/enviar', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                })
-                .then(res => res.json())
-                .then(data => console.log("📩 Mensaje enviado:", data))
-                .catch(err => console.error("❌ Error al enviar mensaje WhatsApp:", err));
+        db.query(updateQuery, updateParams, (err, result) => {
+            if (err) {
+                console.error('❌ Error al actualizar a en_atencion:', err);
+                return res.status(500).json({ success: false });
             }
+
+            if (result.affectedRows === 0) {
+                return res.status(400).json({ success: false, message: 'No se encontró la placa' });
+            }
+
+            io.emit('estadoCambiado', { placa, estado: nuevoEstado });
+
+            // 🔔 Enviar mensaje por WhatsApp
+            const queryTelefono = 'SELECT telefono FROM vehiculos WHERE placa = ?';
+            db.query(queryTelefono, [placa], (err, result) => {
+                if (!err && result.length > 0) {
+                    const numero = result[0].telefono;
+                    const mensaje = `🚗 Tu vehículo con placa ${placa} ha cambiado de estado a *${nuevoEstado}*. Gracias por confiar en LubriWash.`;
+                    const payload = { numero, mensaje };
+
+                    fetch('http://localhost:5000/enviar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(res => res.json())
+                    .then(data => console.log("📩 Mensaje enviado:", data))
+                    .catch(err => console.error("❌ Error al enviar mensaje WhatsApp:", err));
+                }
+            });
+
+            return res.json({ success: true });
         });
 
-        // 🟢 Finalizamos con respuesta al cliente
-        return res.json({
-            success: true,
-            message: `El estado del vehículo con placa ${placa} ha sido actualizado a ${nuevoEstado}`
+    } else if (nuevoEstado === 'finalizado') {
+        const horaFinal = moment().tz('America/Bogota').format('YYYY-MM-DD HH:mm:ss');
+
+        const queryInfo = 'SELECT tiempo_estimado, inicio_servicio FROM planilla WHERE placa = ? AND fecha = CURDATE()';
+        db.query(queryInfo, [placa], (err, resultados) => {
+            if (err || resultados.length === 0) {
+                console.error("❌ Error consultando datos para rendimiento:", err?.message);
+                return res.status(500).json({ success: false });
+            }
+
+            const { tiempo_estimado, inicio_servicio } = resultados[0];
+            const tiempoReal = moment(horaFinal).diff(moment(inicio_servicio), 'minutes');
+
+            let rendimiento;
+            if (tiempoReal <= tiempo_estimado * 0.8) rendimiento = 'Más rápido';
+            else if (tiempoReal <= tiempo_estimado * 1.1) rendimiento = 'Puntual';
+            else if (tiempoReal <= tiempo_estimado * 1.5) rendimiento = 'Lento';
+            else rendimiento = 'Muy lento';
+
+            const updateQuery = `
+                UPDATE planilla 
+                SET estado = ?, hora_finalizacion = ?, rendimiento = ?
+                WHERE placa = ?
+            `;
+            const updateParams = [nuevoEstado, horaFinal, rendimiento, placa];
+
+            db.query(updateQuery, updateParams, (err, result) => {
+                if (err) {
+                    console.error('❌ Error al finalizar servicio:', err.message);
+                    return res.status(500).json({ success: false });
+                }
+
+                if (result.affectedRows === 0) {
+                    return res.status(400).json({ success: false, message: 'No se encontró la placa' });
+                }
+
+                io.emit('estadoCambiado', { placa, estado: nuevoEstado });
+
+                // 🔔 Enviar mensaje por WhatsApp
+                const queryTelefono = 'SELECT telefono FROM vehiculos WHERE placa = ?';
+                db.query(queryTelefono, [placa], (err, result) => {
+                    if (!err && result.length > 0) {
+                        const numero = result[0].telefono;
+                        const mensaje = `🚗 Tu vehículo con placa ${placa} ha cambiado de estado a *${nuevoEstado}*. Gracias por confiar en LubriWash.`;
+                        const payload = { numero, mensaje };
+
+                        fetch('http://localhost:5000/enviar', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        })
+                        .then(res => res.json())
+                        .then(data => console.log("📩 Mensaje enviado:", data))
+                        .catch(err => console.error("❌ Error al enviar mensaje WhatsApp:", err));
+                    }
+                });
+
+                return res.json({ success: true });
+            });
         });
-    });
+
+    } else {
+        const updateQuery = 'UPDATE planilla SET estado = ? WHERE placa = ?';
+        const updateParams = [nuevoEstado, placa];
+
+        db.query(updateQuery, updateParams, (err, result) => {
+            if (err) {
+                console.error('Error al actualizar el estado:', err);
+                return res.status(500).json({ success: false });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(400).json({ success: false, message: 'El vehículo no existe o no se puede actualizar' });
+            }
+
+            io.emit('estadoCambiado', { placa, estado: nuevoEstado });
+
+            // 🔔 Enviar mensaje por WhatsApp
+            const queryTelefono = 'SELECT telefono FROM vehiculos WHERE placa = ?';
+            db.query(queryTelefono, [placa], (err, result) => {
+                if (!err && result.length > 0) {
+                    const numero = result[0].telefono;
+                    const mensaje = `🚗 Tu vehículo con placa ${placa} ha cambiado de estado a *${nuevoEstado}*. Gracias por confiar en LubriWash.`;
+                    const payload = { numero, mensaje };
+
+                    fetch('http://localhost:5000/enviar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(res => res.json())
+                    .then(data => console.log("📩 Mensaje enviado:", data))
+                    .catch(err => console.error("❌ Error al enviar mensaje WhatsApp:", err));
+                }
+            });
+
+            return res.json({ success: true });
+        });
+    }
 });
+
 
 
 
 // Obtener registros de placas
 app.get('/planilla', (req, res) => {
     const { fecha } = req.query;  // Toma la fecha desde la solicitud
-    let sql = 'SELECT placa, tipo_carro, servicios, precio_total, operarios, fecha, estado FROM planilla';
+    let sql = 'SELECT placa, tipo_carro, servicios, precio_total, operarios, fecha, estado, rendimiento FROM planilla';
     let params = [];
 
     // Si se pasa una fecha, usarla para la consulta
@@ -493,15 +583,19 @@ function consultarTrabajosDeHoyPorGrupo() {
 app.get('/tiempos-restantes', (req, res) => {
     const sql = `
         SELECT 
-            placa,
             operarios,
-            servicios,
+            estado,
             tiempo_estimado,
             inicio_servicio,
-            TIMESTAMPDIFF(MINUTE, inicio_servicio, NOW()) AS minutos_transcurridos,
-            GREATEST(0, tiempo_estimado - TIMESTAMPDIFF(MINUTE, inicio_servicio, NOW())) AS minutos_restantes
+            CASE 
+                WHEN estado = 'en_atencion' AND inicio_servicio IS NOT NULL THEN 
+                    GREATEST(0, tiempo_estimado - TIMESTAMPDIFF(MINUTE, inicio_servicio, NOW()))
+                WHEN estado = 'en_espera' THEN 
+                    tiempo_estimado
+                ELSE 0
+            END AS minutos_restantes
         FROM planilla
-        WHERE estado = 'en_atencion' AND inicio_servicio IS NOT NULL
+        WHERE fecha = CURDATE() AND estado IN ('en_espera', 'en_atencion')
     `;
 
     db.query(sql, (err, results) => {
@@ -510,12 +604,29 @@ app.get('/tiempos-restantes', (req, res) => {
             return res.status(500).json({ success: false, error: 'Error interno al consultar tiempos' });
         }
 
+        // Agrupar por grupo y sumar los tiempos
+        const tiemposPorGrupo = {};
+
+        results.forEach(({ operarios, minutos_restantes }) => {
+            if (!tiemposPorGrupo[operarios]) {
+                tiemposPorGrupo[operarios] = 0;
+            }
+            tiemposPorGrupo[operarios] += minutos_restantes;
+        });
+
+        // Convertir a formato de salida compatible con camara.html
+        const salida = Object.entries(tiemposPorGrupo).map(([grupo, total]) => ({
+            operarios: grupo,
+            minutos_restantes: total
+        }));
+
         res.json({
             success: true,
-            data: results
+            data: salida
         });
     });
 });
+
 
 
   
