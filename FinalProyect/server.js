@@ -627,7 +627,46 @@ app.get('/tiempos-restantes', (req, res) => {
     });
 });
 
+const ExcelJS = require('exceljs');
 
+app.get('/descargar-planilla', async (req, res) => {
+    try {
+        const fecha = req.query.fecha || moment().tz('America/Bogota').format('YYYY-MM-DD');
+        const sql = 'SELECT placa, tipo_carro, servicios, precio_total, operarios, fecha, estado, rendimiento FROM planilla WHERE fecha = ?';
+
+        db.query(sql, [fecha], async (err, rows) => {
+            if (err) {
+                console.error('Error al generar Excel:', err);
+                return res.status(500).send('Error interno');
+            }
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Planilla');
+
+            worksheet.columns = [
+                { header: 'Placa', key: 'placa', width: 15 },
+                { header: 'Tipo de carro', key: 'tipo_carro', width: 20 },
+                { header: 'Servicios', key: 'servicios', width: 25 },
+                { header: 'Precio Total', key: 'precio_total', width: 15 },
+                { header: 'Operarios', key: 'operarios', width: 20 },
+                { header: 'Fecha', key: 'fecha', width: 15 },
+                { header: 'Estado', key: 'estado', width: 15 },
+                { header: 'Rendimiento', key: 'rendimiento', width: 15 }
+            ];
+
+            worksheet.addRows(rows);
+
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', `attachment; filename=planilla_${fecha}.xlsx`);
+
+            await workbook.xlsx.write(res);
+            res.end();
+        });
+    } catch (err) {
+        console.error('Error general al descargar planilla:', err);
+        res.status(500).send('Error al generar archivo Excel');
+    }
+});
 
   
 

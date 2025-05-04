@@ -24,6 +24,8 @@
         <!-- Filtro de fecha con valor por defecto del día actual -->
         <input type="date" id="fecha-filtro" onchange="filtrarPlanilla()" value="" />
 
+        <button onclick="descargarExcel()">Descargar Excel</button>
+
         <!-- Mensaje de carga -->
         <div id="loading-message" style="display:none;">Cargando datos...</div>
 
@@ -99,6 +101,12 @@
                     document.getElementById("loading-message").style.display = "none";
                 });
         }
+
+        function descargarExcel() {
+            const fecha = document.getElementById('fecha-filtro').value || new Date().toISOString().split('T')[0];
+            window.location.href = `/descargar-planilla?fecha=${fecha}`;
+        }
+
 
         // Función para filtrar los registros de la planilla según la fecha seleccionada
         function filtrarPlanilla() {
