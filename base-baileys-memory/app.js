@@ -137,57 +137,6 @@ const flowSushi = addKeyword('4')
         'Escribe *Hola* para volver al menu principal'
     ])
 
-const flowPagarEfectivo = addKeyword('1')
-.addAnswer(['✅ Perfecto, por favor acércate a caja para realizar tu pago. ¡Te esperamos con esos billetes! 🏦',
-    '',
-    'Escribe *Hola* para volver al menu principal'
-]);
-
-
-
-
-
-
-const flowPagarTransferencia = addKeyword('2') // palabra clave inventada
-.addAction(async (ctx, { flowDynamic }) => {
-    console.log('💵 Precio al momento de enviar mensaje transferencia:', precioServicio);
-
-    await flowDynamic([
-        `✅ Debes pagar el valor de *$${precioServicio.toLocaleString('es-CO')}* a través del siguiente link:`,
-        '',
-        '👉 [https://pago-seguro.lubrywash.com/mi-pago](https://pago-seguro.lubrywash.com/mi-pago)',
-        '',
-        'Recuerda enviar el comprobante de pago aquí por WhatsApp 📲.',
-        '',
-        'Escribe *Hola* para volver al menú principal.'
-    ]);
-});
-
-
-
-
-    
-const flowPagoServicio = addKeyword('1')
-.addAnswer([
-    '💵 ¿Cómo deseas pagar tu servicio?',
-    '',
-    '1️⃣ Efectivo',
-    '2️⃣ Transferencia'
-], { capture: true }, async (ctx, { gotoFlow, fallBack }) => {
-    const opcion = ctx.body.trim();
-
-    if (opcion === '1') {
-        return gotoFlow(flowPagarEfectivo);
-    } else if (opcion === '2') {
-        return gotoFlow(flowPagarTransferencia);
-    } else {
-        return fallBack('Por favor selecciona una opción válida: *1* o *2*.');
-    }
-});
-
-
-
-
 
 const flowEstadoServicio = addKeyword('5')
 .addAction(async (ctx, { flowDynamic, state }) => {
@@ -197,33 +146,71 @@ const flowEstadoServicio = addKeyword('5')
         const data = await response.json();
 
         if (data.success && data.existe) {
-            precioServicio = data.precio_total || 0; // 🔥 Aquí guardamos el precio en la variable
+            if (data.estado === null) {
+                await flowDynamic([
+                    `👋 Hola ${data.datos.nombre_dueno}!\n\n🚗 Tu vehículo *${data.datos.placa}* no tiene servicios registrados para hoy.`
+                ]);
+                await state.update({ etapaPago: null });
+                return;
+            }
+
+            precioServicio = data.precio_total || 0;
             console.log('💵 Precio guardado:', precioServicio);
 
-            await flowDynamic(`👋 Hola ${data.datos.nombre_dueno}!\n🚗 Tu vehículo *${data.datos.placa}* está en estado *${data.estado}*.`);
-        } else {
-            await flowDynamic('😕 No encontramos un vehículo registrado con tu número.');
-            return;
-        }
+            await flowDynamic([
+                `👋 Hola ${data.datos.nombre_dueno}!\n\n🚗 Tu vehículo *${data.datos.placa}* está en estado *${data.estado}*.\n\n1️⃣ Pagar mi servicio\n\nEscribe *1* si deseas pagar tu servicio ahora.`
+            ]);
 
-        await flowDynamic([
-            '',
-            '1️⃣ Pagar mi servicio'
-        ]);
+            await state.update({ etapaPago: 'menu' });
+        } else {
+            await flowDynamic(['😕 No encontramos un vehículo registrado con tu número.']);
+            await state.update({ etapaPago: null });
+        }
     } catch (error) {
         console.error('❌ Error en flowEstadoServicio:', error);
-        await flowDynamic('😕 Ups, hubo un problema consultando tu servicio.');
+        await flowDynamic(['😕 Ups, hubo un problema consultando tu servicio.']);
     }
 })
-.addAnswer(['Escribe *1* si deseas pagar tu servicio ahora.'], {
-    capture: true
-}, async (ctx, { fallBack, gotoFlow }) => {
-    if (ctx.body.trim() === '1') {
-        return gotoFlow(flowPagoServicio);
-    } else {
-        return fallBack('Por favor escribe *1* si quieres pagar.');
+
+// Primera captura: decide si quiere pagar
+.addAction({ capture: true }, async (ctx, { state, flowDynamic }) => {
+    const etapa = await state.get('etapaPago');
+    const entrada = ctx.body.trim();
+
+    if (etapa === 'menu' && entrada === '1') {
+        await flowDynamic([
+            '💵 ¿Cómo deseas pagar tu servicio?\n\n1️⃣ Efectivo\n2️⃣ Transferencia'
+        ]);
+        await state.update({ etapaPago: 'metodo' });
+    }
+})
+
+// Segunda captura: método de pago
+.addAction({ capture: true }, async (ctx, { state, flowDynamic }) => {
+    const etapa = await state.get('etapaPago');
+    const entrada = ctx.body.trim();
+
+    if (etapa === 'metodo') {
+        if (entrada === '1') {
+            await flowDynamic([
+                '✅ Perfecto, por favor acércate a caja para realizar tu pago. ¡Te esperamos con esos billetes! 🏦\n\nEscribe *Hola* para volver al menú principal.'
+            ]);
+            await state.update({ etapaPago: null });
+        } else if (entrada === '2') {
+            await flowDynamic([
+                `✅ Debes pagar el valor de *$${precioServicio.toLocaleString('es-CO')}* a través del siguiente link:\n\n👉 [https://pago-seguro.lubrywash.com/mi-pago](https://pago-seguro.lubrywash.com/mi-pago)\n\nRecuerda enviar el comprobante de pago aquí por WhatsApp 📲.\n\nEscribe *Hola* para volver al menú principal.`
+            ]);
+            await state.update({ etapaPago: null });
+        } else {
+            await flowDynamic(['❌ Por favor selecciona una opción válida: *1* o *2*.']);
+        }
     }
 });
+    
+
+
+
+
 
 
 
@@ -246,9 +233,10 @@ const flowPrincipal = addKeyword(['hola'])
 const main = async () => {
     const app = express();
     const adapterDB = new MockAdapter();
-    const adapterFlow = createFlow([flowPrincipal,
-        flowPagarEfectivo,
-        flowPagarTransferencia
+    const adapterFlow = createFlow([flowPrincipal
+        //,
+        //flowPagarEfectivo,
+        //flowPagarTransferencia
     ]);
     const adapterProvider = createProvider(BaileysProvider);
 
