@@ -43,7 +43,7 @@ roboflow_client = InferenceHTTPClient(
 )
 
 # ============= CONFIGURACIÓN SERVIDOR DE DESTINO =============
-UPDATE_ENDPOINT = "http://3.82.125.113/update"
+UPDATE_ENDPOINT = "http://44.204.54.62/update"
 
 # ============= FLASK APP =============
 app = Flask(__name__)
@@ -237,7 +237,7 @@ def google_vision_ocr(img):
         return "", 0.0
 
 def enviar_a_servidor(placa, placa_img):
-    """Envía la placa y la imagen en Base64 a tu servidor (3.82.125.113)."""
+    """Envía la placa y la imagen en Base64 a tu servidor (44.204.54.62)."""
     try:
         _, buffer = cv2.imencode('.jpg', placa_img)
         jpg_as_text = base64.b64encode(buffer).decode('utf-8')

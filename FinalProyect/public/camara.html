@@ -49,7 +49,7 @@
           <!-- Sección de la imagen OCR (la placa detectada) -->
           <h3>Placa Detectada (Imagen OCR)</h3>
           <img 
-            src="http://3.82.125.113/last-ocr-image" 
+            src="http://44.204.54.62/last-ocr-image" 
             alt="ocr_feed"
             style="max-width: 400px; border: 1px solid #ccc;"
           />
@@ -126,7 +126,7 @@
 
       // Opcional: Forzar la recarga de la imagen OCR para evitar caché
       const ocrImage = document.querySelector('img[alt="ocr_feed"]');
-      ocrImage.src = "http://3.82.125.113/last-ocr-image?time=" + new Date().getTime();
+      ocrImage.src = "http://44.204.54.62/last-ocr-image?time=" + new Date().getTime();
 });
 
 // Función que verifica si la placa está registrada y llena los campos del formulario
