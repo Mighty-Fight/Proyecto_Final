@@ -29,7 +29,7 @@ ROI_COORDS = (420, 480, 650, 500)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Cantidad de segundos que deben pasar antes de volver a intentar OCR
-COOLDOWN = 10
+COOLDOWN = 3
 
 # Reducir la frecuencia de llamadas al OCR/detección (tiempo de sleep en el loop principal)
 DETECTION_LOOP_SLEEP = 0.2  # ~5-6 llamadas por segundo
