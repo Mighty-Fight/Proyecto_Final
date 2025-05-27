@@ -589,7 +589,7 @@ app.get('/tiempos-restantes', (req, res) => {
             inicio_servicio,
             CASE 
                 WHEN estado = 'en_atencion' AND inicio_servicio IS NOT NULL THEN 
-                    GREATEST(0, tiempo_estimado - TIMESTAMPDIFF(MINUTE, inicio_servicio, NOW()))
+                    GREATEST(0, tiempo_estimado - TIMESTAMPDIFF(MINUTE, inicio_servicio, CONVERT_TZ(NOW(), 'UTC', 'America/Bogota')))
                 WHEN estado = 'en_espera' THEN 
                     tiempo_estimado
                 ELSE 0
@@ -604,9 +604,7 @@ app.get('/tiempos-restantes', (req, res) => {
             return res.status(500).json({ success: false, error: 'Error interno al consultar tiempos' });
         }
 
-        // Agrupar por grupo y sumar los tiempos
         const tiemposPorGrupo = {};
-
         results.forEach(({ operarios, minutos_restantes }) => {
             if (!tiemposPorGrupo[operarios]) {
                 tiemposPorGrupo[operarios] = 0;
@@ -614,7 +612,6 @@ app.get('/tiempos-restantes', (req, res) => {
             tiemposPorGrupo[operarios] += minutos_restantes;
         });
 
-        // Convertir a formato de salida compatible con camara.html
         const salida = Object.entries(tiemposPorGrupo).map(([grupo, total]) => ({
             operarios: grupo,
             minutos_restantes: total
@@ -626,6 +623,7 @@ app.get('/tiempos-restantes', (req, res) => {
         });
     });
 });
+
 
 const ExcelJS = require('exceljs');
 
